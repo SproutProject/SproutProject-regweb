@@ -1,0 +1,39 @@
+<div id="plan">
+    <div class="intro">
+	<div class="item" style="background-image:url('plan_bk1.jpg'); border-top: solid 30px #40BFFF;">
+	    <div class="brief toggle">
+		<h2>程式語言</h2><h2>Programming</h2><h2>Language</h2>
+		<div>學會和電腦溝通<br>開始一趟<br>馴服機器的旅程</div>
+		<button class="btn-suc">深入了解</button>
+	    </div>
+	    <div class="extend">
+		<p><strong>想知道軟體工程師是怎麼讓外表單一的硬體執行各種實用的 APP、顯示溫暖人心的多媒體，甚至精彩刺激的遊戲嗎？</strong></p>
+		<p>程式語言是人類和硬體溝通的管道、是邏輯思考和真實世界的橋樑。透過特定格式與邏輯的描述，讓電腦一步步讀懂你的心思，打造出屬於你的無限可能！</p>
+		<button class="btn-pri">我知道了</button>
+	    </div>
+	</div>
+	<div class="item" style="background-image:url('plan_bk2.jpg'); border-top: solid 30px #81C7D4;">
+	    <div class="brief toggle">
+		<h2>解題方法</h2><h2>Problem</h2><h2>Solving</h2>
+		<div>挑戰你的腦力極限<br>進入前所未有的<br>超效率世界</div>
+		<button class="btn-suc">深入了解</button>
+	    </div>
+	    <div class="extend">
+		<p><strong>遇到各式各樣的問題，總是毫無解決方法的頭緒嗎？<br>一樣是解決問題的方法，你知道好的方法與壞的方法效率可以有幾百萬倍的差異嗎？</strong></p>
+		<p>解題方法將教你分析方法的好壞以及高效率方法的設計方式，讓你走上解決複雜問題的終結者之路！</p>
+		<button class="btn-pri">我知道了</button>
+	    </div>
+	</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+var j_plan = $('#plan');
+
+j_plan.find('div.item div.toggle button').on('click',function(e){
+    $(this).parents('div.item').addClass('extend');
+});
+j_plan.find('div.item div.extend button').on('click',function(e){
+    $(this).parents('div.item').removeClass('extend');
+});
+</script>

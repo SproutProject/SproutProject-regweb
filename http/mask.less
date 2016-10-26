@@ -1,0 +1,121 @@
+@import "mask-inc";
+
+.ct {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: @gutter;
+    padding-right: @gutter;
+    position: relative;
+
+    &:after{
+	content: "";
+	clear: both;
+	display:block;
+    }
+}
+.gencl(@tag,@width,@end) when (@end > 0) {
+    .gencl(@tag,@width,(@end - 1));
+
+    .@{tag}-@{end} {
+	margin-left: @gutter;
+	margin-right: @gutter;
+	float: left;
+	display: none;
+	
+	&:first-child {
+	    margin-left: 0px;
+	}
+    	&:last-child {
+	    margin-right: 0px;
+	}
+
+	@media (min-width: @width) {
+	    width: @column * @end + @gutter * 2 * (@end - 1) !important;
+	    display: block !important;
+	}
+    }
+}
+
+.gencl(bs,480px,6);
+.gencl(sm,600px,10);
+.gencl(md,960px,16);
+.gencl(lg,1200px,20);
+
+@media (min-width: 504px) {
+    .ct {
+	width: 480px - @gutter * 2;
+    }
+}
+@media (min-width: 624px) {
+    .ct {
+	width: 600px - @gutter * 2;
+    }
+}
+@media (min-width: 984px) {
+    .ct {
+	width: 960px - @gutter * 2;
+    }
+}
+@media (min-width: 1224px) {
+    .ct {
+	width: 1200px - @gutter * 2;
+    }
+}
+
+html {
+    height: 100%;
+}
+body {
+    font-size: @fs-md;
+    line-height: 30px;
+    font-family: @ft-def;
+    overflow-y: scroll;
+}
+a {
+    color: @purple;
+    text-decoration: none;
+
+    &:hover {
+	text-decoration: underline;
+    }
+}
+pre {
+    margin: 0px 0px;
+    font-family: @ft-mon;
+}
+.btn(@color) {
+    height: 48px;
+    padding-left: 11px;
+    padding-right: 11px;
+    background-color: @white;
+    color: @black;
+    font-size: @fs-md;
+    line-height: @fs-md;
+    border: @color 1px solid;
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 100ms;
+    transition-timing-function: linear;
+
+    &:hover {
+	background-color: saturate(@color,10%);
+	color: white;
+    }
+    &:before {
+	content: "";
+	width: 12px * sqrt(2);
+	height: 12px * sqrt(2);
+	background-color: @color;
+	position: absolute;
+	top: -12px * sqrt(2) / 2;
+	left: -12px * sqrt(2) / 2;
+	transform: rotate(45deg);
+	display: block;
+    }
+}
+
+.btn-def {.btn(@gray);}
+.btn-pri {.btn(@blue);}
+.btn-suc {.btn(@green);}
+.btn-spe {.btn(@purple);}

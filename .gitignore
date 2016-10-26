@@ -1,0 +1,7 @@
+ENV3/
+*.swp
+
+http/*.css
+*/__pycache__/
+
+python/Config.py
