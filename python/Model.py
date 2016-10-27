@@ -4,9 +4,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 import Config
 
+# Database
 
 Base = declarative_base()
-
 
 class Student(Base):
     __tablename__ = 'student'
@@ -28,3 +28,25 @@ def init():
 
     s = Student(mail=10)
     print(s.__table__.insert())
+
+# Mail
+import smtplib
+
+class SMTPMail(object):
+    def __init__(self):
+        self.username = Config.SMTP_USER
+        self.password = Config.SMTP_PASSWD
+    
+    def send(self, to, subject, content):
+        smtp_server = smtplib.SMTP(Config.SMTP_HOST)
+        smtp_server.ehlo()
+        smtp_server.starttls()
+        smtp_server.login(self.username, self.password)
+
+        header = ('To:%s\n'
+                  'From:%s\n'
+                  'Subject:%s\n') % (to, self.username, subject)
+        msg = '%s\n %s \n\n' % (header, content)
+        smtp_server.sendmail(self.username, to, msg)
+        smtp_server.close()
+
