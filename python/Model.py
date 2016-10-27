@@ -1,6 +1,7 @@
 import sqlalchemy
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 import Config
 
@@ -8,13 +9,31 @@ import Config
 
 Base = declarative_base()
 
-class Student(Base):
-    __tablename__ = 'student'
+class User(Base):
+    __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    mail = Column(String, index=True)
+    mail = Column(String, unique=True)
     password = Column(String)
+    power = Column(Integer)
 
+    def __repr__(self):
+        return '<User(mail="%s", password="%s", power="%d")>' % (
+                                self.mail, self.password, self.power)
+
+class UserData(Base):
+    __tablename__ = 'userdata'
+
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer, ForeignKey("user.id"))
+    full_name = Column(String)
+    gender = Column(Integer)
+    school = Column(String)
+    school_type = Column(Integer)
+    grade = Column(Integer)
+    address = Column(String)
+    phone = Column(String)
+    area = Column(Integer)
 
 def init():
     db_engine = sqlalchemy.create_engine(sqlalchemy.engine.url.URL(
@@ -26,8 +45,12 @@ def init():
 
     Base.metadata.create_all(db_engine)
 
-    s = Student(mail=10)
-    print(s.__table__.insert())
+    #Session = sessionmaker(bind=db_engine)
+    #session = Session()
+    # u = User(mail='luniacslime@gmail.com', password='1234', power=-1)
+    # print(u)
+    # session.add(u)
+    # session.commit()
 
 # Mail
 import smtplib

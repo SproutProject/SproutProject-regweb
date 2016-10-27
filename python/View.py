@@ -1,6 +1,7 @@
 import tornado.web
 import json
 
+
 class RequestHandler(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
         self.db_engine = kwargs.pop('db_engine')
@@ -23,3 +24,18 @@ class PollViewerHandler(RequestHandler):
         db = await self.get_db()
         self.set_header('Content-Type', 'application/json')
         self.write(example)
+
+
+class RegisterHandler(RequestHandler):
+    async def post(self):
+        db = await self.get_db()
+        try:
+            mail = self.get_argument('mail')
+            password = self.get_argument('password')
+        except Exception as e:
+            self.write({'status': 'error'})
+        await db.execute(
+            'INSERT INTO "user" ("mail", "password", "power") VALUES (%s, %s, %s)',
+            (mail, password, -1)
+        )
+

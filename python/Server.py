@@ -8,7 +8,6 @@ import View
 import Model
 import Config
 
-
 async def create_db_engine():
     return await aiopg.sa.create_engine(
             database=Config.DB_NAME,
@@ -29,6 +28,7 @@ def main():
     app = tornado.web.Application([
         (r'/', View.IndexHandler, app_param),
         (r'/poll', View.PollViewerHandler, app_param),
+        (r'/register', View.RegisterHandler, app_param),
     ])
     app.listen(7122)
 
