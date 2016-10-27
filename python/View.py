@@ -20,10 +20,11 @@ class IndexHandler(RequestHandler):
 
 class PollViewerHandler(RequestHandler):
     async def post(self):
-        example = json.dumps({'data': [{'Id': 123, 'Subject': 'test1', 'Body': 'test2'}, {'Id': 456, 'Subject': 'test3', 'Body': 'test3'}]})
         db = await self.get_db()
+        example = json.dumps({'data': [{'Id': 123, 'Subject': 'test1', 'Body': 'test2'}, {'Id': 456, 'Subject': 'test3', 'Body': 'test3'}]})
         self.set_header('Content-Type', 'application/json')
         self.write(example)
+        await db.close()
 
 
 class RegisterHandler(RequestHandler):
