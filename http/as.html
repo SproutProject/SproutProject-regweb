@@ -1,65 +1,65 @@
 <script id="login-templ" type="x-tmpl-mustache">
 <div class="ct"><div class="md-8">
-    <h3>Login</h3>
-    <label for="mail">Mail</label><br>
-    <input id="mail" type="textbox"><br>
-    <label for="passwd">Password</label><br>
-    <input id="passwd" type="password"><br><br>
-    <button id="login" class="btn-pri">Login</button>
+  <h3>Login</h3>
+  <label for="mail">Mail</label><br>
+  <input id="mail" type="textbox"><br>
+  <label for="passwd">Password</label><br>
+  <input id="passwd" type="password"><br><br>
+  <button id="login" class="btn-pri">Login</button>
 </div></div>
 </script>
 <script id="dash-templ" type="x-tmpl-mustache">
-<div class="ct"><div class="md-16 qa">
-    <a class="expand" href=""><h2><span>[+]</span>Manage QA</h2></a>
-    <div class="cont"></div>
+<div class="ct"><div class="qa">
+  <a class="expand" href=""><h2><span>[+]</span>Manage QA</h2></a>
+  <div class="cont"></div>
 </div></div>
-<div class="ct"><div class="md-16 poll">
-    <a class="expand" href=""><h2><span>[+]</span>Manage Poll</h2></a>
-    <div class="cont"></div>
+<div class="ct"><div class="poll">
+  <a class="expand" href=""><h2><span>[+]</span>Manage Poll</h2></a>
+  <div class="cont"></div>
 </div></div>
-<div class="ct"><div class="md-16 req">
-    <a class="expand" href=""><h2><span>[+]</span>Manage Request</h2></a>
-    <div class="cont"></div>
+<div class="ct"><div class="req">
+  <a class="expand" href=""><h2><span>[+]</span>Manage Request</h2></a>
+  <div class="cont"></div>
 </div></div>
 </script>
 <script id="qa-templ" type="x-tmpl-mustache">
 <div class="edit">
-    <h3>add/edit</h3>
-    <input type="textbox" class="subject" placeholder="subject"><br><br>
-    <input type="textbox" class="clas" placeholder="class">
-    <input type="textbox" class="order" placeholder="order"><br><br>
-    <textarea placeholder="html"></textarea><br><br>
-    <button class="btn-suc submit">submit</button>
-    <button class="btn-def cancel">cancel</button>
+  <h3>add/edit</h3>
+  <input type="textbox" class="subject" placeholder="subject"><br><br>
+  <input type="textbox" class="clas" placeholder="class">
+  <input type="textbox" class="order" placeholder="order"><br><br>
+  <textarea placeholder="html"></textarea><br><br>
+  <button class="btn-suc submit">submit</button>
+  <button class="btn-def cancel">cancel</button>
 </div>
 <div class="list">
-    <h3>list</h3>
+  <h3>list</h3>
 {{#data}}
-    <div qaid={{Id}} style="margin-bottom:6px;">
-	<strong class="md-10">{{Order}} - {{Subject}}</strong>
-	<button class="btn-suc modify">modify</button>
-	<button class="btn-pri delete">delete</button>
-    </div>
+  <div qaid={{Id}} style="margin-bottom:6px;">
+    <strong>{{Order}} - {{Subject}}</strong>
+    <button class="btn-pri delete" style="float: right;">delete</button>
+    <button class="btn-suc modify" style="float: right;">modify</button>
+  </div>
 {{/data}}
 </div>
 </script>
 <script id="poll-templ" type="x-tmpl-mustache">
 <div class="edit">
-    <h3>add/edit</h3>
-    <input type="textbox" class="order" placeholder="order"><br><br>
-    <textarea class="subject" placeholder="subject"></textarea><br><br>
-    <textarea class="body" placeholder="content"></textarea><br><br>
-    <button class="btn-suc submit">submit</button>
-    <button class="btn-def cancel">cancel</button>
+  <h3>add/edit</h3>
+  <input type="textbox" class="order" placeholder="order"><br><br>
+  <textarea class="subject" placeholder="subject"></textarea><br><br>
+  <textarea class="body" placeholder="content"></textarea><br><br>
+  <button class="btn-suc submit">submit</button>
+  <button class="btn-def cancel">cancel</button>
 </div>
 <div class="list">
-    <h3>list</h3>
+  <h3>list</h3>
 {{#data}}
-    <div pollid={{Id}} style="margin-bottom:6px;">
-	<strong class="md-10">{{Order}}</strong>
-	<button class="btn-suc modify">modify</button>
-	<button class="btn-pri delete">delete</button>
-    </div>
+  <div pollid={{Id}} style="margin-bottom:6px;">
+    <strong>{{Order}}</strong>
+    <button class="btn-pri delete" style="float: right;">delete</button>
+    <button class="btn-suc modify" style="float: right;">modify</button>
+  </div>
 {{/data}}
 </div>
 </script>

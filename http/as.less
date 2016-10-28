@@ -1,14 +1,32 @@
 @import "mask-inc";
 
 div#as {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    background-color: @paper;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  background-color: @paper;
+  width: 80%;
 
-    a.expand > h2 > span {
-	font-family: monospace;
+  & > div.ct {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  a.expand > h2 > span {
+    font-family: monospace;
+  }
+
+  div.cont {
+    display: none;
+  }
+
+  div.list {
+    & > div {
+      height: 48px;
+      line-height: 48px;
     }
-    div.cont {
-	display: none;
+
+    button {
+      margin-left: 3px;
     }
+  }
 }

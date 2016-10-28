@@ -29,6 +29,10 @@ def main():
         (r'/', View.IndexHandler, app_param),
         (r'/poll', View.PollViewerHandler, app_param),
         (r'/register', View.RegisterHandler, app_param),
+        (r'/mg', View.ManageHandler, app_param),
+        (r'/mg/qa', View.ManageQaHandler, app_param),
+        (r'/mg/poll', View.ManagePollHandler, app_param),
+        (r'/mg/req', View.ManageRequestHandler, app_param),
     ])
     app.listen(7122)
 

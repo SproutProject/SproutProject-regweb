@@ -9,6 +9,7 @@ import Config
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'user'
 
@@ -20,6 +21,14 @@ class User(Base):
     def __repr__(self):
         return '<User(mail="%s", password="%s", power="%d")>' % (
                                 self.mail, self.password, self.power)
+
+class AuthToken(Base):
+    __tablename__ = 'authtoken'
+
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer, ForeignKey("user.id"))
+    token = Column(String)
+
 
 class UserData(Base):
     __tablename__ = 'userdata'
@@ -34,6 +43,7 @@ class UserData(Base):
     address = Column(String)
     phone = Column(String)
     area = Column(Integer)
+
 
 def init():
     db_engine = sqlalchemy.create_engine(sqlalchemy.engine.url.URL(
@@ -52,8 +62,10 @@ def init():
     # session.add(u)
     # session.commit()
 
+
 # Mail
 import smtplib
+
 
 class SMTPMail(object):
     def __init__(self):
