@@ -19,12 +19,20 @@ class IndexHandler(RequestHandler):
         self.write("Ello World")
 
 
-class PollViewerHandler(RequestHandler):
+class PollHandler(RequestHandler):
     async def post(self):
         db = await self.get_db()
-        example = json.dumps({'data': [{'Id': 123, 'Subject': 'test1', 'Body': 'test2'}, {'Id': 456, 'Subject': 'test3', 'Body': 'test3'}]})
+        data = []
+        async for row in db.execute(
+            'SELECT * FROM "poll" WHERE "status"=1'
+            'ORDER BY "year" DESC, "order"'
+        ):
+            element = {}
+            for key in row:
+                element[key] = row[key]
+            data.append(element)
         self.set_header('Content-Type', 'application/json')
-        self.write(example)
+        self.write({'data': data})
         await db.close()
 
 
@@ -36,13 +44,6 @@ class ManageHandler(RequestHandler):
 
 
 class ManageQaHandler(RequestHandler):
-    async def post(self): 
-        example = json.dumps({'data': [{'Id': 123, 'Subject': 'test1', 'Order': 'test2'}, {'Id': 456, 'Subject': 'test3', 'Order': 'test3'}]})
-        self.set_header('Content-Type', 'application/json')
-        self.write(example)
-
-
-class ManagePollHandler(RequestHandler):
     async def post(self): 
         example = json.dumps({'data': [{'Id': 123, 'Subject': 'test1', 'Order': 'test2'}, {'Id': 456, 'Subject': 'test3', 'Order': 'test3'}]})
         self.set_header('Content-Type', 'application/json')

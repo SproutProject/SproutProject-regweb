@@ -45,6 +45,17 @@ class UserData(Base):
     area = Column(Integer)
 
 
+class Poll(Base):
+    __tablename__ = 'poll'
+
+    id = Column(Integer, primary_key=True)
+    subject = Column(String)
+    body = Column(String)
+    order = Column(Integer)
+    year = Column(Integer)
+    status = Column(Integer)
+
+
 def init():
     db_engine = sqlalchemy.create_engine(sqlalchemy.engine.url.URL(
                 drivername='postgresql+psycopg2',

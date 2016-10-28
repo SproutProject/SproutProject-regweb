@@ -1,12 +1,12 @@
 <script id="template" type="x-tmpl-mustache">
 {{#data}}
-  <div pollid={{Id}} class="item">
+  <div pollid={{id}} class="item">
 	<div class="subject">
-      <p>{{&Subject}}</p>
+      <p>{{&year}} - {{&subject}}</p>
     </div>
     <div class="body-container">
       <div class="body">
-        <p>{{&Body}}</p>
+        <p>{{&body}}</p>
         <button class="btn-pri close" style="float:right;">關閉</button>
       </div>
     </div>
