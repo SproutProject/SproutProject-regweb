@@ -21,6 +21,7 @@ class IndexHandler(RequestHandler):
 
 class PollHandler(RequestHandler):
     async def post(self):
+        self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         data = []
         async for row in db.execute(
@@ -31,9 +32,23 @@ class PollHandler(RequestHandler):
             for key in row:
                 element[key] = row[key]
             data.append(element)
-        self.set_header('Content-Type', 'application/json')
         self.write({'data': data})
         await db.close()
+
+
+class PollDeleteHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        try:
+            poll_id = self.get_argument('id')
+            await db.execute(
+                'UPDATE "poll" SET "status"=0 WHERE "id"=%s',
+                (poll_id, )
+            )
+            self.write({'status': 'SUCCESS'})
+        except Exception as e:
+            self.write({'status': 'ERROR'})
 
 
 class ManageHandler(RequestHandler):

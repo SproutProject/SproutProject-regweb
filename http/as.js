@@ -101,7 +101,7 @@ var as = new function(){
                 $('div.poll > div.cont').html(Mustache.render(t_poll,res));
 
                 if(res.data != null){
-                    for(i = 0;i < res.data.length;i++){
+                    for(i = 0; i < res.data.length; i++){
                         $('[pollid="' + res.data[i].id + '"]').data('poll',res.data[i]);
                     }
                 }
@@ -122,10 +122,10 @@ var as = new function(){
                         location.reload();
                     });
                 });
-                $('div.poll div.edit > button.cancel').on('click',function(e){
+                $('div.poll div.edit > button.cancel').on('click', function(e){
                     location.reload();
                 });
-                $('div.poll div.list button.modify').on('click',function(e){
+                $('div.poll div.list button.modify').on('click', function(e){
                     var poll = $(this).parent().data('poll');
                     $('div.poll div.edit').attr('pollid', poll.id);
                     $('div.poll div.edit > input.order').val(poll.order);
@@ -133,13 +133,10 @@ var as = new function(){
                     $('div.poll div.edit > textarea.subject').val(poll.subject);
                     $('div.poll div.edit > textarea.body').val(poll.body);
                 });
-                $('div.poll div.list button.delete').on('click',function(e){
-                    $.post('/spt/d/mg/poll_add',{
-                        'data':JSON.stringify({
-                            'Id':$(this).parent().attr("pollid"),
-                            'Subject':"",
-                        })
-                    },function(res){
+                $('div.poll div.list button.delete').on('click', function(e){
+                    $.post('/spt/d/mg/poll_del', {
+                        'id': $(this).parent().attr("pollid")
+                    }, function(res) {
                         location.reload();
                     });
                 });
