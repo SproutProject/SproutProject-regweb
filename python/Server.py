@@ -33,6 +33,7 @@ def main():
         (r'/mg/qa', View.ManageQaHandler, app_param),
         (r'/mg/poll', View.PollHandler, app_param),
         (r'/mg/poll_del', View.PollDeleteHandler, app_param),
+        (r'/mg/poll_add', View.PollAddHandler, app_param),
         (r'/mg/req', View.ManageRequestHandler, app_param),
     ])
     app.listen(7122)

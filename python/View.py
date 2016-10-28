@@ -49,8 +49,37 @@ class PollDeleteHandler(RequestHandler):
             self.write({'status': 'SUCCESS'})
         except Exception as e:
             self.write({'status': 'ERROR'})
+        await db.close()
 
 
+class PollAddHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        try:
+            poll_id = int(self.get_argument('id'))
+            order = self.get_argument('order')
+            year = self.get_argument('year')
+            subject = self.get_argument('subject')
+            body = self.get_argument('body')
+            if poll_id != -1:
+                await db.execute(
+                    'UPDATE "poll" SET "order"=%s, "year"=%s, "subject"=%s, "body"=%s'
+                    'WHERE "id"=%s AND "status"=1',
+                    (order, year, subject, body, poll_id)
+                )
+            else:
+                await db.execute(
+                    'INSERT INTO "poll" ("order", "year", "subject", "body", "status") '
+                    'VALUES (%s, %s, %s, %s, 1)',
+                    (order, year, subject, body)
+                )
+            self.write({'status': 'SUCCESS'})
+        except Exception as e:
+            self.write({'status': 'ERROR'})
+        await db.close()
+
+        
 class ManageHandler(RequestHandler):
     async def post(self):
         example = json.dumps({'status': 'SUCCES'})

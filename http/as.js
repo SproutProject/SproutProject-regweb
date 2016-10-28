@@ -107,18 +107,21 @@ var as = new function(){
                 }
 
                 $('div.poll div.edit > button.submit').on('click',function(e){
+                    var id = $('div.poll div.edit').attr('pollid');
+                    if (id == undefined)
+                        id = -1;
                     var order = parseInt($('div.poll div.edit > input.order').val());
+                    var year = parseInt($('div.poll div.edit > input.year').val());
                     var subject = $('div.poll div.edit > textarea.subject').val();
                     var body = $('div.poll div.edit > textarea.body').val();
-                    
-                    $.post('/spt/d/mg/poll_add',{
-                        'data':JSON.stringify({
-                            'Id':$('div.poll div.edit').attr('pollid'),
-                            'Order':order,
-                            'Subject':subject,
-                            'Body':body,
-                        })
-                    },function(res){
+
+                    $.post('/spt/d/mg/poll_add', {
+                        'id': id,
+                        'order': order,
+                        'year': year,
+                        'subject': subject,
+                        'body': body,
+                    }, function(res) {
                         location.reload();
                     });
                 });
