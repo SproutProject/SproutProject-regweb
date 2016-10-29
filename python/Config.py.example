@@ -1,3 +1,5 @@
+HOST = 'regweb.azure.sprout.tw'
+
 DB_HOST = '127.0.0.1'
 DB_NAME = 'database'
 DB_USER = 'user'
@@ -6,4 +8,5 @@ DB_PASSWD = '1234'
 SMTP_HOST = 'smtp.gmail.com'
 SMTP_USER = 'user@gmail.com'
 SMTP_PASSWD = '1234'
+SMTP_SENDER = 'Sender'
 

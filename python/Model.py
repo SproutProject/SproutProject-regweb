@@ -93,23 +93,26 @@ def init():
 
 # Mail
 import smtplib
-
+from email.mime.text import MIMEText
+from email.header import Header
 
 class SMTPMail(object):
     def __init__(self):
         self.username = Config.SMTP_USER
         self.password = Config.SMTP_PASSWD
+        self.sender = Config.SMTP_SENDER
     
-    def send(self, to, subject, content):
+    def send(self, to, subject, plain_content, html_content):
         smtp_server = smtplib.SMTP(Config.SMTP_HOST)
         smtp_server.ehlo()
         smtp_server.starttls()
         smtp_server.login(self.username, self.password)
 
-        header = ('To:%s\n'
-                  'From:%s\n'
-                  'Subject:%s\n') % (to, self.username, subject)
-        msg = '%s\n %s \n\n' % (header, content)
-        smtp_server.sendmail(self.username, to, msg)
+        header = MIMEText(plain_content.encode('utf-8'), 'plain', 'utf-8')
+        header = MIMEText(html_content.encode('utf-8'), 'html', 'utf-8')
+        header['From'] = Header(self.sender, 'utf-8')
+        header['To'] = to
+        header['Subject'] = Header(subject, 'utf-8')
+        smtp_server.sendmail(self.username, to, header.as_string())
         smtp_server.close()
 

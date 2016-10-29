@@ -4,6 +4,7 @@ import hashlib
 import json
 from uuid import uuid4
 from Model import SMTPMail
+import Config
 
 
 DEBUG = True
@@ -237,8 +238,15 @@ class RegisterHandler(RequestHandler):
                         (lastrowid, token)
                     )
 
+                    url = 'http://%s/spt/register2/?id=%s&token=%s' % (Config.HOST, lastrowid, str(token))
+                    with open('mail_template/register.mail') as f:
+                        plain_content = f.read() % url
+                    with open('mail_template/register.html') as f:
+                        html_content = f.read() % (url, url)
+                
                     smtp = SMTPMail()
-                    smtp.send(mail, 'auth', token)
+                    smtp.send(mail, '[2017 資訊之芽] 註冊帳號確認信', plain_content, html_content)
+
                     self.write({'status': 'SUCCESS'})
         except Exception as e:
             if DEBUG:
@@ -271,8 +279,14 @@ class ForgetHandler(RequestHandler):
                     (uid, token)
                 )
 
+                url = 'http://%s/spt/set_password/?id=%s&token=%s' % (Config.HOST, uid, str(token))
+                with open('mail_template/set_password.mail') as f:
+                    plain_content = f.read() % url
+                with open('mail_template/set_password.html') as f:
+                    html_content = f.read() % (url, url)
+                
                 smtp = SMTPMail()
-                smtp.send(mail, 'reset', token)
+                smtp.send(mail, '[2017 資訊之芽] 重設密碼', plain_content, html_content)
                 self.write({'status': 'SUCCESS'})
             else:
                 self.write({'status': 'FAILED'})
@@ -302,6 +316,10 @@ class SetPasswordHandler(RequestHandler):
                 await db.execute(
                     'UPDATE "user" SET "password"=%s WHERE "id"=%s',
                     (password, uid)
+                )
+                await db.execute(
+                    'DELETE FROM "forgettoken" WHERE "uid"=%s AND "token"=%s',
+                    (uid, token)
                 )
                 self.write({'status': 'SUCCESS'})
             else:
