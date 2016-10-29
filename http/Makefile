@@ -8,3 +8,5 @@ default:
 	lessc as.less as.css
 	lessc poll.less poll.css
 	lessc rule.less rule.css
+	lessc indiv.less indiv.css
+

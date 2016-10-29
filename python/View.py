@@ -1,7 +1,12 @@
 import tornado.web
+import hashlib
 import json
 from uuid import uuid4
 from Model import SMTPMail
+
+
+DEBUG = True
+
 
 class RequestHandler(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
@@ -48,6 +53,8 @@ class PollDeleteHandler(RequestHandler):
             )
             self.write({'status': 'SUCCESS'})
         except Exception as e:
+            if DEBUG:
+                print(e)
             self.write({'status': 'ERROR'})
         await db.close()
 
@@ -76,15 +83,10 @@ class PollAddHandler(RequestHandler):
                 )
             self.write({'status': 'SUCCESS'})
         except Exception as e:
+            if DEBUG:
+                print(e)
             self.write({'status': 'ERROR'})
         await db.close()
-
-        
-class ManageHandler(RequestHandler):
-    async def post(self):
-        example = json.dumps({'status': 'SUCCESS'})
-        self.set_header('Content-Type', 'application/json')
-        self.write(example)
 
 
 class QaHandler(RequestHandler):
@@ -116,6 +118,8 @@ class QaDeleteHandler(RequestHandler):
             )
             self.write({'status': 'SUCCESS'})
         except Exception as e:
+            if DEBUG:
+                print(e)
             self.write({'status': 'ERROR'})
         await db.close()
 
@@ -143,35 +147,83 @@ class QaAddHandler(RequestHandler):
                 )
             self.write({'status': 'SUCCESS'})
         except Exception as e:
+            if DEBUG:
+                print(e)
             self.write({'status': 'ERROR'})
 
+        
+class ManageHandler(RequestHandler):
+    async def post(self):
+        example = json.dumps({'status': 'SUCCESS'})
+        self.set_header('Content-Type', 'application/json')
+        self.write(example)
+
+
+class CheckLoginHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        uid = self.get_secure_cookie('uid')
+        if uid:
+            self.write({'status': 'LOGINED'})
+        else:
+            self.write({'status': 'NOT LOGINED'})
+        await db.close()
+
+
+class LoginHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        try:
+            mail = self.get_argument('mail')
+            password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
+            uid = None
+            async for row in db.execute(
+                'SELECT "id", "password" FROM "user" WHERE "mail"=%s',
+                (mail, )
+            ):
+                uid = row.id
+                real_password = row.password
+            if uid != None and password == real_password:
+                self.set_secure_cookie('uid', str(uid))
+                self.write({'status': 'SUCCESS'})
+            else:
+                self.write({'status': 'FAILED'})
+        except Exception as e:
+            if DEBUG:
+                print(e)
+            self.write({'status': 'ERROR'})
+        await db.close()
 
 class RegisterHandler(RequestHandler):
     async def post(self):
         db = await self.get_db()
         try:
             mail = self.get_argument('mail')
-            password = self.get_argument('password')
+            password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
+            await db.execute(
+                'INSERT INTO "user" ("mail", "password", "power") VALUES (%s, %s, %s)',
+                (mail, password, -1)
+            )
+
+            async for row in db.execute(
+                'SELECT "id" FROM "user" WHERE "mail"=%s',
+                (mail, )
+            ):
+                lastrowid = row.id
+
+            token = uuid4()
+            await db.execute(
+                'INSERT INTO "authtoken" ("uid", "token") VALUES (%s, %s)',
+                (lastrowid, token)
+            )
+
+            smtp = SMTPMail()
+            smtp.send(mail, 'auth', token)
+            self.write({'status': 'SUCCESS'})
         except Exception as e:
-            self.write({'status': 'error'})
-        await db.execute(
-            'INSERT INTO "user" ("mail", "password", "power") VALUES (%s, %s, %s)',
-            (mail, password, -1)
-        )
-
-        async for row in db.execute(
-            'SELECT "id" FROM "user" WHERE "mail"=%s',
-            (mail, )
-        ):
-            lastrowid = row.id
-
-        token = uuid4()
-        await db.execute(
-            'INSERT INTO "authtoken" ("uid", "token") VALUES (%s, %s)',
-            (lastrowid, token)
-        )
-
-        smtp = SMTPMail()
-        smtp.send(mail, 'auth', token)
-        self.write({'status': 'success'})
+            if DEBUG:
+                print(e)
+            self.write({'status': 'ERROR'})
 
