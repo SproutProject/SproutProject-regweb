@@ -282,3 +282,33 @@ class ForgetHandler(RequestHandler):
             self.write({'status': 'ERROR'})
         await db.close()
 
+
+class SetPasswordHandler(RequestHandler):
+    async def post(self):
+        db = await self.get_db()
+        try:
+            uid = self.get_argument('id')
+            token = self.get_argument('token')
+            password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
+
+            legal = False
+            async for row in db.execute(
+                'SELECT * FROM "forgettoken" WHERE "uid"=%s AND "token"=%s',
+                (uid, token)
+            ):
+                legal = True
+
+            if legal:
+                await db.execute(
+                    'UPDATE "user" SET "password"=%s WHERE "id"=%s',
+                    (password, uid)
+                )
+                self.write({'status': 'SUCCESS'})
+            else:
+                self.write({'status': 'FAILED'})
+        except Exception as e:
+            if DEBUG:
+                print(e)
+            self.write({'status': 'ERROR'})
+        await db.close()
+

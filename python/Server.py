@@ -33,6 +33,7 @@ def main():
         (r'/check_login', View.CheckLoginHandler, app_param),
         (r'/login', View.LoginHandler, app_param),
         (r'/forget', View.ForgetHandler, app_param),
+        (r'/set_password', View.SetPasswordHandler, app_param),
         (r'/mg', View.ManageHandler, app_param),
         (r'/mg/qa', View.QaHandler, app_param),
         (r'/mg/qa_del', View.QaDeleteHandler, app_param),
