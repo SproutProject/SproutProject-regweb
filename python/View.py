@@ -1,3 +1,4 @@
+import re
 import tornado.web
 import hashlib
 import json
@@ -202,28 +203,82 @@ class RegisterHandler(RequestHandler):
         try:
             mail = self.get_argument('mail')
             password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
-            await db.execute(
-                'INSERT INTO "user" ("mail", "password", "power") VALUES (%s, %s, %s)',
-                (mail, password, -1)
-            )
 
-            async for row in db.execute(
-                'SELECT "id" FROM "user" WHERE "mail"=%s',
-                (mail, )
-            ):
-                lastrowid = row.id
+            # Check email format
+            if not re.match(r'^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$', mail):
+                self.write({'status': 'WRONG MAIL'})
+            else:
 
-            token = uuid4()
-            await db.execute(
-                'INSERT INTO "authtoken" ("uid", "token") VALUES (%s, %s)',
-                (lastrowid, token)
-            )
+                # Check if this mail be registered or not
+                uid = None
+                async for row in db.execute(
+                    'SELECT "id" FROM "user" WHERE "mail"=%s',
+                    (mail, )
+                ):
+                    uid = row.id
 
-            smtp = SMTPMail()
-            smtp.send(mail, 'auth', token)
-            self.write({'status': 'SUCCESS'})
+                if uid:
+                    self.write({'status': 'FAILED'})
+                else:
+                    await db.execute(
+                        'INSERT INTO "user" ("mail", "password", "power") VALUES (%s, %s, %s)',
+                        (mail, password, -1)
+                    )
+
+                    async for row in db.execute(
+                        'SELECT "id" FROM "user" WHERE "mail"=%s',
+                        (mail, )
+                    ):
+                        lastrowid = row.id
+
+                    token = uuid4()
+                    await db.execute(
+                        'INSERT INTO "authtoken" ("uid", "token") VALUES (%s, %s)',
+                        (lastrowid, token)
+                    )
+
+                    smtp = SMTPMail()
+                    smtp.send(mail, 'auth', token)
+                    self.write({'status': 'SUCCESS'})
         except Exception as e:
             if DEBUG:
                 print(e)
             self.write({'status': 'ERROR'})
+        await db.close()
+
+
+class ForgetHandler(RequestHandler):
+    async def post(self):
+        db = await self.get_db()
+        try:
+            mail = self.get_argument('mail')
+            uid = None
+            async for row in db.execute(
+                'SELECT "id" FROM "user" WHERE "mail"=%s',
+                (mail, )
+            ):
+                uid = row.id
+
+            if uid:
+                await db.execute(
+                    'DELETE FROM "forgettoken" WHERE "uid"=%s',
+                    (uid, )
+                )
+
+                token = uuid4()
+                await db.execute(
+                    'INSERT INTO "forgettoken" ("uid", "token") VALUES (%s, %s)',
+                    (uid, token)
+                )
+
+                smtp = SMTPMail()
+                smtp.send(mail, 'reset', token)
+                self.write({'status': 'SUCCESS'})
+            else:
+                self.write({'status': 'FAILED'})
+        except Exception as e:
+            if DEBUG:
+                print(e)
+            self.write({'status': 'ERROR'})
+        await db.close()
 

@@ -44,6 +44,14 @@ class UserData(Base):
     phone = Column(String)
 
 
+class ForgetToken(Base):
+    __tablename__ = 'forgettoken'
+
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer, ForeignKey("user.id"))
+    token = Column(String)
+
+
 class Poll(Base):
     __tablename__ = 'poll'
 
