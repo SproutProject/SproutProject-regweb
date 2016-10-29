@@ -42,7 +42,6 @@ class UserData(Base):
     grade = Column(Integer)
     address = Column(String)
     phone = Column(String)
-    area = Column(Integer)
 
 
 class Poll(Base):
@@ -53,6 +52,16 @@ class Poll(Base):
     body = Column(String)
     order = Column(Integer)
     year = Column(Integer)
+    status = Column(Integer)
+
+
+class Qa(Base):
+    __tablename__ = 'qa'
+
+    id = Column(Integer, primary_key=True)
+    question = Column(String)
+    answer = Column(String)
+    order = Column(Integer)
     status = Column(Integer)
 
 

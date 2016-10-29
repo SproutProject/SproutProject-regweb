@@ -25,18 +25,17 @@
 <script id="qa-templ" type="x-tmpl-mustache">
 <div class="edit">
   <h3>add/edit</h3>
-  <input type="textbox" class="subject" placeholder="subject"><br><br>
-  <input type="textbox" class="clas" placeholder="class">
   <input type="textbox" class="order" placeholder="order"><br><br>
-  <textarea placeholder="html"></textarea><br><br>
+  <input type="textbox" class="question" placeholder="question"><br><br>
+  <textarea placeholder="answer"></textarea><br><br>
   <button class="btn-suc submit">submit</button>
   <button class="btn-def cancel">cancel</button>
 </div>
 <div class="list">
   <h3>list</h3>
 {{#data}}
-  <div qaid={{Id}} style="margin-bottom:6px;">
-    <strong>{{Order}} - {{Subject}}</strong>
+  <div qaid={{id}} style="margin-bottom:6px;">
+    <strong>{{order}} - {{question}}</strong>
     <button class="btn-pri delete" style="float: right;">delete</button>
     <button class="btn-suc modify" style="float: right;">modify</button>
   </div>

@@ -64,7 +64,7 @@ class PollAddHandler(RequestHandler):
             body = self.get_argument('body')
             if poll_id != -1:
                 await db.execute(
-                    'UPDATE "poll" SET "order"=%s, "year"=%s, "subject"=%s, "body"=%s'
+                    'UPDATE "poll" SET "order"=%s, "year"=%s, "subject"=%s, "body"=%s '
                     'WHERE "id"=%s AND "status"=1',
                     (order, year, subject, body, poll_id)
                 )
@@ -82,23 +82,68 @@ class PollAddHandler(RequestHandler):
         
 class ManageHandler(RequestHandler):
     async def post(self):
-        example = json.dumps({'status': 'SUCCES'})
+        example = json.dumps({'status': 'SUCCESS'})
         self.set_header('Content-Type', 'application/json')
         self.write(example)
 
 
-class ManageQaHandler(RequestHandler):
-    async def post(self): 
-        example = json.dumps({'data': [{'Id': 123, 'Subject': 'test1', 'Order': 'test2'}, {'Id': 456, 'Subject': 'test3', 'Order': 'test3'}]})
+class QaHandler(RequestHandler):
+    async def post(self):
         self.set_header('Content-Type', 'application/json')
-        self.write(example)
+        db = await self.get_db()
+        data = []
+        async for row in db.execute(
+            'SELECT * FROM "qa" WHERE "status"=1'
+            'ORDER BY "order"'
+        ):
+            element = {}
+            for key in row:
+                element[key] = row[key]
+            data.append(element)
+        self.write({'data': data})
+        await db.close()
 
 
-class ManageRequestHandler(RequestHandler):
-    async def post(self): 
-        example = json.dumps({'data': [{'Id': 123, 'Subject': 'test1', 'Order': 'test2'}, {'Id': 456, 'Subject': 'test3', 'Order': 'test3'}]})
+class QaDeleteHandler(RequestHandler):
+    async def post(self):
         self.set_header('Content-Type', 'application/json')
-        self.write(example)
+        db = await self.get_db()
+        try:
+            poll_id = self.get_argument('id')
+            await db.execute(
+                'UPDATE "qa" SET "status"=0 WHERE "id"=%s',
+                (poll_id, )
+            )
+            self.write({'status': 'SUCCESS'})
+        except Exception as e:
+            self.write({'status': 'ERROR'})
+        await db.close()
+
+
+class QaAddHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        try:
+            qa_id = int(self.get_argument('id'))
+            order = self.get_argument('order')
+            question = self.get_argument('question')
+            answer = self.get_argument('answer')
+            if qa_id != -1:
+                await db.execute(
+                    'UPDATE "qa" SET "order"=%s, "question"=%s, "answer"=%s '
+                    'WHERE "id"=%s AND "status"=1',
+                    (order, question, answer, qa_id)
+                )
+            else:
+                await db.execute(
+                    'INSERT INTO "qa" ("order", "question", "answer", "status") '
+                    'VALUES (%s, %s, %s, 1)',
+                    (order, question, answer)
+                )
+            self.write({'status': 'SUCCESS'})
+        except Exception as e:
+            self.write({'status': 'ERROR'})
 
 
 class RegisterHandler(RequestHandler):

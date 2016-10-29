@@ -1,10 +1,10 @@
 <script id="template" type="x-tmpl-mustache">
 {{#data}}
-    <div qaid={{Id}} class="item">
-	<div class="order">{{Order}}</div>
-	<p class="question">{{Subject}}</p>
-	<p class="answer">{{&Body}}</p>
-    </div>
+  <div qaid={{id}} class="item">
+	<div class="order">{{order}}</div>
+	<p class="question">{{&question}}</p>
+	<p class="answer">{{&answer}}</p>
+  </div>
 {{/data}}
 </script>
 <div id="qa"><div id="list"></div></div>
