@@ -10,4 +10,5 @@ default:
 	lessc rule.less rule.css
 	lessc indiv.less indiv.css
 	lessc set_password.less set_password.css
+	lessc register.less register.css
 

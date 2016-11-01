@@ -234,11 +234,11 @@ class RegisterHandler(RequestHandler):
 
                     token = uuid4()
                     await db.execute(
-                        'INSERT INTO "authtoken" ("uid", "token") VALUES (%s, %s)',
+                        'INSERT INTO "auth_token" ("uid", "token") VALUES (%s, %s)',
                         (lastrowid, token)
                     )
 
-                    url = 'http://%s/spt/register2/?id=%s&token=%s' % (Config.HOST, lastrowid, str(token))
+                    url = 'http://%s/spt/register/?id=%s&token=%s' % (Config.HOST, lastrowid, str(token))
                     with open('mail_template/register.mail') as f:
                         plain_content = f.read() % url
                     with open('mail_template/register.html') as f:
@@ -269,13 +269,13 @@ class ForgetHandler(RequestHandler):
 
             if uid:
                 await db.execute(
-                    'DELETE FROM "forgettoken" WHERE "uid"=%s',
+                    'DELETE FROM "set_password_token" WHERE "uid"=%s',
                     (uid, )
                 )
 
                 token = uuid4()
                 await db.execute(
-                    'INSERT INTO "forgettoken" ("uid", "token") VALUES (%s, %s)',
+                    'INSERT INTO "set_password_token" ("uid", "token") VALUES (%s, %s)',
                     (uid, token)
                 )
 
@@ -307,7 +307,7 @@ class SetPasswordHandler(RequestHandler):
 
             legal = False
             async for row in db.execute(
-                'SELECT * FROM "forgettoken" WHERE "uid"=%s AND "token"=%s',
+                'SELECT * FROM "set_password_token" WHERE "uid"=%s AND "token"=%s',
                 (uid, token)
             ):
                 legal = True
@@ -318,7 +318,7 @@ class SetPasswordHandler(RequestHandler):
                     (password, uid)
                 )
                 await db.execute(
-                    'DELETE FROM "forgettoken" WHERE "uid"=%s AND "token"=%s',
+                    'DELETE FROM "set_password_token" WHERE "uid"=%s AND "token"=%s',
                     (uid, token)
                 )
                 self.write({'status': 'SUCCESS'})
@@ -328,5 +328,72 @@ class SetPasswordHandler(RequestHandler):
             if DEBUG:
                 print(e)
             self.write({'status': 'ERROR'})
+        await db.close()
+
+
+class RegisterOptionsHandler(RequestHandler):
+    async def post(self):
+        db = await self.get_db()
+        data = {}
+        try:
+            data['gender'] = []
+            async for row in db.execute('SELECT * FROM "gender_option"'):
+                obj = {'id': row.id, 'value': row.value}
+                data['gender'].append(obj)
+
+            data['school_type'] = []
+            async for row in db.execute('SELECT * FROM "school_type_option"'):
+                obj = {'id': row.id, 'value': row.value, 'max_grade': row.max_grade}
+                data['school_type'].append(obj)
+            self.write({'status': 'SUCCESS', 'data': data})
+        except Exception as e:
+            if DEBUG:
+                print(e)
+            self.write({'status': 'ERROR'}) 
+        await db.close()
+
+
+class RegisterDataHandler(RequestHandler):
+    async def post(self):
+        db = await self.get_db()
+        try:
+            uid = int(self.get_argument('id'))
+            token = self.get_argument('token')
+            full_name = self.get_argument('full_name')
+            gender = int(self.get_argument('gender'))
+            school = self.get_argument('school')
+            school_type = int(self.get_argument('school_type'))
+            grade = int(self.get_argument('grade'))
+            address = self.get_argument('address')
+            phone = self.get_argument('phone')
+            
+            legal = False
+            async for row in db.execute(
+                'SELECT * FROM "auth_token" WHERE "uid"=%s AND "token"=%s',
+                (uid, token)
+            ):
+                legal = True
+
+            if legal:
+                await db.execute(
+                    'INSERT INTO "user_data"'
+                    '("uid", "full_name", "gender", "school", "school_type", "grade", "address", "phone")'
+                    'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                    (uid, full_name, gender, school, school_type, grade, address, phone)
+                )
+                await db.execute(
+                    'UPDATE "user" SET "power"=0 WHERE "id"=%s',
+                    (uid, )
+                )
+                await db.execute(
+                    'DELETE FROM "auth_token" WHERE "uid"=%s AND "token"=%s',
+                    (uid, token)
+                )
+                self.write({'status': 'SUCCESS'})
+            else:
+                self.write({'status': 'FAILED'})
+        except Exception as e:
+            if DEBUG:
+                print(e)
         await db.close()
 

@@ -5,6 +5,10 @@ from sqlalchemy.orm import sessionmaker
 
 import Config
 
+
+DEBUG = True
+
+
 # Database
 
 Base = declarative_base()
@@ -23,7 +27,7 @@ class User(Base):
                                 self.mail, self.password, self.power)
 
 class AuthToken(Base):
-    __tablename__ = 'authtoken'
+    __tablename__ = 'auth_token'
 
     id = Column(Integer, primary_key=True)
     uid = Column(Integer, ForeignKey("user.id"))
@@ -31,7 +35,7 @@ class AuthToken(Base):
 
 
 class UserData(Base):
-    __tablename__ = 'userdata'
+    __tablename__ = 'user_data'
 
     id = Column(Integer, primary_key=True)
     uid = Column(Integer, ForeignKey("user.id"))
@@ -44,8 +48,8 @@ class UserData(Base):
     phone = Column(String)
 
 
-class ForgetToken(Base):
-    __tablename__ = 'forgettoken'
+class SetPasswordToken(Base):
+    __tablename__ = 'set_password_token'
 
     id = Column(Integer, primary_key=True)
     uid = Column(Integer, ForeignKey("user.id"))
@@ -73,6 +77,21 @@ class Qa(Base):
     status = Column(Integer)
 
 
+class GenderOption(Base):
+    __tablename__ = 'gender_option'
+
+    id = Column(Integer, primary_key=True)
+    value = Column(String)
+
+
+class SchoolTypeOption(Base):
+    __tablename__ = 'school_type_option'
+
+    id = Column(Integer, primary_key=True)
+    value = Column(String)
+    max_grade = Column(Integer)
+
+
 def init():
     db_engine = sqlalchemy.create_engine(sqlalchemy.engine.url.URL(
                 drivername='postgresql+psycopg2',
@@ -83,12 +102,28 @@ def init():
 
     Base.metadata.create_all(db_engine)
 
-    #Session = sessionmaker(bind=db_engine)
-    #session = Session()
-    # u = User(mail='luniacslime@gmail.com', password='1234', power=-1)
-    # print(u)
-    # session.add(u)
-    # session.commit()
+    Session = sessionmaker(bind=db_engine)
+    session = Session()
+
+    def insertInstance(instance):
+        try:
+            session.add(instance)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+
+    # Initialize for some constant data
+    session.query(GenderOption).delete()
+    genders = ['女生', '男生']
+    for i in range(len(genders)):
+        instance = GenderOption(id=(i + 1), value=genders[i])
+        insertInstance(instance)
+
+    session.query(SchoolTypeOption).delete()
+    school_types = [('國中', 3), ('高中', 3)]
+    for i in range(len(school_types)):
+        instance = SchoolTypeOption(id=(i + 1), value=school_types[i][0], max_grade=school_types[i][1])
+        insertInstance(instance)
 
 
 # Mail

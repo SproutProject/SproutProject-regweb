@@ -1,0 +1,35 @@
+<script id="options-templ" type="x-tmpl-mustache">
+<option selected value="">請選擇</option>
+{{#data}}
+  <option value="{{id}}">{{value}}</option>
+{{/data}}
+</script>
+<script id="school-options-templ" type="x-tmpl-mustache">
+<option selected value="" max_grade="0">請選擇</option>
+{{#data}}
+  <option value="{{id}}" max_grade="{{max_grade}}">{{value}}</option>
+{{/data}}
+</script>
+<div id="register">
+  <div class="ct">
+    <h3>填寫基本資料以完成報名</h3>
+    <label for="full_name">姓名</label><br>
+    <input id="full_name" type="text"><br>
+    <label for="gender">性別</label><br>
+    <select id="gender"></select><br>
+    <label for="school">學校</label><br>
+    <input id="school" type="text"><br>
+    <label for="school_type">學校類別</label><br>
+    <select id="school_type"></select><br>
+    <label for="grade">年級</label><br>
+    <select id="grade"></select><br>
+    <label for="address">地址</label><br>
+    <input id="address" type="text"><br>   
+    <label for="phone">聯絡電話</label><br>
+    <input id="phone" type="text"><br>
+    <span class="err-msg"></span><br>
+    <button id="submit" class="btn-pri">送出</button>
+  </div>
+</div>
+<script type="text/javascript">register.load();</script>
+
