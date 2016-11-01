@@ -9,6 +9,18 @@ import Config
 
 DEBUG = True
 
+# Utils
+
+async def get_user(db, id):
+    async for row in db.execute(
+        'SELECT * FROM "user" WHERE "id"=%s',
+        (id, )
+    ):
+        return row
+    return None
+
+
+# RequestHandlers
 
 class RequestHandler(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
@@ -156,9 +168,18 @@ class QaAddHandler(RequestHandler):
         
 class ManageHandler(RequestHandler):
     async def post(self):
-        example = json.dumps({'status': 'SUCCESS'})
         self.set_header('Content-Type', 'application/json')
-        self.write(example)
+        db = await self.get_db()
+        uid = int(self.get_secure_cookie('uid'))
+        if uid:
+            user = await get_user(db, uid)
+            if user.power == 1:
+                self.write({'status': 'SUCCESS'})
+            else:
+                self.write({'status': 'PERMISSION DENIED'})
+        else:
+            self.write({'status': 'NOT LOGINED'})
+        await db.close()
 
 
 class CheckLoginHandler(RequestHandler):
