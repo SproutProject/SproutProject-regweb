@@ -82,6 +82,23 @@ var indiv = new function() {
                 $.post('/spt/d/indiv_data', {}, function(res) {
                     if (res.status == 'SUCCESS') {
                         j_indiv.html(Mustache.render(t_indiv_data, res.data));
+
+                        $('#submit').on('click', function(e) {
+                            var phone = $('#phone').val();
+                            var address = $('#address').val();
+
+                            $.post('/spt/d/modify_indiv_data', {
+                                'phone': phone,
+                                'address': address
+                            }, function(res) {
+                                if (res.status == 'SUCCESS')
+                                    $('span.err-msg').html('修改成功！');
+                                else if (res.status == 'NOT LOGINED')
+                                    $('span.err-msg').html('登入已失效，請重新登入。');
+                                else if (res.status == 'ERROR')
+                                    $('span.err-msg').html('系統錯誤！');
+                            });
+                        });
                     }
                 });
             }

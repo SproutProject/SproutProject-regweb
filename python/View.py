@@ -448,3 +448,27 @@ class IndividualDataHandler(RequestHandler):
             self.write({'status': 'NOT LOGINED'})
         await db.close()
 
+
+class ModifyIndividualDataHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        uid = self.get_secure_cookie('uid')
+        if uid:
+            uid = int(uid)
+            try:
+                address = self.get_argument('address')
+                phone = self.get_argument('phone')
+                await db.execute(
+                    'UPDATE "user_data" SET "address"=%s, "phone"=%s WHERE "id"=%s',
+                    (address, phone, uid)
+                )
+                self.write({'status': 'SUCCESS'})
+            except Exception as e:
+                if DEBUG:
+                    print(e)
+                self.write({'status': 'ERROR'})
+        else:
+            self.write({'status': 'NOT LOGINED'})
+        await db.close()
+

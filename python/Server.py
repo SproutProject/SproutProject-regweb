@@ -37,6 +37,7 @@ def main():
         (r'/set_password', View.SetPasswordHandler, app_param),
         (r'/register_options', View.RegisterOptionsHandler, app_param),
         (r'/indiv_data', View.IndividualDataHandler, app_param),
+        (r'/modify_indiv_data', View.ModifyIndividualDataHandler, app_param),
         (r'/mg', View.ManageHandler, app_param),
         (r'/mg/qa', View.QaHandler, app_param),
         (r'/mg/qa_del', View.QaDeleteHandler, app_param),
