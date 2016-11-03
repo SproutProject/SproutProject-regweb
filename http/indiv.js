@@ -83,6 +83,24 @@ var indiv = new function() {
                     if (res.status == 'SUCCESS') {
                         j_indiv.html(Mustache.render(t_indiv_data, res.data));
 
+                        $('#return_indiv_data').on('click', function(e) {
+                            $('#sign_up').hide();
+                            $('#indiv_data').show();
+                        });
+
+                        $('#return_sign_up').on('click', function(e) {
+                            $('#indiv_data').hide();
+                            $('#sign_up').show();
+                        });
+
+                        $('.logout').on('click', function(e) {
+                            $.post('/spt/d/logout', {}, function(res) {
+                                if (res.status == 'SUCCESS') {
+                                    window.location.reload();
+                                }
+                            });
+                        });
+
                         $('#submit').on('click', function(e) {
                             var phone = $('#phone').val();
                             var address = $('#address').val();

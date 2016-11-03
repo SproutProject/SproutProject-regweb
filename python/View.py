@@ -220,6 +220,13 @@ class LoginHandler(RequestHandler):
             self.write({'status': 'ERROR'})
         await db.close()
 
+
+class LogoutHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        self.clear_cookie('uid')
+        self.write({'status': 'SUCCESS'})
+
 class RegisterHandler(RequestHandler):
     async def post(self):
         self.set_header('Content-Type', 'application/json')

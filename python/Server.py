@@ -33,6 +33,7 @@ def main():
         (r'/register_data', View.RegisterDataHandler, app_param),
         (r'/check_login', View.CheckLoginHandler, app_param),
         (r'/login', View.LoginHandler, app_param),
+        (r'/logout', View.LogoutHandler, app_param),
         (r'/forget', View.ForgetHandler, app_param),
         (r'/set_password', View.SetPasswordHandler, app_param),
         (r'/register_options', View.RegisterOptionsHandler, app_param),
