@@ -45,7 +45,7 @@ class PollHandler(RequestHandler):
         data = []
         async for row in db.execute(
             'SELECT * FROM "poll" WHERE "status"=1'
-            'ORDER BY "year" DESC, "order"'
+            ' ORDER BY "year" DESC, "order"'
         ):
             element = {}
             for key in row:
@@ -85,14 +85,14 @@ class PollAddHandler(RequestHandler):
             body = self.get_argument('body')
             if poll_id != -1:
                 await db.execute(
-                    'UPDATE "poll" SET "order"=%s, "year"=%s, "subject"=%s, "body"=%s '
-                    'WHERE "id"=%s AND "status"=1',
+                    'UPDATE "poll" SET "order"=%s, "year"=%s, "subject"=%s, "body"=%s'
+                    ' WHERE "id"=%s AND "status"=1',
                     (order, year, subject, body, poll_id)
                 )
             else:
                 await db.execute(
-                    'INSERT INTO "poll" ("order", "year", "subject", "body", "status") '
-                    'VALUES (%s, %s, %s, %s, 1)',
+                    'INSERT INTO "poll" ("order", "year", "subject", "body", "status")'
+                    ' VALUES (%s, %s, %s, %s, 1)',
                     (order, year, subject, body)
                 )
             self.write({'status': 'SUCCESS'})
@@ -110,7 +110,7 @@ class QaHandler(RequestHandler):
         data = []
         async for row in db.execute(
             'SELECT * FROM "qa" WHERE "status"=1'
-            'ORDER BY "order"'
+            ' ORDER BY "order"'
         ):
             element = {}
             for key in row:
@@ -149,14 +149,14 @@ class QaAddHandler(RequestHandler):
             answer = self.get_argument('answer')
             if qa_id != -1:
                 await db.execute(
-                    'UPDATE "qa" SET "order"=%s, "question"=%s, "answer"=%s '
-                    'WHERE "id"=%s AND "status"=1',
+                    'UPDATE "qa" SET "order"=%s, "question"=%s, "answer"=%s'
+                    ' WHERE "id"=%s AND "status"=1',
                     (order, question, answer, qa_id)
                 )
             else:
                 await db.execute(
-                    'INSERT INTO "qa" ("order", "question", "answer", "status") '
-                    'VALUES (%s, %s, %s, 1)',
+                    'INSERT INTO "qa" ("order", "question", "answer", "status")'
+                    ' VALUES (%s, %s, %s, 1)',
                     (order, question, answer)
                 )
             self.write({'status': 'SUCCESS'})
@@ -170,8 +170,9 @@ class ManageHandler(RequestHandler):
     async def post(self):
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
-        uid = int(self.get_secure_cookie('uid'))
+        uid = self.get_secure_cookie('uid')
         if uid:
+            uid = int(uid)
             user = await get_user(db, uid)
             if user.power == 1:
                 self.write({'status': 'SUCCESS'})
@@ -221,6 +222,7 @@ class LoginHandler(RequestHandler):
 
 class RegisterHandler(RequestHandler):
     async def post(self):
+        self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         try:
             mail = self.get_argument('mail')
@@ -278,6 +280,7 @@ class RegisterHandler(RequestHandler):
 
 class ForgetHandler(RequestHandler):
     async def post(self):
+        self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         try:
             mail = self.get_argument('mail')
@@ -320,6 +323,7 @@ class ForgetHandler(RequestHandler):
 
 class SetPasswordHandler(RequestHandler):
     async def post(self):
+        self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         try:
             uid = self.get_argument('id')
@@ -354,6 +358,7 @@ class SetPasswordHandler(RequestHandler):
 
 class RegisterOptionsHandler(RequestHandler):
     async def post(self):
+        self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         data = {}
         try:
@@ -376,6 +381,7 @@ class RegisterOptionsHandler(RequestHandler):
 
 class RegisterDataHandler(RequestHandler):
     async def post(self):
+        self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         try:
             uid = int(self.get_argument('id'))
@@ -398,8 +404,8 @@ class RegisterDataHandler(RequestHandler):
             if legal:
                 await db.execute(
                     'INSERT INTO "user_data"'
-                    '("uid", "full_name", "gender", "school", "school_type", "grade", "address", "phone")'
-                    'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                    ' ("uid", "full_name", "gender", "school", "school_type", "grade", "address", "phone")'
+                    ' VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                     (uid, full_name, gender, school, school_type, grade, address, phone)
                 )
                 await db.execute(
@@ -416,5 +422,29 @@ class RegisterDataHandler(RequestHandler):
         except Exception as e:
             if DEBUG:
                 print(e)
+        await db.close()
+
+
+class IndividualDataHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        uid = self.get_secure_cookie('uid')
+        if uid:
+            uid = int(uid)
+            data = {}
+            async for row in db.execute(
+                'SELECT u.*, g."value" as "gender_value", s."value" as "school_type_value"'
+                ' FROM "user_data" u'
+                ' JOIN "gender_option" g ON u."gender"=g."id"'
+                ' JOIN "school_type_option" s ON u."school_type"=s."id"'
+                ' WHERE u."id"=%s',
+                (uid, )
+            ):
+                for key in row:
+                    data[key] = row[key]
+            self.write({'status': 'SUCCESS', 'data': data})
+        else:
+            self.write({'status': 'NOT LOGINED'})
         await db.close()
 

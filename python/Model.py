@@ -30,7 +30,7 @@ class AuthToken(Base):
     __tablename__ = 'auth_token'
 
     id = Column(Integer, primary_key=True)
-    uid = Column(Integer, ForeignKey("user.id"))
+    uid = Column(Integer)
     token = Column(String)
 
 
@@ -38,7 +38,7 @@ class UserData(Base):
     __tablename__ = 'user_data'
 
     id = Column(Integer, primary_key=True)
-    uid = Column(Integer, ForeignKey("user.id"))
+    uid = Column(Integer)
     full_name = Column(String)
     gender = Column(Integer)
     school = Column(String)
@@ -52,7 +52,7 @@ class SetPasswordToken(Base):
     __tablename__ = 'set_password_token'
 
     id = Column(Integer, primary_key=True)
-    uid = Column(Integer, ForeignKey("user.id"))
+    uid = Column(Integer)
     token = Column(String)
 
 

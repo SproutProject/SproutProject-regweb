@@ -7,6 +7,7 @@ var indiv = new function() {
         var t_login = $('#login-templ').html();
         var t_forget = $('#forget-templ').html();
         var t_register = $('#register-templ').html();
+        var t_indiv_data = $('#indiv-data-templ').html();
         var j_indiv = $('#indiv');
 
         $.post('/spt/d/check_login', {}, function(res) {
@@ -76,6 +77,12 @@ var indiv = new function() {
                                 $('span.err-msg').html('系統錯誤！');
                         });
                     });
+                });
+            } else {
+                $.post('/spt/d/indiv_data', {}, function(res) {
+                    if (res.status == 'SUCCESS') {
+                        j_indiv.html(Mustache.render(t_indiv_data, res.data));
+                    }
                 });
             }
         });

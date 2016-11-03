@@ -36,5 +36,27 @@
 </div>
 </script>
 
+<script id="indiv-data-templ" type="x-tmpl-mustache">
+<div class="ct">
+  <h3>基本資料</h3>
+  <label for="full_name">姓名</label><br>
+  <input id="full_name" type="text" disabled value="{{full_name}}"><br>
+  <label for="gender">性別</label><br>
+  <input id="gender" type="text" disabled value="{{gender_value}}"><br>
+  <label for="school">學校</label><br>
+  <input id="school" type="text" disabled value="{{school}}"><br>
+  <label for="school_type">學校類別</label><br>
+  <input id="school_type" type="text" disabled value="{{school_type_value}}"><br>
+  <label for="grade">年級</label><br>
+  <input id="grade" type="text" disabled value="{{gender}}"><br>
+  <label for="address">地址</label><br>
+  <input id="address" type="text" value="{{address}}"><br>
+  <label for="phone">聯絡電話</label><br>
+  <input id="phone" type="text" value="{{phone}}"><br>
+  <span class="err-msg"></span><br>
+  <button id="submit" class="btn-pri">修改</button>
+</div>
+</script>
+
 <div id="indiv"></div>
 <script type="text/javascript">indiv.load();</script>
