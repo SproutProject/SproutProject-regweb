@@ -2,6 +2,7 @@ import re
 import tornado.web
 import hashlib
 import json
+import random
 from uuid import uuid4
 from Model import SMTPMail
 import Config
@@ -499,7 +500,9 @@ class IndividualDataHandler(RequestHandler):
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         uid = self.get_secure_cookie('uid')
-        if uid:
+        if uid == None:
+            self.write({'status': 'NOT LOGINED'})
+        else:
             uid = int(uid)
             data = {}
             async for row in db.execute(
@@ -513,8 +516,6 @@ class IndividualDataHandler(RequestHandler):
                 for key in row:
                     data[key] = row[key]
             self.write({'status': 'SUCCESS', 'data': data})
-        else:
-            self.write({'status': 'NOT LOGINED'})
         await db.close()
 
 
@@ -523,7 +524,9 @@ class ModifyIndividualDataHandler(RequestHandler):
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         uid = self.get_secure_cookie('uid')
-        if uid:
+        if uid == None:
+            self.write({'status': 'NOT LOGINED'})
+        else:
             uid = int(uid)
             try:
                 address = self.get_argument('address')
@@ -537,7 +540,31 @@ class ModifyIndividualDataHandler(RequestHandler):
                 if DEBUG:
                     print(e)
                 self.write({'status': 'ERROR'})
-        else:
-            self.write({'status': 'NOT LOGINED'})
+        await db.close()
+
+
+class RuleQuestionHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+
+        questions = {}
+        async for row in db.execute(
+            'SELECT q.*, a."order", a."description" AS "answer"'
+            ' FROM "rule_question" q'
+            ' JOIN "rule_answer" a'
+            ' ON q."id"=a."qid"'
+            ' WHERE q."status"=1 AND a."status"=1'
+        ):
+            questions[row.id] = questions.get(row.id, {'description': row.description, 'options': []})
+            questions[row.id]['options'].append({'order': row.order, 'answer': row.answer})
+
+        data = []
+        for qid in questions:
+            questions[qid]['id'] = qid
+            random.shuffle(questions[qid]['options'])
+            data.append(questions[qid])
+
+        self.write({'status': 'SUCCESS', 'data': data})
         await db.close()
 
