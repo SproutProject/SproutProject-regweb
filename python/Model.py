@@ -30,7 +30,7 @@ class AuthToken(Base):
     __tablename__ = 'auth_token'
 
     id = Column(Integer, primary_key=True)
-    uid = Column(Integer)
+    uid = Column(Integer) # refer to user.id
     token = Column(String)
 
 
@@ -38,11 +38,11 @@ class UserData(Base):
     __tablename__ = 'user_data'
 
     id = Column(Integer, primary_key=True)
-    uid = Column(Integer)
+    uid = Column(Integer) # refer to user.id
     full_name = Column(String)
-    gender = Column(Integer)
+    gender = Column(Integer) # refer to gender_option.id
     school = Column(String)
-    school_type = Column(Integer)
+    school_type = Column(Integer) # refer to school_type_option.id
     grade = Column(Integer)
     address = Column(String)
     phone = Column(String)
@@ -52,7 +52,7 @@ class SetPasswordToken(Base):
     __tablename__ = 'set_password_token'
 
     id = Column(Integer, primary_key=True)
-    uid = Column(Integer)
+    uid = Column(Integer) # refer to user.id
     token = Column(String)
 
 
@@ -92,6 +92,49 @@ class SchoolTypeOption(Base):
     max_grade = Column(Integer)
 
 
+class RuleQuestion(Base):
+    __tablename__ = 'rule_question'
+
+    id = Column(Integer, primary_key=True)
+    description = Column(String)
+    status = Column(Integer)
+
+
+class RuleAnswer(Base):
+    __tablename__ = 'rule_answer'
+
+    id = Column(Integer, primary_key=True)
+    qid = Column(Integer) # refer to rule_question.id
+    order = Column(Integer)
+    description = Column(String)
+    is_answer = Column(Integer)
+    status = Column(Integer)
+
+
+class ClassTypeOption(Base):
+    __tablename__ = 'class_type_option'
+
+    id = Column(Integer, primary_key=True)
+    value = Column(String)
+
+
+class ApplicationQuestion(Base):
+    __tablename__ = 'application_question'
+
+    id = Column(Integer, primary_key=True)
+    class_type = Column(Integer)
+    description = Column(String)
+
+
+class ApplicationAnswer(Base):
+    __tablename__ = 'application_answer'
+
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer) # refer to user.id
+    qid = Column(Integer) # refer to application_question.id
+    description = Column(String)
+
+
 def init():
     db_engine = sqlalchemy.create_engine(sqlalchemy.engine.url.URL(
                 drivername='postgresql+psycopg2',
@@ -123,6 +166,12 @@ def init():
     school_types = [('國中', 3), ('高中', 3)]
     for i in range(len(school_types)):
         instance = SchoolTypeOption(id=(i + 1), value=school_types[i][0], max_grade=school_types[i][1])
+        insertInstance(instance)
+
+    session.query(ClassTypeOption).delete()
+    class_types = ['C 語法班', 'Python 語法班', '算法班']
+    for i in range(len(class_types)):
+        instance = ClassTypeOption(id=(i + 1), value=class_types[i])
         insertInstance(instance)
 
 
