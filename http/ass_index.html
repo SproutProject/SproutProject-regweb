@@ -1,0 +1,69 @@
+<head>
+  <title>2017 資訊之芽</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Orbitron">
+  <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.css">
+
+  <link rel="stylesheet" type="text/css" href="/spt/mask.css">
+  <link rel="stylesheet" type="text/css" href="/spt/ass_index.css">
+  <link rel="stylesheet" type="text/css" href="/spt/ass_denied.css">
+  <link rel="stylesheet" type="text/css" href="/spt/ass_poll.css">
+
+  <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+  <script type="text/javascript" src="/spt/ass_denied.js"></script>
+  <script type="text/javascript" src="/spt/ass_poll.js"></script>
+
+  <script type="text/javascript">
+    'use strict'
+    $(document).ready(function() {
+        $.post('/spt/d/mg', {}, function(res) {
+            if(res.status != 'SUCCESS') {
+                reload_page('/spt/ass_denied/');
+            } else {
+              // TODO
+            }
+        });
+    });
+
+    function reload_page(target) {
+        var parts = target.split('/');
+        var dest = parts[parts.length - 2];
+
+        if(dest == 'spt') {
+            dest = 'plan';
+        }
+
+        $.get('/spt/' + dest + '.html', function(res) {
+            $('#main').html(res);
+        });
+    }
+  </script>
+</head>
+<body>
+  <div id="back">
+    <img class="logo" src="/spt/index_bk1.png"></img>
+    <div id="nav">
+      <ul class="rside">
+        <li class="plan"><a href="/spt/ass_plan/">計劃</a></li>
+        <li class="about"><a href="/spt/ass_about/">關於</a></li>
+        <li class="qa"><a href="/spt/ass_qa/">Q&A</a></li>
+      </ul>
+      <ul class="lside">
+        <li class="rule"><a href="/spt/ass_rule/">規則</a></li>
+        <li class="poll"><a href="javascript:reload_page('/spt/ass_poll/')">評價</a></li>
+        <li class="indiv"><a href="/spt/ass_indiv/">個人</a></li>
+      </ul>
+    </div>
+    <div class="foot">
+      <h3>聯絡我們</h3>
+      <span>Mail: <a href="mailto:sprout@csie.ntu.edu.tw">sprout@csie.ntu.edu.tw</a></span>
+      <span>FB: <a href="https://www.facebook.com/ntucsiesprout">資訊之芽培訓計畫</a></span><br>
+      <span>計劃負責人 <a href="telto:0988562005">0988562005</a></span>
+      <span>台大資工 <a href="telto:886-2-33664888">886-2-33664888</a></span>
+    </div>
+  </div>
+  <div id="main"></div>
+</body>
+
