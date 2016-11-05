@@ -11,6 +11,7 @@ var ass_poll = new function() {
             var i;
 
             $('#ass_poll').html(Mustache.render(t_poll, res));
+            if (ass_mode_on) resizeSpecial();
 
             $('button.modify').on('click', function(e) {
                 if (confirm('確認修改？')) {

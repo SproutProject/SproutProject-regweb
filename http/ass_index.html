@@ -19,23 +19,38 @@
 
   <script type="text/javascript">
     'use strict'
+    var ass_mode_on = false;
+    
     $(document).ready(function() {
         $.post('/spt/d/mg', {}, function(res) {
             if(res.status != 'SUCCESS') {
                 reload_page('/spt/ass_denied/');
             } else {
-                // $('body').css('background-color', 'rgba(255, 0, 122, 0.5)');
+                if (ass_mode_on) {
+                  $('body').css('background-color', 'rgba(255, 0, 122, 0.5)');
+                  $('.logo').attr('src', '/spt/index_bk2.png');
+                  var img = $('<img>');
+                  img.attr('id', 'philosophy');
+                  img.attr('src', '/spt/ass.jpg');
+                  img.css('margin-left', '16%');
+                  $('body').append(img);
+                  $(window).resize(resizeSpecial);
+                }
                 reload_page(window.location.href);
             }
         });
     });
 
+    function resizeSpecial() {
+      $('#philosophy').width($('#main > div').width());
+    }
+
     function reload_page(target) {
         var parts = target.split('/');
         var dest = parts[parts.length - 2];
 
-        if(dest == 'spt') {
-            dest = 'plan';
+        if(dest == 'ass') {
+            dest = 'ass_poll';
         }
 
         $.get('/spt/' + dest + '.html', function(res) {

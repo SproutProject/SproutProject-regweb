@@ -10,6 +10,7 @@ var ass_qa = new function() {
             var i;
 
             $('#ass_qa').html(Mustache.render(t_qa, res));
+            if (ass_mode_on) resizeSpecial();
 
             $('button.modify').on('click', function(e) {
                 if (confirm('確認修改？')) {
