@@ -5,7 +5,6 @@ var ass_poll = new function() {
 
     that.load = function() {
         var t_poll = $('#poll-templ').html();
-        var j_ass_poll = $('#ass_poll');
 
         $.post('/spt/d/mg/poll', {}, function(res) {
             var i;

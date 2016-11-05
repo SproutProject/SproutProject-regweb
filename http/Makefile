@@ -9,6 +9,7 @@ default:
 	lessc as.less as.css
 	lessc ass_denied.less ass_denied.css
 	lessc ass_poll.less ass_poll.css
+	lessc ass_qa.less ass_qa.css
 	lessc poll.less poll.css
 	lessc rule.less rule.css
 	lessc indiv.less indiv.css

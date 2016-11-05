@@ -1,0 +1,29 @@
+<script id="qa-templ" type="x-tmpl-mustache">
+  <div class="ct">
+    <h3>Q&A</h3>
+    <div class="edit">
+      <h3>add/edit</h3>
+      <input type="textbox" class="order" placeholder="order"><br><br>
+      <input type="textbox" class="question" placeholder="question"><br><br>
+      <textarea placeholder="answer"></textarea><br><br>
+      <button class="btn-suc submit">submit</button>
+      <button class="btn-def cancel">cancel</button>
+    </div>
+    <div class="list">
+      <h3>list</h3>
+      {{#data}}
+        <div qaid={{id}} style="margin-bottom:6px;">
+          <strong>{{order}} - {{question}}</strong>
+          <button class="btn-pri delete" style="float: right;">delete</button>
+          <button class="btn-suc modify" style="float: right;">modify</button>
+        </div>
+      {{/data}}
+    </div>
+  </div>
+</script>
+
+<div id="ass_qa"></div>
+<script type="text/javascript">
+    history.pushState({}, "", "/spt/ass_qa/");
+    ass_qa.load();
+</script>
