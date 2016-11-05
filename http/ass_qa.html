@@ -1,21 +1,30 @@
 <script id="qa-templ" type="x-tmpl-mustache">
   <div class="ct">
     <h3>Q&A</h3>
+    <div class="qa" style="margin-bottom:6px;">
+      <strong>新增評價</strong>
+      <button class="btn-suc open" style="float: right;">open</button>
+    </div>
     <div class="edit">
-      <h3>add/edit</h3>
       <input type="textbox" class="order" placeholder="order"><br><br>
       <input type="textbox" class="question" placeholder="question"><br><br>
       <textarea placeholder="answer"></textarea><br><br>
-      <button class="btn-suc submit">submit</button>
-      <button class="btn-def cancel">cancel</button>
+      <button class="btn-suc modify">submit</button>
+      <button class="btn-def close">close</button>
     </div>
     <div class="list">
-      <h3>list</h3>
       {{#data}}
-        <div qaid={{id}} style="margin-bottom:6px;">
+        <div class="qa" qaid={{id}} style="margin-bottom:6px;">
           <strong>{{order}} - {{question}}</strong>
           <button class="btn-pri delete" style="float: right;">delete</button>
-          <button class="btn-suc modify" style="float: right;">modify</button>
+          <button class="btn-suc open" style="float: right;">open</button>
+        </div>
+        <div class="edit" qaid={{id}}>
+          <input type="textbox" class="order" placeholder="order" value="{{order}}"><br><br>
+          <input type="textbox" class="question" placeholder="question" value="{{question}}"><br><br>
+          <textarea placeholder="answer">{{answer}}</textarea><br><br>
+          <button class="btn-suc modify">modify</button>
+          <button class="btn-def close">close</button>
         </div>
       {{/data}}
     </div>

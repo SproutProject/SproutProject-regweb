@@ -15,8 +15,21 @@ div#ass_qa {
     font-family: monospace;
   }
 
+  div.qa {
+    height: 48px;
+    line-height: 48px;
+  }
+
+  div.edit {
+    display: none;
+  }
+
+  div.edit.active {
+    display: block;
+  }
+
   div.list {
-    & > div {
+    & > div.qa {
       height: 48px;
       line-height: 48px;
     }

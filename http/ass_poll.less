@@ -15,8 +15,21 @@ div#ass_poll {
     font-family: monospace;
   }
 
+  div.poll {
+    height: 48px;
+    line-height: 48px;
+  }
+
+  div.edit {
+    display: none;
+  }
+
+  div.edit.active {
+    display: block;
+  }
+
   div.list {
-    & > div {
+    & > div.poll {
       height: 48px;
       line-height: 48px;
     }

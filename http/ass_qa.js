@@ -11,45 +11,45 @@ var ass_qa = new function() {
 
             $('#ass_qa').html(Mustache.render(t_qa, res));
 
-            if (res.data != null) {
-                for (i = 0; i < res.data.length; i++) {
-                    $('[qaid="' + res.data[i].id + '"]').data('qa', res.data[i]);
-                }
-            }
+            $('button.modify').on('click', function(e) {
+                if (confirm('確認修改？')) {
+                    var j_edit = $(this).parent();
+                    var qa_id = j_edit.attr('qaid');
+                    if (qa_id == undefined)
+                        qa_id = -1;
+                    var question = j_edit.find('input.question').val();
+                    var order = parseInt(j_edit.find('input.order').val());
+                    var answer = j_edit.find('textarea').val();
 
-            $('#ass_qa div.edit > button.submit').on('click', function(e) {
-                var qa_id = $('#ass_qa div.edit').attr('qaid');
-                if (qa_id == undefined)
-                    qa_id = -1;
-                var question = $('#ass_qa div.edit > input.question').val();
-                var order = parseInt($('#ass_qa div.edit > input.order').val());
-                var answer = $('#ass_qa div.edit > textarea').val();
-                console.log(qa_id);
-                $.post('/spt/d/mg/qa_add', {
-                    'id': qa_id,
-                    'question': question,
-                    'answer': answer,
-                    'order': order
-                }, function(res) {
-                    reload_page('/spt/ass_qa/');
-                });
+                    $.post('/spt/d/mg/qa_add', {
+                        'id': qa_id,
+                        'question': question,
+                        'answer': answer,
+                        'order': order
+                    }, function(res) {
+                        reload_page('/spt/ass_qa/');
+                    });
+                }
             });
-            $('#ass_qa div.edit > button.cancel').on('click', function(e) {
-                reload_page('/spt/ass_qa/');
+
+            $('button.open').on('click', function(e) {
+                var j_edit = $(this).parent().next();
+                $("div.edit.active").removeClass('active');
+                j_edit.addClass('active');
             });
-            $('#ass_qa div.list button.modify').on('click', function(e) {
-                var qa = $(this).parent().data('qa');
-                $('#ass_qa div.edit').attr('qaid', qa.id);
-                $('#ass_qa div.edit > input.question').val(qa.question);
-                $('#ass_qa div.edit > input.order').val(qa.order);
-                $('#ass_qa div.edit > textarea').val(qa.answer);
+
+            $('button.close').on('click', function(e) {
+                $("div.edit.active").removeClass('active');
             });
-            $('#ass_qa div.list button.delete').on('click', function(e) {
-                $.post('/spt/d/mg/qa_del', {
-                    'id': $(this).parent().attr("qaid"),
-                }, function(res) {
-                    reload_page('/spt/ass_qa/');
-                });
+
+            $('button.delete').on('click', function(e) {
+                if (confirm('確認刪除？')) {
+                    $.post('/spt/d/mg/qa_del', {
+                        'id': $(this).parent().attr('qaid'),
+                    }, function(res) {
+                        reload_page('/spt/ass_qa/');
+                    });
+                }
             });
         });
     }; 
