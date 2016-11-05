@@ -8,6 +8,7 @@ default:
 	lessc req.less req.css
 	lessc as.less as.css
 	lessc ass_denied.less ass_denied.css
+	lessc ass_poll.less ass_poll.css
 	lessc poll.less poll.css
 	lessc rule.less rule.css
 	lessc indiv.less indiv.css
