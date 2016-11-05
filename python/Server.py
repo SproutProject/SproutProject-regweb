@@ -47,6 +47,7 @@ def main():
         (r'/mg/poll', View.PollHandler, app_param),
         (r'/mg/poll_del', View.PollDeleteHandler, app_param),
         (r'/mg/poll_add', View.PollAddHandler, app_param),
+        (r'/mg/user_data', View.UserDataHandler, app_param),
     ], cookie_secret='7122')
     app.listen(7122)
 

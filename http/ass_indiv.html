@@ -1,0 +1,60 @@
+<script id="indiv-data-templ" type="x-tmpl-mustache">
+  <div class="ct" id="sign_up">
+    <button id="show_indiv_data" class="btn-pri" style="float: right;">顯示個人資料</button>
+    <h3>報名</h3>
+    <b>STEP. 1</b>
+    <button id="rule_test" class="btn-pri">規則測驗</button><br>
+    <b>STEP. 2</b>
+    <button id="pre_test" class="btn-pri">算法班預試</button><br>
+    <b>STEP. 3</b>
+    <button id="c_class" class="btn-pri">C 語法班報名</button>
+    <button id="python_class" class="btn-pri">Python 語法班報名</button>
+    <button id="algorithm_class" class="btn-pri">算法班報名</button>   
+  </div>
+</script>
+<script id="user-data-templ" type="x-tmpl-mustache">
+  <div class="ct" id="user_data">
+    <button id="return_sign_up" class="btn-pri" style="float: right;">回報名頁</button>
+    <h3>基本資料</h3>
+    {{#data}}
+      <div class="user" userid={{id}} style="margin-bottom: 6px;">
+          <strong>{{school}} - {{full_name}}</strong>
+          <button class="btn-suc open" style="float: right;">open</button>
+      </div>
+      <div class="edit">
+        註冊信箱<br>
+        <input disabled type="text" value="{{mail}}"><br>
+        姓名<br>
+        <input disabled type="text" value="{{full_name}}"><br>
+        性別<br>
+        <input disabled type="text" value="{{gender_value}}"><br>
+        學校<br>
+        <input disabled type="text" value="{{school}}"><br>
+        學校類別<br>
+        <input disabled type="text" value="{{school_type_value}}"><br>
+        年級<br>
+        <input disabled type="text" value="{{grade}}"><br>
+        地址<br>
+        <input disabled type="text" value="{{address}}"><br>
+        聯絡電話<br>
+        <input disabled type="text" value="{{phone}}"><br>
+        權限<br>
+        <input disabled type="text" value="{{power_value}}"><br>
+        規則測驗<br>
+        <input disabled type="text" value="{{rule_test_value}}"><br>
+        pretest<br>
+        <input disabled type="text" value="{{pre_test_value}}"><br>
+        報名狀態<br>
+        <input disabled type="text" value="{{signup_status_value}}"><br>
+        <span class="err-msg"></span><br>
+        <button class="btn-pri close">close</button>
+      </div>
+    {{/data}}
+  </div>
+</script>
+
+<div id="ass_indiv"></div>
+<script type="text/javascript">
+    history.pushState({}, "", "/spt/ass_indiv/");
+    ass_indiv.load();
+</script>

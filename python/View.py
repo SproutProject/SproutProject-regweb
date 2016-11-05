@@ -315,7 +315,8 @@ class RegisterHandler(RequestHandler):
                     self.write({'status': 'FAILED'})
                 else:
                     await db.execute(
-                        'INSERT INTO "user" ("mail", "password", "power") VALUES (%s, %s, %s)',
+                        'INSERT INTO "user" ("mail", "password", "power", "rule_test", "pre_test", "signup_status")'
+                        ' VALUES (%s, %s, %s, 0, 0, 0)',
                         (mail, password, -1)
                     )
 
@@ -547,17 +548,27 @@ class RuleQuestionHandler(RequestHandler):
     async def post(self):
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
+        response_is_answer = False
+        uid = self.get_secure_cookie('uid')
+        if uid:
+            uid = int(uid)
+            user = get_user(db, uid)
+            if user.power == 1:
+                response_is_answer = True
 
         questions = {}
         async for row in db.execute(
-            'SELECT q.*, a."order", a."description" AS "answer"'
+            'SELECT q.*, a."order", a."description" AS "answer", a."is_answer"'
             ' FROM "rule_question" q'
             ' JOIN "rule_answer" a'
             ' ON q."id"=a."qid"'
             ' WHERE q."status"=1 AND a."status"=1'
         ):
             questions[row.id] = questions.get(row.id, {'description': row.description, 'options': []})
-            questions[row.id]['options'].append({'order': row.order, 'answer': row.answer})
+            option = {'order': row.order, 'answer': row.answer}
+            if response_is_answer:
+                option['is_answer'] = row.is_answer
+            questions[row.id]['options'].append(option)
 
         data = []
         for qid in questions:
@@ -568,3 +579,34 @@ class RuleQuestionHandler(RequestHandler):
         self.write({'status': 'SUCCESS', 'data': data})
         await db.close()
 
+
+class UserDataHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        uid = self.get_secure_cookie('uid')
+
+        if uid == None:
+            self.write({'status': 'NOT LOGINED'})
+        else:
+            uid = int(uid)
+            user = await get_user(db, uid)
+            if user.power != 1:
+                self.write({'status': 'PERMISSION DENIED'})
+            else:
+                data = []
+                async for row in db.execute(
+                    'SELECT u."id", u."mail", u."power", u."rule_test", u."pre_test", u."signup_status",'
+                    ' g."value" as "gender_value", s."value" as "school_type_value",'
+                    ' d."full_name", d."gender", d."school", d."school_type", d."grade", d."phone", d."address"'
+                    ' FROM "user" u'
+                    ' JOIN "user_data" d ON u."id"=d."uid"'
+                    ' JOIN "gender_option" g ON d."gender"=g."id"'
+                    ' JOIN "school_type_option" s ON d."school_type"=s."id"'
+                ):
+                    element = {}
+                    for key in row:
+                        element[key] = row[key]
+                    data.append(element)
+                self.write({'status': 'SUCCESS', 'data': data})
+        await db.close()

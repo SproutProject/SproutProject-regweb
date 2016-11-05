@@ -20,7 +20,10 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     mail = Column(String, unique=True)
     password = Column(String)
-    power = Column(Integer)
+    power = Column(Integer) # -1: unauth, 0: normal, 1: admin
+    rule_test = Column(Integer)
+    pre_test = Column(Integer) # cms
+    signup_status = Column(Integer) # stored in binary 3 bits 000
 
     def __repr__(self):
         return '<User(mail="%s", password="%s", power="%d")>' % (

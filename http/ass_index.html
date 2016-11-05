@@ -9,6 +9,7 @@
   <link rel="stylesheet" type="text/css" href="/spt/ass_denied.css">
   <link rel="stylesheet" type="text/css" href="/spt/ass_poll.css">
   <link rel="stylesheet" type="text/css" href="/spt/ass_qa.css">
+  <link rel="stylesheet" type="text/css" href="/spt/ass_indiv.css">
 
   <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
@@ -16,6 +17,7 @@
   <script type="text/javascript" src="/spt/ass_denied.js"></script>
   <script type="text/javascript" src="/spt/ass_poll.js"></script>
   <script type="text/javascript" src="/spt/ass_qa.js"></script>
+  <script type="text/javascript" src="/spt/ass_indiv.js"></script>
 
   <script type="text/javascript">
     'use strict'
@@ -55,6 +57,8 @@
 
         $.get('/spt/' + dest + '.html', function(res) {
             $('#main').html(res);
+            $('li.active').removeClass('active');
+            $('li.' + dest.replace('ass_', '')).addClass('active');
         });
     }
   </script>
@@ -64,14 +68,14 @@
     <img class="logo" src="/spt/index_bk1.png"></img>
     <div id="nav">
       <ul class="rside">
-        <li class="plan"><a href="/spt/ass_plan/">計劃</a></li>
-        <li class="about"><a href="/spt/ass_about/">關於</a></li>
+        <li class="plan"><a href="#">計劃</a></li>
+        <li class="about"><a href="#">關於</a></li>
         <li class="qa"><a href="javascript:reload_page('/spt/ass_qa/')">Q&A</a></li>
       </ul>
       <ul class="lside">
-        <li class="rule"><a href="/spt/ass_rule/">規則</a></li>
+        <li class="rule"><a href="#">規則</a></li>
         <li class="poll"><a href="javascript:reload_page('/spt/ass_poll/')">評價</a></li>
-        <li class="indiv"><a href="/spt/ass_indiv/">個人</a></li>
+        <li class="indiv"><a href="javascript:reload_page('/spt/ass_indiv/')">個人</a></li>
       </ul>
     </div>
     <div class="foot">
