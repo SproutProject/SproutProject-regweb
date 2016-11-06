@@ -1,14 +1,17 @@
 <script id="question-templ" type="x-tmpl-mustache">
-{{#data}}
-  <div class="question">
-    <div class="description">{{&description}}</div>
-    {{#options}}
-      <input type="radio" name="{{id}}" value="{{order}}">
-      <label for="{{id}}">{{answer}}</label>
-    {{/options}}
+  <div class="ct">
+    <h3>規則測驗</h3>
+    {{#data}}
+      <div class="question">
+        <div class="description">{{&description}}</div>
+        {{#options}}
+          <input type="radio" name="{{id}}" value="{{order}}">
+          <label for="{{id}}">{{answer}}</label><br>
+        {{/options}}
+        <br>
+      </div>
+    {{/data}}
   </div>
-{{/data}}
 </script>
-<div id="rule_test">
-</div>
+<div id="rule_test"></div>
 <script type="text/javascript">rule_test.load();</script>

@@ -1,0 +1,36 @@
+@import "mask-inc";
+
+div#ass_rule_test {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  background-color: @paper;
+  width: 80%;
+
+  & > div.ct {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  div.edit {
+    display: none;
+  }
+
+  div.edit.active {
+    display: block;
+  }
+
+  div.question {
+    height: 48px;
+    line-height: 48px;
+
+    button {
+      margin-left: 3px;
+    }
+  }
+
+  div.option {
+    margin-top: 6px;
+    height: 48px;
+    line-height: 48px;
+  }
+}

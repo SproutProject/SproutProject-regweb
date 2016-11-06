@@ -6,6 +6,8 @@ var ass_qa = new function() {
     that.load = function() {
         var t_qa = $('#qa-templ').html();
 
+        window.history.replaceState({}, "2017 資訊之芽", "/spt/ass_qa/");
+
         $.post('/spt/d/mg/qa', {}, function(res) {
             var i;
 

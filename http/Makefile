@@ -10,9 +10,10 @@ default:
 	lessc ass_poll.less ass_poll.css
 	lessc ass_qa.less ass_qa.css
 	lessc ass_indiv.less ass_indiv.css
+	lessc ass_rule_test.less ass_rule_test.css
 	lessc poll.less poll.css
 	lessc rule.less rule.css
+	lessc rule_test.less rule_test.css
 	lessc indiv.less indiv.css
 	lessc set_password.less set_password.css
 	lessc register.less register.css
-

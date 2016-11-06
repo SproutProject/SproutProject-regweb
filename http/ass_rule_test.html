@@ -1,0 +1,48 @@
+<script id="question-templ" type="x-tmpl-mustache">
+  <div class="ct">
+    <h3>規則測驗</h3>
+    <div class="question" style="margin-bottom: 6px;">
+      <strong>新增問題</strong>
+      <button class="btn-suc open" style="float: right;">open</button>
+    </div>
+    <div class="edit">
+      <input class="order" type="number" placeholder="order" value="{{order}}"><br><br>
+      <textarea class="description" placeholder="question">{{description}}</textarea><br><br>
+      <div class="option">
+        <input type="radio" name="-1" value="-1" checked>
+        <input type="text" for="-1" placeholder="answer">
+        <button class="btn-pri delete" style="float: right;">delete</button>
+      </div>
+      <br>
+      <button class="btn-suc modify">submit</button>
+      <button class="btn-suc add_option">add option</button>
+      <button class="btn-def close">close</button>
+    </div>
+    <div class="list">
+      {{#data}}
+        <div class="question" qid={{id}} style="margin-bottom: 6px;">
+          <strong>{{order}} : <span>{{description_value}}</span></strong>
+          <button class="btn-pri delete" style="float: right;">delete</button>
+          <button class="btn-suc open" style="float: right;">open</button>
+        </div>
+        <div class="edit" qid={{id}}>
+          <input class="order" type="number" placeholder="order" value="{{order}}"><br><br>
+          <textarea class="description" placeholder="question">{{description}}</textarea><br><br>
+          {{#options}}
+            <div class="option">
+              <input type="radio" name="{{id}}" value="{{aid}}" {{is_answer_value}}>
+              <input type="text" for="{{id}}" value="{{answer}}">
+              <button class="btn-pri delete" style="float: right;">delete</button>
+            </div>
+          {{/options}}
+          <br>
+          <button class="btn-suc modify">modify</button>
+          <button class="btn-suc add_option">add option</button>
+          <button class="btn-def close">close</button>
+        </div>
+      {{/data}}
+    </div>
+  </div>
+</script>
+<div id="ass_rule_test"></div>
+<script type="text/javascript">ass_rule_test.load();</script>

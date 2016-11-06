@@ -99,6 +99,7 @@ class RuleQuestion(Base):
     __tablename__ = 'rule_question'
 
     id = Column(Integer, primary_key=True)
+    order = Column(Integer)
     description = Column(String)
     status = Column(Integer)
 
@@ -108,7 +109,6 @@ class RuleAnswer(Base):
 
     id = Column(Integer, primary_key=True)
     qid = Column(Integer) # refer to rule_question.id
-    order = Column(Integer)
     description = Column(String)
     is_answer = Column(Integer)
     status = Column(Integer)
