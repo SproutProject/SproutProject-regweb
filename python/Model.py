@@ -125,8 +125,10 @@ class ApplicationQuestion(Base):
     __tablename__ = 'application_question'
 
     id = Column(Integer, primary_key=True)
+    order = Column(Integer)
     class_type = Column(Integer)
     description = Column(String)
+    status = Column(Integer)
 
 
 class ApplicationAnswer(Base):

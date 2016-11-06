@@ -11,8 +11,20 @@ var ass_indiv = new function() {
         window.history.replaceState({}, "2017 資訊之芽", "/spt/ass_indiv/");
 
         j_indiv.html(Mustache.render(t_indiv_data));
+        if (ass_mode_on) resizeSpecial();
+
         $('#rule_test').on('click', function(e) {
             reload_page('/spt/ass_rule_test/');
+        });
+
+        $('#c_class').on('click', function(e) {
+            reload_page('/spt/ass_app/?type=1');
+        });
+        $('#python_class').on('click', function(e) {
+            reload_page('/spt/ass_app/?type=2');
+        });
+        $('#algorithm_class').on('click', function(e) {
+            reload_page('/spt/ass_app/?type=3');
         });
 
         $('#show_indiv_data').on('click', function(e) {

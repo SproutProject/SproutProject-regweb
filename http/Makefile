@@ -11,6 +11,7 @@ default:
 	lessc ass_qa.less ass_qa.css
 	lessc ass_indiv.less ass_indiv.css
 	lessc ass_rule_test.less ass_rule_test.css
+	lessc ass_app.less ass_app.css
 	lessc poll.less poll.css
 	lessc rule.less rule.css
 	lessc rule_test.less rule_test.css

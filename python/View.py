@@ -760,3 +760,101 @@ class UserDataHandler(RequestHandler):
                     data.append(element)
                 self.write({'status': 'SUCCESS', 'data': data})
         await db.close()
+
+
+class ApplicationHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        try:
+            class_type = self.get_argument('class_type')
+            data = []
+            async for row in db.execute(
+                'SELECT * FROM "application_question"'
+                ' WHERE "class_type"=%s AND "status"=1'
+                ' ORDER BY "order"',
+                (class_type, )
+            ):
+                element = {}
+                for key in row:
+                    element[key] = row[key]
+                data.append(element)
+            self.write({'status': 'SUCCESS', 'data': data})
+        except Exception as e:
+            if DEBUG:
+                print(e)
+            self.write({'status': 'ERROR'})
+        await db.close()
+
+
+class ApplicationAddHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        uid = self.get_secure_cookie('uid')
+
+        if uid == None:
+            self.write({'status': 'NOT LOGINED'})
+        else:
+            uid = int(uid)
+            user = await get_user(db, uid)
+            if user.power != 1:
+                self.write({'status': 'PERMISSION DENIED'})
+            else:
+                try:
+                    app_id = int(self.get_argument('id'))
+                    order = self.get_argument('order')
+                    class_type = self.get_argument('class_type')
+                    description = self.get_argument('description')
+
+                    if app_id == -1:
+                        await db.execute(
+                            'INSERT INTO "application_question"'
+                            ' ("order", "class_type", "description", "status")'
+                            ' VALUES (%s, %s, %s, 1)',
+                            (order, class_type, description)
+                        )
+                    else:
+                        await db.execute(
+                            'UPDATE "application_question"'
+                            ' SET "order"=%s, "class_type"=%s, "description"=%s'
+                            ' WHERE "id"=%s',
+                            (order, class_type, description, app_id)
+                        )
+
+                    self.write({'status': 'SUCCESS'})
+                except Exception as e:
+                    if DEBUG:
+                        print(e)
+                    self.write({'status': 'ERROR'})
+        await db.close()
+
+
+class ApplicationDeleteHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        uid = self.get_secure_cookie('uid')
+
+        if uid == None:
+            self.write({'status': 'NOT LOGINED'})
+        else:
+            uid = int(uid)
+            user = await get_user(db, uid)
+            if user.power != 1:
+                self.write({'status': 'PERMISSION DENIED'})
+            else:
+                try:
+                    app_id = int(self.get_argument('id'))
+
+                    await db.execute(
+                        'UPDATE "application_question" SET "status"=0 WHERE "id"=%s',
+                        (app_id, )
+                    )
+
+                    self.write({'status': 'SUCCESS'})
+                except Exception as e:
+                    if DEBUG:
+                        print(e)
+                    self.write({'status': 'ERROR'})
+        await db.close()

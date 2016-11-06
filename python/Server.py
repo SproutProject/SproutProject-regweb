@@ -41,6 +41,7 @@ def main():
         (r'/modify_indiv_data', View.ModifyIndividualDataHandler, app_param),
         (r'/rule_question', View.RuleQuestionHandler, app_param),
         (r'/rule_test', View.RuleTestHandler, app_param),
+        (r'/application', View.ApplicationHandler, app_param),
         (r'/mg', View.ManageHandler, app_param),
         (r'/mg/qa', View.QaHandler, app_param),
         (r'/mg/qa_del', View.QaDeleteHandler, app_param),
@@ -51,6 +52,8 @@ def main():
         (r'/mg/rule_question_add', View.RuleQuestionAddHandler, app_param),
         (r'/mg/rule_question_del', View.RuleQuestionDeleteHandler, app_param),
         (r'/mg/user_data', View.UserDataHandler, app_param),
+        (r'/mg/application_add', View.ApplicationAddHandler, app_param),
+        (r'/mg/application_del', View.ApplicationDeleteHandler, app_param),
     ], cookie_secret='7122')
     app.listen(7122)
 

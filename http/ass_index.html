@@ -11,6 +11,7 @@
   <link rel="stylesheet" type="text/css" href="/spt/ass_qa.css">
   <link rel="stylesheet" type="text/css" href="/spt/ass_indiv.css">
   <link rel="stylesheet" type="text/css" href="/spt/ass_rule_test.css">
+  <link rel="stylesheet" type="text/css" href="/spt/ass_app.css">
 
   <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
@@ -20,10 +21,12 @@
   <script type="text/javascript" src="/spt/ass_qa.js"></script>
   <script type="text/javascript" src="/spt/ass_indiv.js"></script>
   <script type="text/javascript" src="/spt/ass_rule_test.js"></script>
+  <script type="text/javascript" src="/spt/ass_app.js"></script>
 
   <script type="text/javascript">
     'use strict'
-    var ass_mode_on = false;
+    var ass_mode_on = true;
+    var class_type = undefined;
     
     $(document).ready(function() {
         $.post('/spt/d/mg', {}, function(res) {
@@ -50,6 +53,10 @@
     }
 
     function reload_page(target) {
+        if (target.indexOf('?') >= 0) {
+            class_type = parseInt(target.split('?')[1].split('=')[1]);
+            target = target.split('?')[0];
+        }
         var parts = target.split('/');
         var dest = parts[parts.length - 2];
 
