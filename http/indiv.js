@@ -117,6 +117,10 @@ var indiv = new function() {
                                     $('span.err-msg').html('系統錯誤！');
                             });
                         });
+
+                        $('#rule_test').on('click', function(e) {
+                            window.location = '/spt/rule_test/';
+                        });
                     }
                 });
             }

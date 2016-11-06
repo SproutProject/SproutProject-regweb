@@ -11,6 +11,9 @@ var ass_indiv = new function() {
         window.history.replaceState({}, "2017 資訊之芽", "/spt/ass_indiv/");
 
         j_indiv.html(Mustache.render(t_indiv_data));
+        $('#rule_test').on('click', function(e) {
+            reload_page('/spt/ass_rule_test/');
+        });
 
         $('#show_indiv_data').on('click', function(e) {
             $.post('/spt/d/mg/user_data', {}, function(res) {

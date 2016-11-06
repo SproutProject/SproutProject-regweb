@@ -2,15 +2,17 @@
   <div class="ct">
     <h3>規則測驗</h3>
     {{#data}}
-      <div class="question">
+      <div class="question" qid="{{id}}">
         <div class="description">{{&description}}</div>
         {{#options}}
-          <input type="radio" name="{{id}}" value="{{order}}">
+          <input type="radio" name="{{id}}" value="{{aid}}">
           <label for="{{id}}">{{answer}}</label><br>
         {{/options}}
         <br>
       </div>
     {{/data}}
+    <span class="err-msg"></span><br>
+    <button class="btn-suc submit">submit</button>
   </div>
 </script>
 <div id="rule_test"></div>
