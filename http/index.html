@@ -32,22 +32,31 @@
     <script type="text/javascript" src="/spt/rule_test.js"></script>
     <script type="text/javascript">
       'use strict'
+      var class_type = undefined;
+
       $(document).ready(function() {
-        var j_main = $('#main');
-
-        var parts = location.href.split('/');
-        var dest = parts[parts.length - 2];
-
-        if(dest == 'spt') {
-          dest = 'plan';
-        }
-
-        $.get('/spt/' + dest + '.html', function(res) {
-          j_main.html(res);
-        });
-
-        $('#nav li.' + dest).addClass('active');
+          reload_page(window.location.href);
       });
+
+      function reload_page(target) {
+          if (target.indexOf('?') >= 0) {
+              class_type = parseInt(target.split('?')[1].split('=')[1]);
+              target = target.split('?')[0];
+          }
+          var parts = target.split('/');
+          var dest = parts[parts.length - 2];
+
+          if(dest == 'spt') {
+              dest = 'plan';
+          }
+
+          $.get('/spt/' + dest + '.html', function(res) {
+              $('#main').html(res);
+              $('li.active').removeClass('active');
+              $('li.' + dest).addClass('active');
+              window.history.replaceState({}, '2017 資訊之芽', target);
+          });
+      }
     </script>
   </head>
   <body>
@@ -55,14 +64,14 @@
       <img class="logo" src="/spt/index_bk1.png"></img>
       <div id="nav">
         <ul class="rside">
-          <li class="plan"><a href="/spt/">計劃</a></li>
-          <li class="about"><a href="/spt/about/">關於</a></li>
-          <li class="qa"><a href="/spt/qa/">Q&A</a></li>
+          <li class="plan"><a href="javascript:reload_page('/spt/')">計劃</a></li>
+          <li class="about"><a href="javascript:reload_page('/spt/about/')">關於</a></li>
+          <li class="qa"><a href="javascript:reload_page('/spt/qa/')">Q&amp;A</a></li>
         </ul>
         <ul class="lside">
-          <li class="rule"><a href="/spt/rule/">規則</a></li>
-          <li class="poll"><a href="/spt/poll/">評價</a></li>
-          <li class="indiv"><a href="/spt/indiv/">個人</a></li>
+          <li class="rule"><a href="javascript:reload_page('/spt/rule/')">規則</a></li>
+          <li class="poll"><a href="javascript:reload_page('/spt/poll/')">評價</a></li>
+          <li class="indiv"><a href="javascript:reload_page('/spt/indiv/')">個人</a></li>
         </ul>
       </div>
       <div class="foot">

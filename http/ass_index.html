@@ -25,7 +25,7 @@
 
   <script type="text/javascript">
     'use strict'
-    var ass_mode_on = true;
+    var ass_mode_on = false;
     var class_type = undefined;
     
     $(document).ready(function() {
@@ -68,6 +68,7 @@
             $('#main').html(res);
             $('li.active').removeClass('active');
             $('li.' + dest.replace('ass_', '')).addClass('active');
+            window.history.replaceState({}, '2017 資訊之芽', target);
         });
     }
   </script>
@@ -79,7 +80,7 @@
       <ul class="rside">
         <li class="plan"><a href="#">計劃</a></li>
         <li class="about"><a href="#">關於</a></li>
-        <li class="qa"><a href="javascript:reload_page('/spt/ass_qa/')">Q&A</a></li>
+        <li class="qa"><a href="javascript:reload_page('/spt/ass_qa/')">Q&amp;A</a></li>
       </ul>
       <ul class="lside">
         <li class="rule"><a href="#">規則</a></li>

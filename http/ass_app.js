@@ -6,8 +6,6 @@ var ass_app = new function() {
     that.load = function() {
         var t_app = $('#app-templ').html();
 
-        window.history.replaceState({}, '2017 資訊之芽', '/spt/ass_app/?type=' + class_type);
-
         $.post('/spt/d/application', {
             'class_type': class_type
         }, function(res) {

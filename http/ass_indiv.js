@@ -8,8 +8,6 @@ var ass_indiv = new function() {
         var t_user_data = $('#user-data-templ').html();
         var j_indiv = $('#ass_indiv');
 
-        window.history.replaceState({}, "2017 資訊之芽", "/spt/ass_indiv/");
-
         j_indiv.html(Mustache.render(t_indiv_data));
         if (ass_mode_on) resizeSpecial();
 

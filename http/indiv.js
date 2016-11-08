@@ -119,7 +119,7 @@ var indiv = new function() {
                         });
 
                         $('#rule_test').on('click', function(e) {
-                            window.location = '/spt/rule_test/';
+                            reload_page('/spt/rule_test/');
                         });
                     }
                 });

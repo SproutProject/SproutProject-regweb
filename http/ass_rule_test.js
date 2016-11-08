@@ -6,8 +6,6 @@ var ass_rule_test = new function() {
     that.load = function() {
         var t_question = $('#question-templ').html();
 
-        window.history.replaceState({}, "2017 資訊之芽", "/spt/ass_rule_test/");
-
         $.post('/spt/d/rule_question', {}, function(res) {
             res.is_answer_value = function() {
                 return (this.is_answer) ? 'checked' : '';
