@@ -53,11 +53,12 @@
     }
 
     function reload_page(target) {
+        var _target = target;
         if (target.indexOf('?') >= 0) {
             class_type = parseInt(target.split('?')[1].split('=')[1]);
-            target = target.split('?')[0];
+            _target = target.split('?')[0];
         }
-        var parts = target.split('/');
+        var parts = _target.split('/');
         var dest = parts[parts.length - 2];
 
         if(dest == 'ass') {

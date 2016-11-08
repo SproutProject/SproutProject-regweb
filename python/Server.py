@@ -42,6 +42,7 @@ def main():
         (r'/rule_question', View.RuleQuestionHandler, app_param),
         (r'/rule_test', View.RuleTestHandler, app_param),
         (r'/application', View.ApplicationHandler, app_param),
+        (r'/application_answer', View.ApplicationAnswerHandler, app_param),
         (r'/mg', View.ManageHandler, app_param),
         (r'/mg/qa', View.QaHandler, app_param),
         (r'/mg/qa_del', View.QaDeleteHandler, app_param),

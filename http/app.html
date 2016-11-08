@@ -1,0 +1,21 @@
+<script id="app-templ" type="x-tmpl-mustache">
+  <div class="ct">
+    <h3>{{title_value}} - 備審問題</h3>
+    <div class="list">
+      {{#data}}
+        <div class="app" appid={{id}} style="margin-bottom:6px;">
+          <div class="description">{{&description}}</div>
+          <textarea class="answer">{{answer}}</textarea>
+          <br><br>
+        </div>
+      {{/data}}
+      <span class="err-msg"></span><br>
+      <button class="btn-suc submit">submit</button>
+    </div>
+  </div>
+</script>
+
+<div id="app"></div>
+<script type="text/javascript">
+    app.load();
+</script>

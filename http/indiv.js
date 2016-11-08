@@ -83,6 +83,16 @@ var indiv = new function() {
                     if (res.status == 'SUCCESS') {
                         j_indiv.html(Mustache.render(t_indiv_data, res.data));
 
+                        $('#c_class').on('click', function(e) {
+                            reload_page('/spt/app/?type=1');
+                        });
+                        $('#python_class').on('click', function(e) {
+                            reload_page('/spt/app/?type=2');
+                        });
+                        $('#algorithm_class').on('click', function(e) {
+                            reload_page('/spt/app/?type=3');
+                        });
+
                         $('#return_indiv_data').on('click', function(e) {
                             $('#sign_up').hide();
                             $('#indiv_data').show();
