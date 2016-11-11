@@ -1,16 +1,18 @@
 <script id="options-templ" type="x-tmpl-mustache">
-<option selected value="">請選擇</option>
-{{#data}}
-  <option value="{{id}}">{{value}}</option>
-{{/data}}
+  <option selected value="">請選擇</option>
+  {{#data}}
+    <option value="{{id}}">{{value}}</option>
+  {{/data}}
 </script>
+
 <script id="school-options-templ" type="x-tmpl-mustache">
-<option selected value="" max_grade="0">請選擇</option>
-{{#data}}
-  <option value="{{id}}" max_grade="{{max_grade}}">{{value}}</option>
-{{/data}}
+  <option selected value="" max_grade="0">請選擇</option>
+  {{#data}}
+    <option value="{{id}}" max_grade="{{max_grade}}">{{value}}</option>
+  {{/data}}
 </script>
-<div id="register">
+
+<div class="main-container" id="register">
   <div class="ct">
     <h3>填寫基本資料以完成報名</h3>
     <label for="full_name">姓名</label><br>
@@ -31,5 +33,6 @@
     <button id="submit" class="btn-pri">送出</button>
   </div>
 </div>
-<script type="text/javascript">register.load();</script>
-
+<script type="text/javascript">
+    register.load();
+</script>
