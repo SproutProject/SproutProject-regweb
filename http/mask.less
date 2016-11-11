@@ -50,6 +50,7 @@ div.main-container {
 .gencl(md, 960px, 16);
 .gencl(lg, 1200px, 20);
 
+/*
 @media (min-width: 504px) {
   .ct {
     width: 480px - @gutter * 2;
@@ -69,6 +70,12 @@ div.main-container {
   .ct {
     width: 1200px - @gutter * 2;
   }
+}
+*/
+
+div.ct {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 html {
@@ -133,3 +140,8 @@ pre {
 .btn-pri { .btn(@blue); }
 .btn-suc { .btn(@green); }
 .btn-spe { .btn(@purple); }
+
+
+span.err-msg {
+  color: red;
+}

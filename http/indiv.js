@@ -49,6 +49,10 @@ var indiv = new function() {
                                 $('span.err-msg').html('系統錯誤！');
                         });
                     });
+
+                    $('#return').on('click', function(e) {
+                        that.load();
+                    });
                 });
 
                 $('#register').on('click', function(e) {
@@ -76,6 +80,10 @@ var indiv = new function() {
                             else if (res.status == 'ERROR')
                                 $('span.err-msg').html('系統錯誤！');
                         });
+                    });
+
+                    $('#return').on('click', function(e) {
+                        that.load();
                     });
                 });
             } else {
