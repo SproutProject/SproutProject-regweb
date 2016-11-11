@@ -1,7 +1,7 @@
 <script id="poll-templ" type="x-tmpl-mustache">
   <div class="ct">
     <h3>評價</h3>
-    <div class="poll" style="margin-bottom:6px;">
+    <div class="title" style="margin-bottom:6px;">
       <strong>新增評價</strong>
       <button class="btn-suc open" style="float: right;">open</button>
     </div>
@@ -15,7 +15,7 @@
     </div>
     <div class="list">
       {{#data}}
-        <div class="poll" pollid={{id}} style="margin-bottom: 6px;">
+        <div class="title" pollid={{id}} style="margin-bottom: 6px;">
           <strong>{{order}} : {{year}} - {{subject}}</strong>
           <button class="btn-pri delete" style="float: right;">delete</button>
           <button class="btn-suc open" style="float: right;">open</button>
@@ -33,7 +33,7 @@
   </div>
 </script>
 
-<div id="ass_poll"></div>
+<div class="main-container ass" id="ass_poll"></div>
 <script type="text/javascript">
     ass_poll.load();
 </script>
