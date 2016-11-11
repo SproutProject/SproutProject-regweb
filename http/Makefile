@@ -5,7 +5,6 @@ default:
 	lessc plan.less plan.css
 	lessc about.less about.css
 	lessc qa.less qa.css
-	lessc ass_denied.less ass_denied.css
 	lessc ass_poll.less ass_poll.css
 	lessc ass_qa.less ass_qa.css
 	lessc ass_indiv.less ass_indiv.css
