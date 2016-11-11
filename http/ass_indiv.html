@@ -17,7 +17,7 @@
     <button id="return_sign_up" class="btn-pri" style="float: right;">回報名頁</button>
     <h3>基本資料</h3>
     {{#data}}
-      <div class="user" userid={{id}} style="margin-bottom: 6px;">
+      <div class="title" userid={{id}} style="margin-bottom: 6px;">
           <strong>{{school}} - {{full_name}}</strong>
           <button class="btn-suc open" style="float: right;">open</button>
       </div>
@@ -53,7 +53,7 @@
   </div>
 </script>
 
-<div id="ass_indiv"></div>
+<div class="main-container ass" id="ass_indiv"></div>
 <script type="text/javascript">
     ass_indiv.load();
 </script>
