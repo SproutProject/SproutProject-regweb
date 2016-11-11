@@ -14,6 +14,5 @@ default:
 	lessc ass_app.less ass_app.css
 	lessc poll.less poll.css
 	lessc rule_test.less rule_test.css
-	lessc set_password.less set_password.css
 	lessc register.less register.css
 	lessc app.less app.css
