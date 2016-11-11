@@ -7,7 +7,7 @@ div#poll {
     margin: @gutter @gutter;
     padding: 0 @gutter 0 @gutter;
     background-color: @white;
-    box-shadow: 0px 1px 4px -1px fade(@black,30%);
+    box-shadow: 0px 1px 4px -1px fade(@black, 30%);
     font-size: @fs-sm;
   }
 
@@ -18,17 +18,19 @@ div#poll {
       padding: @gutter @gutter;
       margin: @gutter @gutter;
       background-color: @white;
-      box-shadow: 0px 1px 4px -1px fade(@black,30%);
+      box-shadow: 0px 1px 4px -1px fade(@black, 30%);
       float: left;
       cursor: pointer;
 
       & > p {
         word-break: break-all;
       }
+
       &:hover {
-        box-shadow: 0px 1px 6px -1px fade(@black,60%);
+        box-shadow: 0px 1px 6px -1px fade(@black, 60%);
       }
     }
+
     & > div.body-container {
       padding: 0 @gutter;
 
@@ -36,7 +38,7 @@ div#poll {
         width: 100%;
         padding: @gutter @gutter;
         background-color: @white;
-        box-shadow: 0px 1px 4px -1px fade(@black,30%);
+        box-shadow: 0px 1px 4px -1px fade(@black, 30%);
         float: left;
         display: none;
         box-sizing: border-box;
@@ -46,6 +48,7 @@ div#poll {
         }
       }
     }
+
     &.active{
       & > div.body-container {
         & > div.body {

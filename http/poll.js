@@ -14,6 +14,7 @@ var poll = new function() {
                 $('#list').find('div.subject').hide();
                 j_this.addClass('active');
             });
+
             $('#list button.close').on('click', function(e) {
                 var j_item = $(this).parents('div.item');
                 $('#list').find('div.subject').show();
