@@ -13,7 +13,6 @@ default:
 	lessc ass_rule_test.less ass_rule_test.css
 	lessc ass_app.less ass_app.css
 	lessc poll.less poll.css
-	lessc rule.less rule.css
 	lessc rule_test.less rule_test.css
 	lessc indiv.less indiv.css
 	lessc set_password.less set_password.css
