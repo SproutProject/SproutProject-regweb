@@ -10,9 +10,10 @@
   &:after{
     content: "";
     clear: both;
-    display:block;
+    display: block;
   }
 }
+
 .gencl(@tag,@width,@end) when (@end > 0) {
   .gencl(@tag,@width,(@end - 1));
 
@@ -36,10 +37,10 @@
   }
 }
 
-.gencl(bs,480px,6);
-.gencl(sm,600px,10);
-.gencl(md,960px,16);
-.gencl(lg,1200px,20);
+.gencl(bs, 480px, 6);
+.gencl(sm, 600px, 10);
+.gencl(md, 960px, 16);
+.gencl(lg, 1200px, 20);
 
 @media (min-width: 504px) {
   .ct {
@@ -65,12 +66,14 @@
 html {
   height: 100%;
 }
+
 body {
   font-size: @fs-md;
   line-height: 30px;
   font-family: @ft-def;
   overflow-y: scroll;
 }
+
 a {
   color: @purple;
   text-decoration: none;
@@ -79,10 +82,12 @@ a {
     text-decoration: underline;
   }
 }
+
 pre {
   margin: 0px 0px;
   font-family: @ft-mon;
 }
+
 .btn(@color) {
   height: 48px;
   padding-left: 11px;
@@ -99,9 +104,10 @@ pre {
   transition-timing-function: linear;
 
   &:hover {
-    background-color: saturate(@color,10%);
+    background-color: saturate(@color, 10%);
     color: white;
   }
+
   &:before {
     content: "";
     width: 12px * sqrt(2);
@@ -115,7 +121,7 @@ pre {
   }
 }
 
-.btn-def {.btn(@gray);}
-.btn-pri {.btn(@blue);}
-.btn-suc {.btn(@green);}
-.btn-spe {.btn(@purple);}
+.btn-def { .btn(@gray); }
+.btn-pri { .btn(@blue); }
+.btn-suc { .btn(@green); }
+.btn-spe { .btn(@purple); }
