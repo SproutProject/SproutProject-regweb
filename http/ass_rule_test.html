@@ -1,7 +1,7 @@
 <script id="question-templ" type="x-tmpl-mustache">
   <div class="ct">
     <h3>規則測驗</h3>
-    <div class="question" style="margin-bottom: 6px;">
+    <div class="title" style="margin-bottom: 6px;">
       <strong>新增問題</strong>
       <button class="btn-suc open" style="float: right;">open</button>
     </div>
@@ -20,7 +20,7 @@
     </div>
     <div class="list">
       {{#data}}
-        <div class="question" qid={{id}} style="margin-bottom: 6px;">
+        <div class="title" qid={{id}} style="margin-bottom: 6px;">
           <strong>{{order}} : <span>{{description_value}}</span></strong>
           <button class="btn-pri delete" style="float: right;">delete</button>
           <button class="btn-suc open" style="float: right;">open</button>
@@ -44,5 +44,7 @@
     </div>
   </div>
 </script>
-<div id="ass_rule_test"></div>
-<script type="text/javascript">ass_rule_test.load();</script>
+<div class="main-container ass" id="ass_rule_test"></div>
+<script type="text/javascript">
+    ass_rule_test.load();
+</script>
