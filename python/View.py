@@ -43,26 +43,18 @@ class PollHandler(RequestHandler):
     async def post(self):
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
-        uid = self.get_secure_cookie('uid')
 
-        if uid == None:
-            self.write({'status': 'NOT LOGINED'})
-        else:
-            uid = int(uid)
-            user = await get_user(db, uid)
-            if user.power != 1:
-                self.write({'status': 'PERMISSION DENIED'})
-            else:
-                data = []
-                async for row in db.execute(
-                    'SELECT * FROM "poll" WHERE "status"=1'
-                    ' ORDER BY "year" DESC, "order"'
-                ):
-                    element = {}
-                    for key in row:
-                        element[key] = row[key]
-                    data.append(element)
-                self.write({'status': 'SUCCESS', 'data': data})
+        data = []
+        async for row in db.execute(
+            'SELECT * FROM "poll" WHERE "status"=1'
+            ' ORDER BY "year" DESC, "order"'
+        ):
+            element = {}
+            for key in row:
+                element[key] = row[key]
+            data.append(element)
+        self.write({'status': 'SUCCESS', 'data': data})
+
         await db.close()
 
 
@@ -138,26 +130,18 @@ class QaHandler(RequestHandler):
     async def post(self):
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
-        uid = self.get_secure_cookie('uid')
 
-        if uid == None:
-            self.write({'status': 'NOT LOGINED'})
-        else:
-            uid = int(uid)
-            user = await get_user(db, uid)
-            if user.power != 1:
-                self.write({'status': 'PERMISSION DENIED'})
-            else:
-                data = []
-                async for row in db.execute(
-                    'SELECT * FROM "qa" WHERE "status"=1'
-                    ' ORDER BY "order"'
-                ):
-                    element = {}
-                    for key in row:
-                        element[key] = row[key]
-                    data.append(element)
-                self.write({'status': 'SUCCESS', 'data': data})
+        data = []
+        async for row in db.execute(
+            'SELECT * FROM "qa" WHERE "status"=1'
+            ' ORDER BY "order"'
+        ):
+            element = {}
+            for key in row:
+                element[key] = row[key]
+            data.append(element)
+        self.write({'status': 'SUCCESS', 'data': data})
+
         await db.close()
 
 
