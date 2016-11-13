@@ -32,12 +32,14 @@ var app = new function() {
                     'class_type': class_type,
                     'data': JSON.stringify(data)
                 }, function(res) {
-                    if (res.status == 'SUCCESS')
-                        $('span.err-msg').html('報名資料已成功送出。');
+                    if (res.status == 'SUCCESS') {
+                        show_message('報名資料已成功送出。');
+                        reload_page('/spt/indiv/');
+                    }
                     if (res.status == 'PERMISSION DENIED')
-                        $('span.err-msg').html('尚未完成規則測驗（或前測）。');
+                        show_message('尚未完成規則測驗（或前測）。');
                     else if (res.status == 'ERROR')
-                        $('span.err-msg').html('系統錯誤！');
+                        show_message('系統錯誤！');
                     ajax_done();
                 });
             });

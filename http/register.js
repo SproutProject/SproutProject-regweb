@@ -30,34 +30,38 @@ var register = new function() {
         });
 
         $('#submit').on('click', function(e) {
-            var params = window.location.search.replace('?', '').split('&');
-            var data = {};
-            params.forEach(function(param) {
-                var arr = param.split('=');
-                data[arr[0]] = arr[1];
-            });
-
-            var done = true;
-            var fields = ['full_name', 'gender', 'school', 'school_type', 'grade', 'address', 'phone'];
-            fields.forEach(function(name) {
-                data[name] = $('#' + name).val();
-                if (data[name] == "")
-                    done = false;
-            });
-
-            if (done) {
-                ajax_start();
-                $.post('/spt/d/register_data', data, function(res) {
-                    if (res.status == 'SUCCESS')
-                        $('span.err-msg').html('基本資料填寫完成，請回個人頁面登入後進行報名。');
-                    else if (res.status == 'FAILED')
-                        $('span.err-msg').html('參數錯誤！');
-                    else if (res.status == 'ERROR')
-                        $('span.err-msg').html('系統錯誤！');
-                    ajax_done();
+            if (confirm('確認送出？')) {
+                var params = window.location.search.replace('?', '').split('&');
+                var data = {};
+                params.forEach(function(param) {
+                    var arr = param.split('=');
+                    data[arr[0]] = arr[1];
                 });
-            } else {
-                $('span.err-msg').html('尚有欄位未填寫完成');
+
+                var done = true;
+                var fields = ['full_name', 'gender', 'school', 'school_type', 'grade', 'address', 'phone'];
+                fields.forEach(function(name) {
+                    data[name] = $('#' + name).val();
+                    if (data[name] == '')
+                        done = false;
+                });
+
+                if (done) {
+                    ajax_start();
+                    $.post('/spt/d/register_data', data, function(res) {
+                        if (res.status == 'SUCCESS') {
+                            show_message('基本資料填寫完成，請回個人頁面登入後進行報名。');
+                            reload_page('/spt/indiv/');
+                        }
+                        else if (res.status == 'FAILED')
+                            show_message('參數錯誤！');
+                        else if (res.status == 'ERROR')
+                            show_message('系統錯誤！');
+                        ajax_done();
+                    });
+                } else {
+                    show_message('尚有欄位未填寫完成');
+                }
             }
         });
     };

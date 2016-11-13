@@ -162,7 +162,7 @@ def init():
 
     # Initialize for some constant data
     session.query(GenderOption).delete()
-    genders = ['女生', '男生']
+    genders = ['女', '男']
     for i in range(len(genders)):
         instance = GenderOption(id=(i + 1), value=genders[i])
         insertInstance(instance)

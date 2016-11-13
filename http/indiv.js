@@ -27,9 +27,9 @@ var indiv = new function() {
                         if (res.status == 'SUCCESS')
                             location.reload();
                         else if (res.status == 'FAILED')
-                            $('span.err-msg').html('信箱或密碼錯誤！');
+                            show_message('信箱或密碼錯誤！');
                         else if (res.status == 'ERROR')
-                            $('span.err-msg').html('系統錯誤！');
+                            show_message('系統錯誤！');
                         ajax_done();
                     });
                 });
@@ -45,11 +45,11 @@ var indiv = new function() {
                             'mail': mail,
                         }, function(res) {
                             if (res.status == 'SUCCESS')
-                                $('span.err-msg').html('已發送修改密碼連結至註冊信箱。');
+                                show_message('已發送修改密碼連結至註冊信箱。');
                             else if (res.status == 'FAILED')
-                                $('span.err-msg').html('未註冊的信箱。');
+                                show_message('未註冊的信箱。');
                             else if (res.status == 'ERROR')
-                                $('span.err-msg').html('系統錯誤！');
+                                show_message('系統錯誤！');
                             ajax_done();
                         });
                     });
@@ -67,7 +67,7 @@ var indiv = new function() {
                         var password = $('#password').val();
                         var password2 = $('#password2').val();
                         if (password != password2) {
-                            $('span.err-msg').html('兩次輸入密碼不符。');
+                            show_message('兩次輸入密碼不符。');
                             return;
                         }
                         ajax_start();
@@ -76,14 +76,16 @@ var indiv = new function() {
                             'mail': mail,
                             'password': password,
                         }, function(res) {
-                            if (res.status == 'SUCCESS')
-                                $('span.err-msg').html('已發送確認信至您的信箱。');
+                            if (res.status == 'SUCCESS') {
+                                show_message('已發送確認信至您的信箱，請至信件內網址繼續完成報名。');
+                                reload_page('/spt/indiv/');
+                            }
                             else if (res.status == 'FAILED')
-                                $('span.err-msg').html('此信箱已被註冊。');
+                                show_message('此信箱已被註冊。');
                             else if (res.status == 'WRONG MAIL')
-                                $('span.err-msg').html('信箱格式錯誤！');
+                                show_message('信箱格式錯誤！');
                             else if (res.status == 'ERROR')
-                                $('span.err-msg').html('系統錯誤！');
+                                show_message('系統錯誤！');
                             ajax_done();
                         });
                     });
@@ -137,11 +139,11 @@ var indiv = new function() {
                                 'address': address
                             }, function(res) {
                                 if (res.status == 'SUCCESS')
-                                    $('span.err-msg').html('修改成功！');
+                                    show_message('修改成功！');
                                 else if (res.status == 'NOT LOGINED')
-                                    $('span.err-msg').html('登入已失效，請重新登入。');
+                                    show_message('登入已失效，請重新登入。');
                                 else if (res.status == 'ERROR')
-                                    $('span.err-msg').html('系統錯誤！');
+                                    show_message('系統錯誤！');
                                 ajax_done();
                             });
                         });

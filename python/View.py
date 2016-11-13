@@ -496,7 +496,7 @@ class IndividualDataHandler(RequestHandler):
                 ' FROM "user_data" u'
                 ' JOIN "gender_option" g ON u."gender"=g."id"'
                 ' JOIN "school_type_option" s ON u."school_type"=s."id"'
-                ' WHERE u."id"=%s',
+                ' WHERE u."uid"=%s',
                 (uid, )
             ):
                 for key in row:
@@ -519,7 +519,7 @@ class ModifyIndividualDataHandler(RequestHandler):
                 address = self.get_argument('address')
                 phone = self.get_argument('phone')
                 await db.execute(
-                    'UPDATE "user_data" SET "address"=%s, "phone"=%s WHERE "id"=%s',
+                    'UPDATE "user_data" SET "address"=%s, "phone"=%s WHERE "uid"=%s',
                     (address, phone, uid)
                 )
                 self.write({'status': 'SUCCESS'})

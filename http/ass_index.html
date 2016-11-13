@@ -79,6 +79,11 @@
     function ajax_done() {
         $("#overlay").fadeOut(250);
     }
+
+    function show_message(msg) {
+        $('span.err-msg').html(msg);
+        alert(msg);
+    }
   </script>
 </head>
 <body>

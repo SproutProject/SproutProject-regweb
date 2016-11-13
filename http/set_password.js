@@ -8,7 +8,7 @@ var set_password = new function() {
             var password = $('#password').val();
             var password2 = $('#password2').val();
             if (password != password2) {
-                $('span.err-msg').html('兩次輸入密碼不符。');
+                show_message('兩次輸入密碼不符。');
                 return true;
             }
 
@@ -21,12 +21,14 @@ var set_password = new function() {
 
             ajax_start();
             $.post('/spt/d/set_password', data, function(res) {
-                if (res.status == 'SUCCESS')
-                    $('span.err-msg').html('密碼重設完成。');
+                if (res.status == 'SUCCESS') {
+                    show_message('密碼重設完成。');
+                    reload_page('/spt/indiv/');
+                }
                 else if (res.status == 'FAILED')
-                    $('span.err-msg').html('參數錯誤！');
+                    show_message('參數錯誤！');
                 else if (res.status == 'ERROR')
-                    $('span.err-msg').html('系統錯誤！');
+                    show_message('系統錯誤！');
                 ajax_done();
             });
         });
