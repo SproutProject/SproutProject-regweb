@@ -21,6 +21,8 @@ var poll = new function() {
                 j_item.removeClass('active');
                 return false;
             });
+
+            ajax_done();
         });
     };
 }

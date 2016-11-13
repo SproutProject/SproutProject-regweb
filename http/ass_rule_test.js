@@ -35,6 +35,8 @@ var ass_rule_test = new function() {
                         element['is_answer'] = 1;
                     options.push(element);
                 }
+                
+                ajax_start();
 
                 $.post('/spt/d/mg/rule_question_add', {
                     'id': qid,
@@ -72,6 +74,7 @@ var ass_rule_test = new function() {
             $('div.question > button.delete').on('click', function(e) {
                 if (confirm('確認刪除此問題？')) {
                     var qid = $(this).parent().attr('qid');
+                    ajax_start();
 
                     $.post('/spt/d/mg/rule_question_del', {
                         'id': qid
@@ -86,5 +89,7 @@ var ass_rule_test = new function() {
                     $(this).parent().remove();
             });
         });
+
+        ajax_done();
     };
 }

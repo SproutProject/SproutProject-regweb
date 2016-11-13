@@ -21,6 +21,7 @@ var ass_qa = new function() {
                     var question = j_edit.find('input.question').val();
                     var order = parseInt(j_edit.find('input.order').val());
                     var answer = j_edit.find('textarea').val();
+                    ajax_start();
 
                     $.post('/spt/d/mg/qa_add', {
                         'id': qa_id,
@@ -44,6 +45,7 @@ var ass_qa = new function() {
             });
 
             $('button.delete').on('click', function(e) {
+                ajax_start();
                 if (confirm('確認刪除？')) {
                     $.post('/spt/d/mg/qa_del', {
                         'id': $(this).parent().attr('qaid'),
@@ -52,6 +54,8 @@ var ass_qa = new function() {
                     });
                 }
             });
+
+            ajax_done();
         });
     }; 
 }

@@ -26,6 +26,8 @@ var app = new function() {
                     data.push({'id': id, 'answer': answer});
                 }
 
+                ajax_start();
+
                 $.post('/spt/d/application_answer', {
                     'class_type': class_type,
                     'data': JSON.stringify(data)
@@ -36,8 +38,11 @@ var app = new function() {
                         $('span.err-msg').html('尚未完成規則測驗（或前測）。');
                     else if (res.status == 'ERROR')
                         $('span.err-msg').html('系統錯誤！');
+                    ajax_done();
                 });
             });
+
+            ajax_done();
         });
     }; 
 }

@@ -26,6 +26,7 @@ var ass_indiv = new function() {
         });
 
         $('#show_indiv_data').on('click', function(e) {
+            ajax_start();
             $.post('/spt/d/mg/user_data', {}, function(res) {
                 res.power_value = function() {
                     var arr = ['一般', '管理者'];
@@ -68,8 +69,12 @@ var ass_indiv = new function() {
                     $("#user_data").remove();
                     $("#sign_up").show();
                 });
+
+                ajax_done();
             });
         });
+
+        ajax_done();
     }
 }
 

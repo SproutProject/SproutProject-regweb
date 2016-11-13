@@ -1,6 +1,9 @@
 <head>
   <title>2017 資訊之芽</title>
   <meta charset="utf-8">
+  <link rel="shortcut icon" href="/favicon.ico"/>
+  <link rel="bookmark" href="/favicon.ico"/>
+
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Orbitron">
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.css">
 
@@ -23,6 +26,7 @@
     var class_type = undefined;
     
     $(document).ready(function() {
+        $("#overlay").hide();
         $.post('/spt/d/mg', {}, function(res) {
             if(res.status != 'SUCCESS') {
                 reload_page('/spt/ass_denied/');
@@ -43,10 +47,11 @@
     });
 
     function resizeSpecial() {
-      $('#philosophy').width($('#main > div').width());
+        $('#philosophy').width($('#main > div').width());
     }
 
     function reload_page(target) {
+        ajax_start();
         var _target = target;
         if (target.indexOf('?') >= 0) {
             class_type = parseInt(target.split('?')[1].split('=')[1]);
@@ -65,6 +70,14 @@
             $('li.' + dest.replace('ass_', '')).addClass('active');
             window.history.replaceState({}, '2017 資訊之芽', target);
         });
+    }
+
+    function ajax_start() {
+        $("#overlay").fadeIn(250);
+    }
+
+    function ajax_done() {
+        $("#overlay").fadeOut(250);
     }
   </script>
 </head>
@@ -92,5 +105,8 @@
     </div>
   </div>
   <div id="main"></div>
+  <div id="overlay">
+    <img src="/spt/ring-alt.svg" id="loading"></img>
+  </div> 
 </body>
 

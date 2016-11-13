@@ -10,6 +10,7 @@ var rule_test = new function() {
             $('#rule_test').html(Mustache.render(t_question, res));
 
             $('button.submit').on('click', function(e) {
+                ajax_start();
                 var data = {};
                 var question_list = $('div.question');
                 for (var i = 0; i < question_list.size(); i++) {
@@ -33,8 +34,11 @@ var rule_test = new function() {
                         $('span.err-msg').html('答案錯誤！');
                     else if (res.status == 'ERROR')
                         $('span.err-msg').html('系統錯誤！');
+                    ajax_done();
                 });
             });
+
+            ajax_done();
         });
     };
 }

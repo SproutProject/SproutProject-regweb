@@ -29,6 +29,7 @@ var ass_app = new function() {
                         app_id = -1;
                     var order = parseInt(j_edit.find('input.order').val());
                     var description = j_edit.find('textarea').val();
+                    ajax_start();
 
                     $.post('/spt/d/mg/application_add', {
                         'id': app_id,
@@ -53,6 +54,7 @@ var ass_app = new function() {
 
             $('button.delete').on('click', function(e) {
                 if (confirm('確認刪除？')) {
+                    ajax_start();
                     $.post('/spt/d/mg/application_del', {
                         'id': $(this).parent().attr('appid'),
                     }, function(res) {
@@ -60,6 +62,8 @@ var ass_app = new function() {
                     });
                 }
             });
+
+            ajax_done();
         });
     }; 
 }

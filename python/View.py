@@ -762,7 +762,7 @@ class ApplicationHandler(RequestHandler):
                 data = []
                 if user.signup_status & (1 << (class_type - 1)):
                     async for row in db.execute(
-                        'SELECT q."id", q."description", a."description" as "answer" FROM "application_question" q'
+                        'SELECT q."id", q."order", q."description", a."description" as "answer" FROM "application_question" q'
                         ' JOIN "application_answer" a'
                         ' ON q."id"=a."qid"'
                         ' WHERE q."class_type"=%s AND a."uid"=%s AND q."status"=1'

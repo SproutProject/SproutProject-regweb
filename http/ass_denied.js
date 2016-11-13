@@ -12,6 +12,8 @@ var ass_denied = new function() {
 
         resizeYoutubeEmbed();
         $(window).resize(resizeYoutubeEmbed);
+
+        ajax_done();
     };
 }
 

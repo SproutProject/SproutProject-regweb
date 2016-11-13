@@ -8,6 +8,8 @@ var qa = new function() {
 
         $.post('/spt/d/qa', {}, function(res){
             $('#list').html(Mustache.render(template, res));
+
+            ajax_done();
         });
     };
 }

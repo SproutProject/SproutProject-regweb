@@ -23,6 +23,7 @@ var ass_poll = new function() {
                     var year = j_edit.find('input.year').val();
                     var subject = j_edit.find('textarea.subject').val();
                     var body = j_edit.find('textarea.body').val();
+                    ajax_start();
 
                     $.post('/spt/d/mg/poll_add', {
                         'id': poll_id,
@@ -48,6 +49,7 @@ var ass_poll = new function() {
 
             $('button.delete').on('click', function(e) {
                 if (confirm('確認刪除？')) {
+                    ajax_start();
                     $.post('/spt/d/mg/poll_del', {
                         'id': $(this).parent().attr('pollid'),
                     }, function(res) {
@@ -55,6 +57,8 @@ var ass_poll = new function() {
                     });
                 }
             });
+
+            ajax_done();
         });
     }; 
 }

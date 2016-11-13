@@ -17,6 +17,7 @@ var indiv = new function() {
                 $('#login').on('click', function(e) {
                     var mail = $('#mail').val();
                     var password = $('#password').val();
+                    ajax_start();
 
                     $.post('/spt/d/login', {
                         'mail': mail,
@@ -29,6 +30,7 @@ var indiv = new function() {
                             $('span.err-msg').html('信箱或密碼錯誤！');
                         else if (res.status == 'ERROR')
                             $('span.err-msg').html('系統錯誤！');
+                        ajax_done();
                     });
                 });
 
@@ -37,6 +39,7 @@ var indiv = new function() {
 
                     $('#submit').on('click', function(e) {
                         var mail = $('#mail').val();
+                        ajax_start();
 
                         $.post('/spt/d/forget', {
                             'mail': mail,
@@ -47,6 +50,7 @@ var indiv = new function() {
                                 $('span.err-msg').html('未註冊的信箱。');
                             else if (res.status == 'ERROR')
                                 $('span.err-msg').html('系統錯誤！');
+                            ajax_done();
                         });
                     });
 
@@ -66,6 +70,7 @@ var indiv = new function() {
                             $('span.err-msg').html('兩次輸入密碼不符。');
                             return;
                         }
+                        ajax_start();
 
                         $.post('/spt/d/register', {
                             'mail': mail,
@@ -79,6 +84,7 @@ var indiv = new function() {
                                 $('span.err-msg').html('信箱格式錯誤！');
                             else if (res.status == 'ERROR')
                                 $('span.err-msg').html('系統錯誤！');
+                            ajax_done();
                         });
                     });
 
@@ -87,6 +93,7 @@ var indiv = new function() {
                     });
                 });
             } else {
+                ajax_start();
                 $.post('/spt/d/indiv_data', {}, function(res) {
                     if (res.status == 'SUCCESS') {
                         j_indiv.html(Mustache.render(t_indiv_data, res.data));
@@ -112,6 +119,7 @@ var indiv = new function() {
                         });
 
                         $('.logout').on('click', function(e) {
+                            ajax_start();
                             $.post('/spt/d/logout', {}, function(res) {
                                 if (res.status == 'SUCCESS') {
                                     window.location.reload();
@@ -122,6 +130,7 @@ var indiv = new function() {
                         $('#submit').on('click', function(e) {
                             var phone = $('#phone').val();
                             var address = $('#address').val();
+                            ajax_start();
 
                             $.post('/spt/d/modify_indiv_data', {
                                 'phone': phone,
@@ -133,6 +142,7 @@ var indiv = new function() {
                                     $('span.err-msg').html('登入已失效，請重新登入。');
                                 else if (res.status == 'ERROR')
                                     $('span.err-msg').html('系統錯誤！');
+                                ajax_done();
                             });
                         });
 
@@ -140,8 +150,11 @@ var indiv = new function() {
                             reload_page('/spt/rule_test/');
                         });
                     }
+                    ajax_done();
                 });
             }
+
+            ajax_done();
         });
     }
 }
