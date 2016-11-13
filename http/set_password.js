@@ -19,6 +19,7 @@ var set_password = new function() {
                 data[arr[0]] = arr[1];
             });
 
+            ajax_start();
             $.post('/spt/d/set_password', data, function(res) {
                 if (res.status == 'SUCCESS')
                     $('span.err-msg').html('密碼重設完成。');
@@ -26,8 +27,11 @@ var set_password = new function() {
                     $('span.err-msg').html('參數錯誤！');
                 else if (res.status == 'ERROR')
                     $('span.err-msg').html('系統錯誤！');
+                ajax_done();
             });
         });
+
+        ajax_done();
     }
 }
 
