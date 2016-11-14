@@ -5,4 +5,5 @@ default:
 	lessc about.less about.css
 	lessc qa.less qa.css
 	lessc poll.less poll.css
+	lessc indiv.less indiv.css
 
