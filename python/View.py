@@ -586,33 +586,36 @@ class RuleTestHandler(RequestHandler):
             uid = int(uid)
             user = await get_user(db, uid)
 
-            try:
-                data = json.loads(self.get_argument('data'))
-                correct = True
-                async for row in db.execute(
-                    'SELECT q."id", a."id" as "aid"'
-                    ' FROM "rule_question" q'
-                    ' JOIN "rule_answer" a'
-                    ' ON q."id"=a."qid"'
-                    ' WHERE a."is_answer"=1 AND q."status"=1 AND a."status"=1'
-                ):
-                    if str(row.id) not in data:
-                        correct = False
-                    elif data[str(row.id)] != str(row.aid):
-                        correct = False
+            if user.power < 0:
+                self.write({'status': 'PERMISSION DENIED'})
+            else:
+                try:
+                    data = json.loads(self.get_argument('data'))
+                    correct = True
+                    async for row in db.execute(
+                        'SELECT q."id", a."id" as "aid"'
+                        ' FROM "rule_question" q'
+                        ' JOIN "rule_answer" a'
+                        ' ON q."id"=a."qid"'
+                        ' WHERE a."is_answer"=1 AND q."status"=1 AND a."status"=1'
+                    ):
+                        if str(row.id) not in data:
+                            correct = False
+                        elif data[str(row.id)] != str(row.aid):
+                            correct = False
 
-                if not correct:
-                    self.write({'status': 'WRONG'})
-                else:
-                    await db.execute(
-                        'UPDATE "user" SET "rule_test"=1 WHERE "id"=%s',
-                        (uid, )
-                    )
-                    self.write({'status': 'SUCCESS'})
-            except Exception as e:
-                if DEBUG:
-                    print(e)
-                self.write({'status': 'ERROR'})
+                    if not correct:
+                        self.write({'status': 'WRONG'})
+                    else:
+                        await db.execute(
+                            'UPDATE "user" SET "rule_test"=1 WHERE "id"=%s',
+                            (uid, )
+                        )
+                        self.write({'status': 'SUCCESS'})
+                except Exception as e:
+                    if DEBUG:
+                        print(e)
+                    self.write({'status': 'ERROR'})
         await db.close()
 
 

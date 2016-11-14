@@ -34,6 +34,8 @@ var rule_test = new function() {
                         show_message('答案錯誤！');
                     else if (res.status == 'ERROR')
                         show_message('系統錯誤！');
+                    else if (res.status == 'PERMISSION DENIED')
+                        show_message('不合法的行為。');                        
                     ajax_done();
                 });
             });
