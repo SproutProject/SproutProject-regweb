@@ -258,7 +258,7 @@ class LoginHandler(RequestHandler):
                 real_password = row.password
                 power = row.power
             if uid != None and password == real_password:
-                if power == 0:
+                if power >= 0:
                     self.set_secure_cookie('uid', str(uid))
                     self.write({'status': 'SUCCESS'})
                 else:
