@@ -44,6 +44,10 @@ var app = new function() {
                 });
             });
 
+            $('button.close').on('click', function(e) {
+                reload_page('/spt/indiv/');
+            });
+
             ajax_done();
         });
     }; 

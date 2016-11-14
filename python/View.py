@@ -494,6 +494,7 @@ class IndividualDataHandler(RequestHandler):
             self.write({'status': 'NOT LOGINED'})
         else:
             uid = int(uid)
+            user = await get_user(db, uid)
             data = {}
             async for row in db.execute(
                 'SELECT u.*, g."value" as "gender_value", s."value" as "school_type_value"'
@@ -505,6 +506,11 @@ class IndividualDataHandler(RequestHandler):
             ):
                 for key in row:
                     data[key] = row[key]
+
+            data['rule_test'] = user.rule_test
+            data['pre_test'] = user.pre_test
+            data['signup_status'] = user.signup_status
+
             self.write({'status': 'SUCCESS', 'data': data})
         await db.close()
 
