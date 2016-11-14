@@ -7,7 +7,7 @@ var ass_poll = new function() {
         var t_poll = $('#poll-templ').html();
         var j_ass_poll = $('#ass_poll');
 
-        $.post('/spt/d/mg/poll', {}, function(res) {
+        $.post('/spt/d/poll', {}, function(res) {
             var i;
 
             $('#ass_poll').html(Mustache.render(t_poll, res));

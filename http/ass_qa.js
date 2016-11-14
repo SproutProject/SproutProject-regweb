@@ -6,7 +6,7 @@ var ass_qa = new function() {
     that.load = function() {
         var t_qa = $('#qa-templ').html();
 
-        $.post('/spt/d/mg/qa', {}, function(res) {
+        $.post('/spt/d/qa', {}, function(res) {
             var i;
 
             $('#ass_qa').html(Mustache.render(t_qa, res));
