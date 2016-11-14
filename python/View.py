@@ -251,14 +251,18 @@ class LoginHandler(RequestHandler):
             password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
             uid = None
             async for row in db.execute(
-                'SELECT "id", "password" FROM "user" WHERE "mail"=%s',
+                'SELECT "id", "password", "power" FROM "user" WHERE "mail"=%s',
                 (mail, )
             ):
                 uid = row.id
                 real_password = row.password
+                power = row.power
             if uid != None and password == real_password:
-                self.set_secure_cookie('uid', str(uid))
-                self.write({'status': 'SUCCESS'})
+                if power == 0:
+                    self.set_secure_cookie('uid', str(uid))
+                    self.write({'status': 'SUCCESS'})
+                else:
+                    self.write({'status': 'PERMISSION DENIED'})
             else:
                 self.write({'status': 'FAILED'})
         except Exception as e:

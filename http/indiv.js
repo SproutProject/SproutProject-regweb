@@ -26,6 +26,8 @@ var indiv = new function() {
                         $('#password').val('');
                         if (res.status == 'SUCCESS')
                             location.reload();
+                        else if (res.status == 'PERMISSION DENIED')
+                            show_message('尚未完成註冊流程，請至註冊信箱收取確認信完成註冊流程。');
                         else if (res.status == 'FAILED')
                             show_message('信箱或密碼錯誤！');
                         else if (res.status == 'ERROR')
