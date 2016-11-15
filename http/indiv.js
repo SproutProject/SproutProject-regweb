@@ -103,6 +103,8 @@ var indiv = new function() {
                         j_indiv.html(Mustache.render(t_indiv_data, res.data));
 
                         if (res.data.rule_test == 1) {
+                            $("#rule_test").append(' (已完成)');
+
                             $('#c_class').removeClass('btn-disabled');
                             $('#c_class').addClass('btn-pri');
                             $('#c_class').on('click', function(e) {
@@ -117,12 +119,21 @@ var indiv = new function() {
                         }
 
                         if (res.data.pre_test == 1) {
+                            $("#pre_test").append(' (已完成)');
+
                             $('#algorithm_class').removeClass('btn-disabled');
                             $('#algorithm_class').addClass('btn-pri');
                             $('#algorithm_class').on('click', function(e) {
                                 reload_page('/spt/app/?type=3');
                             });
                         }
+
+                        if (res.data.signup_status & 1)
+                            $("#c_class").append(' (已完成)');
+                        if (res.data.signup_status & 2)
+                            $("#python_class").append(' (已完成)');
+                        if (res.data.signup_status & 4)
+                            $("#algorithm_class").append(' (已完成)');
 
                         $('#return_indiv_data').on('click', function(e) {
                             $('#sign_up').hide();
