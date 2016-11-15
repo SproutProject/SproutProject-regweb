@@ -75,7 +75,7 @@ def main():
         (r'/mg/application_add', View.ApplicationAddHandler, app_param),
         (r'/mg/application_del', View.ApplicationDeleteHandler, app_param),
         (r'/gs', View.UpdateGoogleSheetViewer, app_param),
-    ], cookie_secret='7122')
+    ], cookie_secret=Config.SECRET_KEY)
     app.listen(7122)
 
     asyncio.get_event_loop().run_forever()
