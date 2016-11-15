@@ -1,3 +1,6 @@
+import threading
+import requests
+
 import aiopg.sa
 import asyncio
 import tornado.platform.asyncio
@@ -16,14 +19,32 @@ async def create_db_engine():
             password=Config.DB_PASSWD)
 
 
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec) 
+        func()  
+    t = threading.Timer(sec, func_wrapper)
+    t.start()
+    return t
+
+
+def update_google_sheet():
+    r = requests.post('http://localhost/spt/d/gs', params={'key': Config.SECRET_KEY})
+
+
 def main():
     Model.init()
 
     tornado.platform.asyncio.AsyncIOMainLoop().install()
     db_engine = asyncio.get_event_loop().run_until_complete(create_db_engine())
+    g_sheet = Model.GoogleSheet()
+
+    # Daemon for updating google sheet
+    set_interval(update_google_sheet, Config.GOOGLE_REFRESH_TIME)
 
     app_param = {
         'db_engine': db_engine,
+        'g_sheet': g_sheet,
     }
     app = tornado.web.Application([
         (r'/', View.IndexHandler, app_param),
@@ -53,6 +74,7 @@ def main():
         (r'/mg/user_data', View.UserDataHandler, app_param),
         (r'/mg/application_add', View.ApplicationAddHandler, app_param),
         (r'/mg/application_del', View.ApplicationDeleteHandler, app_param),
+        (r'/gs', View.UpdateGoogleSheetViewer, app_param),
     ], cookie_secret='7122')
     app.listen(7122)
 

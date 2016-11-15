@@ -29,7 +29,9 @@ var ass_indiv = new function() {
             ajax_start();
             $.post('/spt/d/mg/user_data', {}, function(res) {
                 res.power_value = function() {
-                    var arr = ['一般', '管理者'];
+                    if (this.power == -1)
+                        return '未完成註冊'
+                    var arr = ['一般', '管理者', '神'];
                     return arr[this.power];
                 };
 

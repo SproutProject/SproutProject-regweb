@@ -26,6 +26,7 @@ async def get_user(db, id):
 class RequestHandler(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
         self.db_engine = kwargs.pop('db_engine')
+        self.g_sheet = kwargs.pop('g_sheet')        
 
         super().__init__(*args, **kwargs)
 
@@ -69,7 +70,7 @@ class PollDeleteHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 try:
@@ -97,7 +98,7 @@ class PollAddHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 try:
@@ -156,7 +157,7 @@ class QaDeleteHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 try:
@@ -184,7 +185,7 @@ class QaAddHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 try:
@@ -223,7 +224,7 @@ class ManageHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 self.write({'status': 'SUCCESS'})
@@ -320,6 +321,12 @@ class RegisterHandler(RequestHandler):
                         (lastrowid, token)
                     )
 
+                    # Insert empty userdata
+                    await db.execute(
+                        'INSERT INTO "user_data" ("uid", "gender", "school_type") VALUES (%s, 1, 1)',
+                        (lastrowid, )
+                    )
+
                     url = 'http://%s/spt/register/?id=%s&token=%s' % (Config.HOST, lastrowid, str(token))
                     with open('mail_template/register.mail') as f:
                         plain_content = f.read() % url
@@ -328,7 +335,6 @@ class RegisterHandler(RequestHandler):
                 
                     smtp = SMTPMail()
                     smtp.send(mail, '[2017 資訊之芽] 註冊帳號確認信', plain_content, html_content)
-
                     self.write({'status': 'SUCCESS'})
         except Exception as e:
             if DEBUG:
@@ -462,10 +468,10 @@ class RegisterDataHandler(RequestHandler):
 
             if legal:
                 await db.execute(
-                    'INSERT INTO "user_data"'
-                    ' ("uid", "full_name", "gender", "school", "school_type", "grade", "address", "phone")'
-                    ' VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                    (uid, full_name, gender, school, school_type, grade, address, phone)
+                    'UPDATE "user_data" SET "full_name"=%s, "gender"=%s, "school"=%s,'
+                    ' "school_type"=%s, "grade"=%s, "address"=%s, "phone"=%s'
+                    ' WHERE "uid"=%s',
+                    (full_name, gender, school, school_type, grade, address, phone, uid)
                 )
                 await db.execute(
                     'UPDATE "user" SET "power"=0 WHERE "id"=%s',
@@ -550,7 +556,7 @@ class RuleQuestionHandler(RequestHandler):
         if uid:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power == 1:
+            if user.power >= 1:
                 response_is_answer = True
 
         questions = {}
@@ -636,7 +642,7 @@ class RuleQuestionAddHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 try:
@@ -706,7 +712,7 @@ class RuleQuestionDeleteHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 try:
@@ -738,7 +744,7 @@ class UserDataHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 data = []
@@ -830,7 +836,7 @@ class ApplicationAddHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 try:
@@ -873,7 +879,7 @@ class ApplicationDeleteHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
-            if user.power != 1:
+            if user.power < 1:
                 self.write({'status': 'PERMISSION DENIED'})
             else:
                 try:
@@ -950,4 +956,100 @@ class ApplicationAnswerHandler(RequestHandler):
                 if DEBUG:
                     print(e)
                 self.write({'status': 'ERROR'})
+        await db.close()
+
+
+class UpdateGoogleSheetViewer(RequestHandler):
+    async def post(self):
+        db = await self.get_db()
+        try:
+            key = self.get_argument('key')
+            if key != Config.SECRET_KEY:
+                self.write({'status': 'PERMISSION DENIED'})
+            else:
+                sheet_names = ['Sheet1', 'C', 'Python', 'Algorithm']
+
+                # Update userdata
+                value_order = ['id', 'mail', 'full_name', 'gender_value', 'school',
+                    'school_type_value', 'grade', 'address', 'phone',
+                    'power', 'rule_test', 'pre_test', 'signup_status']
+
+                values = []
+                async for row in db.execute(
+                    'SELECT u."id", u."mail", u."power", u."rule_test", u."pre_test", u."signup_status",'
+                    ' g."value" as "gender_value", s."value" as "school_type_value",'
+                    ' d."full_name", d."gender", d."school", d."school_type", d."grade", d."phone", d."address"'
+                    ' FROM "user" u'
+                    ' JOIN "user_data" d ON u."id"=d."uid"'
+                    ' JOIN "gender_option" g ON d."gender"=g."id"'
+                    ' JOIN "school_type_option" s ON d."school_type"=s."id"'
+                    ' ORDER BY u."id"'
+                ):
+                    value = []
+                    for key in value_order:
+                        if key == 'rule_test' or key == 'pre_test':
+                            value.append('v' if row[key] else '')
+                        elif key == 'power':
+                            power_list = ['一般', '管理者', '神']
+                            if row[key] == -1:
+                                value.append('未完成註冊')
+                            else:
+                                value.append(power_list[row[key]])
+                        elif key == 'signup_status':
+                            for i in range(3):
+                                value.append('v' if row[key] & (1 << i) else '')
+                        else:
+                            value.append(row[key])
+                    values.append(value)
+
+                self.g_sheet.update(values, sheet_names[0] + '!A2:O')
+
+                # Update Application
+                for class_type in range(1, 4):
+                    values = []
+
+                    question_list = []
+                    value = ['id', '姓名', '學校', '年級']
+                    async for row in db.execute(
+                        'SELECT * FROM "application_question" WHERE "class_type"=%s AND "status"=1 ORDER BY "order"',
+                        (class_type)
+                    ):
+                        question_list.append(row)
+                        value.append(row.description)
+                    values.append(value)
+
+                    async for user in db.execute(
+                        'SELECT u."id", d."full_name", d."school", d."grade" FROM "user" u'
+                        ' JOIN "user_data" d'
+                        ' ON u."id"=d."uid"'
+                        ' WHERE (u."signup_status" & %s) > 0',
+                        (1 << (class_type - 1), )
+                    ):
+                        answer = {}
+                        async for row in db.execute(
+                            'SELECT * FROM "application_answer" WHERE "uid"=%s',
+                            (user.id, )
+                        ):
+                            answer[row.qid] = row.description
+
+                        value = []
+                        value.append(user.id)
+                        value.append(user.full_name)
+                        value.append(user.school)
+                        value.append(user.grade)
+
+                        for question in question_list:
+                            if question.id in answer:
+                                value.append(answer[question.id])
+                            else:
+                                value.append('')
+                        values.append(value)
+                    self.g_sheet.update(values, sheet_names[class_type] + '!A1:Z')
+
+
+                self.write({'status': 'SUCCESS'})
+        except Exception as e:
+            if DEBUG:
+                print(e)
+            self.write({'status': 'ERROR'})
         await db.close()

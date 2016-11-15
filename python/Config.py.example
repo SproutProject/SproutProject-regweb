@@ -10,3 +10,10 @@ SMTP_USER = 'user@gmail.com'
 SMTP_PASSWD = '1234'
 SMTP_SENDER = 'Sender'
 
+GOOGLE_SPREAD_SHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
+GOOGLE_APPLICATION_NAME = 'Google Sheets API Python Quickstart'
+GOOGLE_SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
+GOOGLE_CLIENT_SECRET_FILE = 'client_secret.json'
+GOOGLE_REFRESH_TIME = 30
+
+SECRET_KEY = '7122'
