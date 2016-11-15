@@ -119,21 +119,28 @@ div#main {
 }
 
 div#overlay {
+  width: 0;
+  height: 0;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 7122;
-
   display: -webkit-flex; /* Safari */
   -webkit-align-items: center; /* Safari 7.0+ */
   display: flex;
   align-items: center;
+  opacity: 0;
 
   img#loading {
     position: relative;
     margin: 0px auto;
+  }
+
+  &.enable {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity .5s linear;
   }
 }

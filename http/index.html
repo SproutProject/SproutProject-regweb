@@ -33,7 +33,7 @@
       var class_type = undefined;
 
       $(document).ready(function() {
-          $("#overlay").hide();
+          // $("#overlay").hide();
           reload_page(window.location.href);
       });
 
@@ -60,11 +60,11 @@
       }
 
       function ajax_start() {
-          $("#overlay").fadeIn(250);
+          $("#overlay").addClass('enable');
       }
 
       function ajax_done() {
-          $("#overlay").fadeOut(250);
+          $("#overlay").removeClass('enable');
       }
 
       function show_message(msg) {
