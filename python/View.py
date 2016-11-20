@@ -1057,3 +1057,33 @@ class UpdateGoogleSheetViewer(RequestHandler):
                 print(e)
             self.write({'status': 'ERROR'})
         await db.close()
+
+
+class SetPowerHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        uid = self.get_secure_cookie('uid')
+
+        if uid == None:
+            self.write({'status': 'NOT LOGINED'})
+        else:
+            uid = int(uid)
+            user = await get_user(db, uid)
+
+            if user.power < 2:
+                self.write({'status': 'PERMISSION DENIED'})
+            else:
+                try:
+                    mail = self.get_argument('mail')
+                    power = self.get_argument('power')
+                    await db.execute(
+                        'UPDATE "user" SET "power"=%s WHERE "mail"=%s',
+                        (power, mail)
+                    )
+                    self.write({'status': 'SUCCESS'})
+                except Exception as e:
+                    if DEBUG:
+                        print(e)
+                    self.write({'status': 'ERROR'})
+        await db.close()

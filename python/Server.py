@@ -74,6 +74,7 @@ def main():
         (r'/mg/user_data', View.UserDataHandler, app_param),
         (r'/mg/application_add', View.ApplicationAddHandler, app_param),
         (r'/mg/application_del', View.ApplicationDeleteHandler, app_param),
+        (r'/mg/set_power', View.SetPowerHandler, app_param),
         (r'/gs', View.UpdateGoogleSheetViewer, app_param),
     ], cookie_secret=Config.SECRET_KEY)
     app.listen(7122)
