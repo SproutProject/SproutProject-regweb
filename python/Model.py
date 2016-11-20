@@ -246,13 +246,10 @@ class GoogleSheet(object):
         credentials = store.get()
         if not credentials or credentials.invalid:
             flow = client.flow_from_clientsecrets(Config.GOOGLE_CLIENT_SECRET_FILE, Config.GOOGLE_SCOPES)
-            flow.user_agent = Config.APPLICATION_NAME
-            #if flags:
+            flow.user_agent = Config.GOOGLE_APPLICATION_NAME
             import argparse
             flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
             credentials = tools.run_flow(flow, store, flags)
-            #else: # Needed only for compatibility with Python 2.6
-            #    credentials = tools.run(flow, store)
             print('Storing credentials to ' + credential_path)
         return credentials
 

@@ -1,3 +1,5 @@
+import bcrypt
+import codecs
 import re
 import tornado.web
 import hashlib
@@ -249,16 +251,16 @@ class LoginHandler(RequestHandler):
         db = await self.get_db()
         try:
             mail = self.get_argument('mail')
-            password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
+            password = self.get_argument('password')
             uid = None
             async for row in db.execute(
                 'SELECT "id", "password", "power" FROM "user" WHERE "mail"=%s',
                 (mail, )
             ):
                 uid = row.id
-                real_password = row.password
+                hashed = eval(row.password)
                 power = row.power
-            if uid != None and password == real_password:
+            if uid != None and bcrypt.hashpw(password.encode('utf-8'), hashed) == hashed:
                 if power >= 0:
                     self.set_secure_cookie('uid', str(uid))
                     self.write({'status': 'SUCCESS'})
@@ -285,7 +287,9 @@ class RegisterHandler(RequestHandler):
         db = await self.get_db()
         try:
             mail = self.get_argument('mail')
-            password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
+            password = self.get_argument('password')
+            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            # password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
 
             # Check email format
             if not re.match(r'^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$', mail):
@@ -306,7 +310,7 @@ class RegisterHandler(RequestHandler):
                     await db.execute(
                         'INSERT INTO "user" ("mail", "password", "power", "rule_test", "pre_test", "signup_status")'
                         ' VALUES (%s, %s, %s, 0, 0, 0)',
-                        (mail, password, -1)
+                        (mail, str(hashed), -1)
                     )
 
                     async for row in db.execute(
