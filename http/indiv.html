@@ -55,8 +55,10 @@
   <p><b>STEP. 2 算法班預試</b></p>
   <p>需先通過規則測驗後才能前往預試評測頁面，若<b>非報名算法班</b>可馬上往下個步驟。</p>
   <div class="button-ct">
-    <form action="http://clang.azure.sprout.tw/redirect_login" method="post">
-      <input name="token" type="hidden">
+    <form action="http://pretest.azure.sprout.tw/redirect_login" method="post">
+      <input name="username" type="hidden">
+      <input name="password" type="hidden">
+      <input name="realname" type="hidden">
     </form>
     <button class="empty"></button>
     <button id="pre_test" class="btn-disabled">算法班預試</button>

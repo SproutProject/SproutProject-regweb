@@ -105,17 +105,20 @@ var indiv = new function() {
                         if (res.data.rule_test == 1) {
                             // $("#rule_test").append(' (已完成)');
 
+                            $.post('/spt/d/cms_token', {}, function(res) {
+                                if (res.status == 'SUCCESS') {\
+                                    $('input[name="username"]').attr('value', res.username);
+                                    $('input[name="password"]').attr('value', res.password);
+                                    $('input[name="realname"]').attr('value', res.realname);
+                                } else {
+                                    show_message('尚未通過規則測驗。');
+                                }
+                            });
+
                             $('#pre_test').removeClass('btn-disabled');
                             $('#pre_test').addClass('btn-pri');
                             $('#pre_test').on('click', function(e) {
-                                $.post('/spt/d/cms_token', {}, function(res) {
-                                    if (res.status == 'SUCCESS') {
-                                        $('input[name="token"]').attr('value', res.token);
-                                        $('form').submit();
-                                    } else {
-                                        show_message('尚未通過規則測驗。');
-                                    }
-                                });
+                                $('form').submit();
                             });
 
                             $('#c_class').removeClass('btn-disabled');

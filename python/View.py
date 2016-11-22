@@ -1103,11 +1103,16 @@ class GetCmsTokenHandler(RequestHandler):
             user = await get_user(db, uid)
 
             if user.rule_test == 0:
-                print(user.rule_test)
                 self.write({'status': 'FAILED'})
             else:
                 h = hashlib.new('sha512')
                 h.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
-                self.write({'status': 'SUCCESS', 'token': h.hexdigest()})
+                async for row in db.execute(
+                    'SELECT "full_name" FROM "user_data" WHERE "id"=%s',
+                    (user.id, )
+                ):
+                    realname = row.full_name
+
+                self.write({'status': 'SUCCESS', 'username': user.mail, 'password': h.hexdigest(), 'realname': realname})
         await db.close()
