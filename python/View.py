@@ -5,6 +5,7 @@ import tornado.web
 import hashlib
 import json
 import random
+import requests
 import time
 from uuid import uuid4
 from Model import SMTPMail
@@ -1108,9 +1109,22 @@ class GetCmsTokenHandler(RequestHandler):
                 h = hashlib.new('sha512')
                 h.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
+                hh = hashlib.new('ripemd160')
+                hh.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
+
+                url = 'http://pretest.azure.sprout.tw/user_score?username=%s&password=%s' % (user.mail, hh.hexdigest())
+                res = requests.get(url)
+                score = int(res.text)
+
+                if score >= 300:
+                    await db.execute(
+                        'UPDATE "user" SET "pre_test"=1 WHERE "id"=%s',
+                        (uid, )
+                    )
+
                 async for row in db.execute(
                     'SELECT "full_name" FROM "user_data" WHERE "id"=%s',
-                    (user.id, )
+                    (uid, )
                 ):
                     realname = row.full_name
 
