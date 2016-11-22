@@ -5,6 +5,7 @@ import tornado.web
 import hashlib
 import json
 import random
+import time
 from uuid import uuid4
 from Model import SMTPMail
 import Config
@@ -963,7 +964,7 @@ class ApplicationAnswerHandler(RequestHandler):
         await db.close()
 
 
-class UpdateGoogleSheetViewer(RequestHandler):
+class UpdateGoogleSheetHandler(RequestHandler):
     async def post(self):
         db = await self.get_db()
         try:
@@ -1086,4 +1087,27 @@ class SetPowerHandler(RequestHandler):
                     if DEBUG:
                         print(e)
                     self.write({'status': 'ERROR'})
+        await db.close()
+
+
+class GetCmsTokenHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        uid = self.get_secure_cookie('uid')
+
+        if uid == None:
+            self.write({'status': 'NOT LOGINED'})
+        else:
+            uid = int(uid)
+            user = await get_user(db, uid)
+
+            if user.rule_test == 0:
+                print(user.rule_test)
+                self.write({'status': 'FAILED'})
+            else:
+                h = hashlib.new('sha512')
+                h.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
+
+                self.write({'status': 'SUCCESS', 'token': h.hexdigest()})
         await db.close()
