@@ -96,6 +96,7 @@ var indiv = new function() {
                         that.load();
                     });
                 });
+                ajax_done();
             } else {
                 ajax_start();
                 $.post('/spt/d/indiv_data', {}, function(res) {
@@ -111,6 +112,7 @@ var indiv = new function() {
                                     $('input[name="username"]').attr('value', res.username);
                                     $('input[name="password"]').attr('value', res.password);
                                     $('input[name="realname"]').attr('value', res.realname);
+                                    $('#pre_test').append(' (' + res.score + ')');
                                 } else {
                                     show_message('尚未通過規則測驗。');
                                 }
@@ -199,9 +201,6 @@ var indiv = new function() {
                     ajax_done();
                 });
             }
-
-            ajax_done();
         });
     }
 }
-

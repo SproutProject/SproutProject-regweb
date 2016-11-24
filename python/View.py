@@ -1116,11 +1116,16 @@ class GetCmsTokenHandler(RequestHandler):
                 res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()})
                 # print(res.url)
                 score = float(res.text.split('\n')[0].replace('*', ''))
-                # print(score)
+                # print(res.text)
 
-                if score >= 300.0:
+                if score >= Config.PRETEST_THRESHOLD:
                     await db.execute(
                         'UPDATE "user" SET "pre_test"=1 WHERE "id"=%s',
+                        (uid, )
+                    )
+                else:
+                    await db.execute(
+                        'UPDATE "user" SET "pre_test"=0 WHERE "id"=%s',
                         (uid, )
                     )
 
@@ -1132,5 +1137,12 @@ class GetCmsTokenHandler(RequestHandler):
                     
                 redirect_url = 'http://%s/redirect_login' % Config.PRETEST_HOST
 
-                self.write({'status': 'SUCCESS', 'username': user.mail, 'password': h.hexdigest(), 'realname': realname, 'url': redirect_url})
+                self.write({
+                    'status': 'SUCCESS',
+                    'username': user.mail,
+                    'password': h.hexdigest(),
+                    'realname': realname,
+                    'url': redirect_url,
+                    'score': score,
+                })
         await db.close()
