@@ -107,6 +107,7 @@ var indiv = new function() {
 
                             $.post('/spt/d/cms_token', {}, function(res) {
                                 if (res.status == 'SUCCESS') {
+                                    $('form').attr('action', res.url);
                                     $('input[name="username"]').attr('value', res.username);
                                     $('input[name="password"]').attr('value', res.password);
                                     $('input[name="realname"]').attr('value', res.realname);

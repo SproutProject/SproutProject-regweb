@@ -1112,11 +1112,13 @@ class GetCmsTokenHandler(RequestHandler):
                 hh = hashlib.new('ripemd160')
                 hh.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
-                url = 'http://pretest.azure.sprout.tw/user_score?username=%s&password=%s' % (user.mail, hh.hexdigest())
-                res = requests.get(url)
-                score = int(res.text)
+                url = 'http://%s/user_score' % Config.PRETEST_HOST
+                res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()})
+                # print(res.url)
+                score = float(res.text.split('\n')[0].replace('*', ''))
+                # print(score)
 
-                if score >= 300:
+                if score >= 300.0:
                     await db.execute(
                         'UPDATE "user" SET "pre_test"=1 WHERE "id"=%s',
                         (uid, )
@@ -1127,6 +1129,8 @@ class GetCmsTokenHandler(RequestHandler):
                     (uid, )
                 ):
                     realname = row.full_name
+                    
+                redirect_url = 'http://%s/redirect_login' % Config.PRETEST_HOST
 
-                self.write({'status': 'SUCCESS', 'username': user.mail, 'password': h.hexdigest(), 'realname': realname})
+                self.write({'status': 'SUCCESS', 'username': user.mail, 'password': h.hexdigest(), 'realname': realname, 'url': redirect_url})
         await db.close()
