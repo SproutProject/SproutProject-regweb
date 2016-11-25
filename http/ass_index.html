@@ -24,7 +24,7 @@
 
   <script type="text/javascript">
     'use strict'
-    var ass_mode_on = false;
+    var ass_mode_on = true;
     var class_type = undefined;
     
     $(document).ready(function() {
@@ -40,6 +40,7 @@
                   img.attr('id', 'philosophy');
                   img.attr('src', '/spt/ass.jpg');
                   img.css('margin-left', '16%');
+                  img.css('margin-top', '-30px');
                   $('body').append(img);
                   $(window).resize(resizeSpecial);
                 }
@@ -49,7 +50,7 @@
     });
 
     function resizeSpecial() {
-        $('#philosophy').width($('#main > div').width());
+        $('#philosophy').width($('#main > div').outerWidth());
     }
 
     function reload_page(target) {

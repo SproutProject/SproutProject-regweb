@@ -4,6 +4,8 @@ var ass_god = new function() {
     var that = this;
     
     that.load = function() {
+        if (ass_mode_on) resizeSpecial();
+        
         $('#submit').on('click', function(e) {
             var mail = $('#mail').val();
             var power = $('#power').val();
