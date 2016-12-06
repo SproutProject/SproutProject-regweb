@@ -10,6 +10,10 @@ var ass_poll = new function() {
         $.post('/spt/d/poll', {}, function(res) {
             var i;
 
+            res.subject_value = function() {
+                return this.subject.slice(0, 10) + '...';
+            }
+
             $('#ass_poll').html(Mustache.render(t_poll, res));
             if (ass_mode_on) resizeSpecial();
 

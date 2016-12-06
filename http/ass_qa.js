@@ -9,6 +9,10 @@ var ass_qa = new function() {
         $.post('/spt/d/qa', {}, function(res) {
             var i;
 
+            res.question_value = function() {
+                return this.question.slice(0, 10) + '...';
+            }
+
             $('#ass_qa').html(Mustache.render(t_qa, res));
             if (ass_mode_on) resizeSpecial();
 

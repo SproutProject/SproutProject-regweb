@@ -1095,54 +1095,64 @@ class GetCmsTokenHandler(RequestHandler):
     async def post(self):
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
-        uid = self.get_secure_cookie('uid')
-
-        if uid == None:
-            self.write({'status': 'NOT LOGINED'})
-        else:
+        try:
+            uid = self.get_secure_cookie('uid')
+            if uid is None:
+                self.write({'status': 'NOT LOGINED'})
+                return
+                
             uid = int(uid)
             user = await get_user(db, uid)
 
             if user.rule_test == 0:
                 self.write({'status': 'FAILED'})
-            else:
-                h = hashlib.new('sha512')
-                h.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
+                return
+            
+            h = hashlib.new('sha512')
+            h.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
-                hh = hashlib.new('ripemd160')
-                hh.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
+            hh = hashlib.new('ripemd160')
+            hh.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
-                url = 'http://%s/user_score' % Config.PRETEST_HOST
-                res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()})
-                # print(res.url)
+            url = 'http://%s/user_score' % Config.PRETEST_HOST
+            res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()}, timeout=0.1)
+            # print(res.url)
+            try:
                 score = float(res.text.split('\n')[0].replace('*', ''))
-                # print(res.text)
+            except Exception as e:
+                if DEBUG:
+                    print(e)
+                    print(res.text)
+                self.write({'status': 'ERROR'})
+                return
+            # print(res.text)
 
-                if score >= Config.PRETEST_THRESHOLD:
-                    await db.execute(
-                        'UPDATE "user" SET "pre_test"=1 WHERE "id"=%s',
-                        (uid, )
-                    )
-                else:
-                    await db.execute(
-                        'UPDATE "user" SET "pre_test"=0 WHERE "id"=%s',
-                        (uid, )
-                    )
-
-                async for row in db.execute(
-                    'SELECT "full_name" FROM "user_data" WHERE "id"=%s',
+            if score >= Config.PRETEST_THRESHOLD:
+                await db.execute(
+                    'UPDATE "user" SET "pre_test"=1 WHERE "id"=%s',
                     (uid, )
-                ):
-                    realname = row.full_name
-                    
-                redirect_url = 'http://%s/redirect_login' % Config.PRETEST_HOST
+                )
+            else:
+                await db.execute(
+                    'UPDATE "user" SET "pre_test"=0 WHERE "id"=%s',
+                    (uid, )
+                )
 
-                self.write({
-                    'status': 'SUCCESS',
-                    'username': user.mail,
-                    'password': h.hexdigest(),
-                    'realname': realname,
-                    'url': redirect_url,
-                    'score': score,
-                })
-        await db.close()
+            async for row in db.execute(
+                'SELECT "full_name" FROM "user_data" WHERE "id"=%s',
+                (uid, )
+            ):
+                realname = row.full_name
+                
+            redirect_url = 'http://%s/redirect_login' % Config.PRETEST_HOST
+
+            self.write({
+                'status': 'SUCCESS',
+                'username': user.mail,
+                'password': h.hexdigest(),
+                'realname': realname,
+                'url': redirect_url,
+                'score': score,
+            })
+        finally:
+            await db.close()

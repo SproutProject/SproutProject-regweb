@@ -113,15 +113,16 @@ var indiv = new function() {
                                     $('input[name="password"]').attr('value', res.password);
                                     $('input[name="realname"]').attr('value', res.realname);
                                     $('#pre_test').append(' (' + res.score + ')');
+                                    $('#pre_test').removeClass('btn-disabled');
+                                    $('#pre_test').addClass('btn-pri');
+                                    $('#pre_test').on('click', function(e) {
+                                        $('form').submit();
+                                    });
+                                } else if (res.status == 'ERROR') {
+                                    show_message('cms 系統錯誤！');
                                 } else {
-                                    show_message('尚未通過規則測驗。');
+                                    // show_message('尚未通過規則測驗。');
                                 }
-                            });
-
-                            $('#pre_test').removeClass('btn-disabled');
-                            $('#pre_test').addClass('btn-pri');
-                            $('#pre_test').on('click', function(e) {
-                                $('form').submit();
                             });
 
                             $('#c_class').removeClass('btn-disabled');
