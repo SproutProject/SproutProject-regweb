@@ -34,6 +34,7 @@ var indiv = new function() {
                             show_message('系統錯誤！');
                         ajax_done();
                     });
+                    return false;
                 });
 
                 $('#forget').on('click', function(e) {
@@ -59,6 +60,7 @@ var indiv = new function() {
                     $('#return').on('click', function(e) {
                         that.load();
                     });
+                    return false;
                 });
 
                 $('#register').on('click', function(e) {
@@ -95,6 +97,7 @@ var indiv = new function() {
                     $('#return').on('click', function(e) {
                         that.load();
                     });
+                    return false;
                 });
                 ajax_done();
             } else {
@@ -107,16 +110,29 @@ var indiv = new function() {
                             // $("#rule_test").append(' (已完成)');
 
                             $.post('/spt/d/cms_token', {}, function(res) {
+                                var token_time = +new Date();
                                 if (res.status == 'SUCCESS') {
                                     $('form').attr('action', res.url);
                                     $('input[name="username"]').attr('value', res.username);
                                     $('input[name="password"]').attr('value', res.password);
                                     $('input[name="realname"]').attr('value', res.realname);
-                                    $('#pre_test').append(' (' + res.score + ')');
+                                    // $('#pre_test').append(' (' + res.score + ')');
                                     $('#pre_test').removeClass('btn-disabled');
                                     $('#pre_test').addClass('btn-pri');
                                     $('#pre_test').on('click', function(e) {
-                                        $('form').submit();
+                                        if (+new Date() - token_time > 30000){
+                                            token_time = +new Date();
+                                            $.post('/spt/d/cms_token', {}, function(res) {
+                                                $('input[name="password"]').attr('value', res.password);
+                                                if (res.status == 'SUCCESS') {
+                                                    $('form').submit();
+                                                } else {
+                                                    show_message('cms 系統錯誤！');
+                                                }
+                                            });
+                                        } else {
+                                            $('form').submit();
+                                        }
                                     });
                                 } else if (res.status == 'ERROR') {
                                     show_message('cms 系統錯誤！');

@@ -1,13 +1,16 @@
 <script id="login-templ" type="x-tmpl-mustache">
 <div class="ct">
   <h3>登入帳號</h3>
-  <p>登入帳號後以進行 2017 資訊之芽的報名流程，<b>若您尚未註冊帳號請先進行註冊</b>。若忘記密碼可點<b>「忘記／修改密碼」</b>進行密碼修改。</p>
+  <p>登入帳號後以進行 2017 資訊之芽的報名流程</p>
+  <form onsubmit="return false;">
   <label for="mail">信箱</label><br>
   <input id="mail" type="textbox"><br>
   <label for="password">密碼</label><br>
   <input id="password" type="password"><br>
   <span class="err-msg"></span><br>
-  <button id="login" class="btn-pri">登入</button>
+  <button id="login" class="btn-pri" type="submit">登入</button>
+  </form>
+  <p><b>若您尚未註冊帳號請先進行註冊</b>。若忘記密碼可點<b>「忘記／修改密碼」</b>進行密碼修改。</p>
   <button id="forget" class="btn-pri">忘記／修改密碼</button>
   <button id="register" class="btn-pri">註冊帳號</button>
 </div>
@@ -17,11 +20,13 @@
 <div class="ct">
   <h3>忘記／修改密碼</h3>
   <p>輸入信箱後將發送<b>重設密碼</b>信至您的信箱以進行密碼修改。</p>
+  <form onsubmit="return false;">
   <label for="mail">輸入註冊信箱</label><br>
   <input id="mail" type="textbox"><br>
   <span class="err-msg"></span><br>
-  <button id="submit" class="btn-pri">送出</button>
+  <button id="submit" class="btn-pri" type="submit">送出</button>
   <button id="return" class="btn-def">返回</button>
+  </form>
 </div>
 </script>
 
@@ -29,6 +34,7 @@
 <div class="ct">
   <h3>註冊帳號</h3>
   <p>請使用<b>真實信箱</b>註冊，信箱將用來作為<b>帳號登入</b>及<b>主要聯絡方式。</b></p>
+  <form onsubmit="return false;">
   <label for="mail">信箱</label><br>
   <input id="mail" type="textbox"><br>
   <label for="password">密碼</label><br>
@@ -36,8 +42,9 @@
   <label for="password2">確認密碼</label><br>
   <input id="password2" type="password"><br>
   <span class="err-msg"></span><br>
-  <button id="submit" class="btn-pri">送出</button>
+  <button id="submit" class="btn-pri" type="submit">送出</button>
   <button id="return" class="btn-def">返回</button>
+  </form>
 </div>
 </script>
 
@@ -64,7 +71,7 @@
     <button id="pre_test" class="btn-disabled">算法班預試</button>
   </div>
   <p><b>STEP. 3 報名</b></p>
-  <p>選擇您想報名的班級（<b>只要符合資格能報名複數班級</b>），回答問題後完成報名。</p>
+  <p>選擇您想報名的班級（<b>只要符合資格能報名複數班級，但至多錄取一個班級</b>），回答問題後完成報名。</p>
   <div class="button-ct">
     <button id="c_class" class="btn-disabled">C 語法班報名</button>
     <button id="python_class" class="btn-disabled">Python 語法班報名</button>

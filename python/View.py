@@ -1123,8 +1123,9 @@ class GetCmsTokenHandler(RequestHandler):
                 if DEBUG:
                     print(e)
                     print(res.text)
-                self.write({'status': 'ERROR'})
-                return
+                # self.write({'status': 'ERROR'})
+                # return
+                score = -1
             # print(res.text)
 
             if score >= Config.PRETEST_THRESHOLD:
