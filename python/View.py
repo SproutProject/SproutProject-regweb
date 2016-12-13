@@ -399,7 +399,9 @@ class SetPasswordHandler(RequestHandler):
         try:
             uid = self.get_argument('id')
             token = self.get_argument('token')
-            password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
+            # password = hashlib.md5(self.get_argument('password').encode('utf-8')).hexdigest()
+            password = self.get_argument('password')
+            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
             legal = False
             async for row in db.execute(
@@ -411,7 +413,7 @@ class SetPasswordHandler(RequestHandler):
             if legal:
                 await db.execute(
                     'UPDATE "user" SET "password"=%s WHERE "id"=%s',
-                    (password, uid)
+                    (str(hashed), uid)
                 )
                 await db.execute(
                     'DELETE FROM "set_password_token" WHERE "uid"=%s AND "token"=%s',
