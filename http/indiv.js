@@ -108,6 +108,7 @@ var indiv = new function() {
 
                         if (res.data.rule_test == 1) {
                             // $("#rule_test").append(' (已完成)');
+							var _res = res;
 
                             $.post('/spt/d/cms_token', {}, function(res) {
                                 var token_time = +new Date();
@@ -116,7 +117,16 @@ var indiv = new function() {
                                     $('input[name="username"]').attr('value', res.username);
                                     $('input[name="password"]').attr('value', res.password);
                                     $('input[name="realname"]').attr('value', res.realname);
-                                    // $('#pre_test').append(' (' + res.score + ')');
+                                    if (res.score >= 0.0) {
+										$('#pre_test').append(' (' + res.score + ' / 300)');
+									}
+									if (_res.data.pre_test == 0 && res.score >= 300.0) {
+										$('#algorithm_class').removeClass('btn-disabled');
+										$('#algorithm_class').addClass('btn-pri');
+										$('#algorithm_class').on('click', function(e) {
+											reload_page('/spt/app/?type=3');
+										});
+									}
                                     $('#pre_test').removeClass('btn-disabled');
                                     $('#pre_test').addClass('btn-pri');
                                     $('#pre_test').on('click', function(e) {
@@ -172,6 +182,14 @@ var indiv = new function() {
                         if (res.data.signup_status & 4)
                             $("#algorithm_class").append(' (已完成)');
                         */
+
+						var suffix_msg = '<b>資料修改</b>'
+                        if (res.data.signup_status & 1)
+                            $("#c_class").append(suffix_msg);
+                        if (res.data.signup_status & 2)
+                            $("#python_class").append(suffix_msg);
+                        if (res.data.signup_status & 4)
+                            $("#algorithm_class").append(suffix_msg);
 
                         $('#return_indiv_data').on('click', function(e) {
                             $('#sign_up').hide();

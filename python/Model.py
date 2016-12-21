@@ -168,7 +168,7 @@ def init():
         insertInstance(instance)
 
     session.query(SchoolTypeOption).delete()
-    school_types = [('國小', 6), ('國中', 3), ('高中', 3), ('大學', 7)]
+    school_types = [('國小', 6), ('國中', 3), ('高中', 3), ('大學', 7), ('高職', 3)]
     for i in range(len(school_types)):
         instance = SchoolTypeOption(id=(i + 1), value=school_types[i][0], max_grade=school_types[i][1])
         insertInstance(instance)

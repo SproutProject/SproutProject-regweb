@@ -71,7 +71,7 @@ var ass_rule_test = new function() {
                 last_option.after(new_option);
             });
 
-            $('div.question > button.delete').on('click', function(e) {
+            $('div.title > button.delete').on('click', function(e) {
                 if (confirm('確認刪除此問題？')) {
                     var qid = $(this).parent().attr('qid');
                     ajax_start();

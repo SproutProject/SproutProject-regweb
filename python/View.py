@@ -1007,7 +1007,7 @@ class UpdateGoogleSheetHandler(RequestHandler):
                             for i in range(3):
                                 value.append('v' if row[key] & (1 << i) else '')
                         else:
-                            value.append(row[key])
+                            value.append("'" + str(row[key]))
                     values.append(value)
 
                 self.g_sheet.update(values, sheet_names[0] + '!A2:O')
@@ -1030,7 +1030,8 @@ class UpdateGoogleSheetHandler(RequestHandler):
                         'SELECT u."id", d."full_name", d."school", d."grade" FROM "user" u'
                         ' JOIN "user_data" d'
                         ' ON u."id"=d."uid"'
-                        ' WHERE (u."signup_status" & %s) > 0',
+                        ' WHERE (u."signup_status" & %s) > 0'
+                        ' ORDER BY u."id"',
                         (1 << (class_type - 1), )
                     ):
                         answer = {}
@@ -1117,7 +1118,7 @@ class GetCmsTokenHandler(RequestHandler):
             hh.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
             url = 'http://%s/user_score' % Config.PRETEST_HOST
-            res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()}, timeout=0.1)
+            res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()}, timeout=0.5)
             # print(res.url)
             try:
                 score = float(res.text.split('\n')[0].replace('*', ''))
