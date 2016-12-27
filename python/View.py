@@ -1165,7 +1165,7 @@ class GetCmsTokenHandler(RequestHandler):
                 )
 
             async for row in db.execute(
-                'SELECT "full_name" FROM "user_data" WHERE "id"=%s',
+                'SELECT "full_name" FROM "user_data" WHERE "uid"=%s',
                 (uid, )
             ):
                 realname = row.full_name
