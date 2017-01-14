@@ -794,7 +794,8 @@ class ApplicationHandler(RequestHandler):
                         'SELECT q."id", q."order", q."description", a."description" as "answer" FROM "application_question" q'
                         ' JOIN "application_answer" a'
                         ' ON q."id"=a."qid"'
-                        ' WHERE q."class_type"=%s AND a."uid"=%s AND q."status"=1',
+                        ' WHERE q."class_type"=%s AND a."uid"=%s AND q."status"=1'
+                        ' ORDER BY q."order"',
                         (class_type, uid)
                     ):
                         element = {}
