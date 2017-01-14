@@ -21,3 +21,7 @@ SSO_LOGIN_PASSWORD = 'SSO_PASS_XXXXXXXXXXXXXX'
 
 PRETEST_HOST = 'pretest.azure.sprout.tw'
 PRETEST_THRESHOLD = 300.0
+
+from datetime import datetime
+DEADLINE = datetime(2017, 1, 15)
+

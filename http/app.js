@@ -36,10 +36,12 @@ var app = new function() {
                         show_message('報名資料已成功送出。');
                         reload_page('/spt/indiv/');
                     }
-                    if (res.status == 'PERMISSION DENIED')
+                    else if (res.status == 'PERMISSION DENIED')
                         show_message('尚未完成規則測驗（或前測）。');
                     else if (res.status == 'ERROR')
                         show_message('系統錯誤！');
+                    else if (res.status == 'DEADLINE')
+                        show_message('報名期限已過！');
                     ajax_done();
                 });
             });

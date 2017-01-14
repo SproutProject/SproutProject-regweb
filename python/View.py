@@ -10,6 +10,7 @@ import time
 from uuid import uuid4
 from Model import SMTPMail
 import Config
+from datetime import datetime
 
 
 DEBUG = True
@@ -908,6 +909,10 @@ class ApplicationDeleteHandler(RequestHandler):
 
 class ApplicationAnswerHandler(RequestHandler):
     async def post(self):
+        if datetime.now() > Config.DEADLINE:
+            self.write({'status': 'DEADLINE'})
+            return
+
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         uid = self.get_secure_cookie('uid')
