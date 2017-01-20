@@ -113,10 +113,10 @@ var indiv = new function() {
                             $.post('/spt/d/cms_token', {}, function(res) {
                                 var token_time = +new Date();
                                 if (res.status == 'SUCCESS') {
-                                    $('form').attr('action', res.url);
-                                    $('input[name="username"]').attr('value', res.username);
-                                    $('input[name="password"]').attr('value', res.password);
-                                    $('input[name="realname"]').attr('value', res.realname);
+                                    $('form#pre_test_from').attr('action', res.url);
+                                    $('form#pre_test_from input[name="username"]').attr('value', res.username);
+                                    $('form#pre_test_from input[name="password"]').attr('value', res.password);
+                                    $('form#pre_test_from input[name="realname"]').attr('value', res.realname);
                                     if (res.score >= 0.0) {
 										$('#pre_test').append(' (' + res.score + ' / 300)');
 									}
@@ -135,13 +135,13 @@ var indiv = new function() {
                                             $.post('/spt/d/cms_token', {}, function(res) {
                                                 $('input[name="password"]').attr('value', res.password);
                                                 if (res.status == 'SUCCESS') {
-                                                    $('form').submit();
+                                                    $('form#pre_test_from').submit();
                                                 } else {
                                                     show_message('cms 系統錯誤！');
                                                 }
                                             });
                                         } else {
-                                            $('form').submit();
+                                            $('form#pre_test_from').submit();
                                         }
                                     });
                                 } else if (res.status == 'ERROR') {
@@ -164,13 +164,34 @@ var indiv = new function() {
                             });
                         }
 
-                        if (res.data.pre_test == 1) {
+                        if (res.data.signup_status & 4) {
                             // $("#pre_test").append(' (已完成)');
 
                             $('#algorithm_class').removeClass('btn-disabled');
                             $('#algorithm_class').addClass('btn-pri');
                             $('#algorithm_class').on('click', function(e) {
                                 reload_page('/spt/app/?type=3');
+                            });
+
+                            $('div#entrance_area').show();
+                            $('#entrance').on('click', function(e) {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/spt/d/entrance_token',
+                                    dataType: 'json',
+                                    async: false
+                                }).done(function(res) {
+                                    console.log(res);
+                                    $('form#entrance_form').attr('action', res.url);
+                                    $('form#entrance_form input[name="username"]').attr('value', res.username);
+                                    $('form#entrance_form input[name="password"]').attr('value', res.password);
+                                    $('form#entrance_form input[name="realname"]').attr('value', res.realname);
+                                    if (res.status == 'SUCCESS') {
+                                        $('form#entrance_form').submit();
+                                    } else {
+                                        show_message('cms 系統錯誤！');
+                                    }
+                                });
                             });
                         }
 

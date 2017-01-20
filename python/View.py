@@ -910,10 +910,6 @@ class ApplicationDeleteHandler(RequestHandler):
 
 class ApplicationAnswerHandler(RequestHandler):
     async def post(self):
-        if datetime.now() > Config.DEADLINE:
-            self.write({'status': 'DEADLINE'})
-            return
-
         self.set_header('Content-Type', 'application/json')
         db = await self.get_db()
         uid = self.get_secure_cookie('uid')
@@ -923,8 +919,15 @@ class ApplicationAnswerHandler(RequestHandler):
         else:
             uid = int(uid)
             user = await get_user(db, uid)
+
             try:
                 class_type = int(self.get_argument('class_type'))
+
+
+                if datetime.now() > Config.DEADLINE:
+                    self.write({'status': 'DEADLINE'})
+                    return
+
                 if not user.rule_test:
                     self.write({'status': 'PERMISSION DENIED'})
                 elif class_type == 3 and not user.pre_test:
@@ -1185,6 +1188,47 @@ class GetCmsTokenHandler(RequestHandler):
                 'realname': realname,
                 'url': redirect_url,
                 'score': score,
+            })
+        finally:
+            await db.close()
+
+class GetEntranceTokenHandler(RequestHandler):
+    async def post(self):
+        self.set_header('Content-Type', 'application/json')
+        db = await self.get_db()
+        try:
+            uid = self.get_secure_cookie('uid')
+            if uid is None:
+                self.write({'status': 'NOT LOGINED'})
+                return
+                
+            uid = int(uid)
+            user = await get_user(db, uid)
+
+            if (user.signup_status & 4) == 0:
+                self.write({'status': 'FAILED'})
+                return
+
+            print(user.mail)
+            print(self.request.headers.get('Remote-Addr'))
+            
+            h = hashlib.new('sha512')
+            h.update((Config.ENTRANCE_SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
+
+            async for row in db.execute(
+                'SELECT "full_name" FROM "user_data" WHERE "uid"=%s',
+                (uid, )
+            ):
+                realname = row.full_name
+                
+            redirect_url = 'http://%s/redirect_login' % Config.ENTRANCE_HOST
+
+            self.write({
+                'status': 'SUCCESS',
+                'username': user.mail,
+                'password': h.hexdigest(),
+                'realname': realname,
+                'url': redirect_url,
             })
         finally:
             await db.close()

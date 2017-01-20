@@ -76,9 +76,10 @@ def main():
         (r'/mg/application_del', View.ApplicationDeleteHandler, app_param),
         (r'/mg/set_power', View.SetPowerHandler, app_param),
         (r'/cms_token', View.GetCmsTokenHandler, app_param),
+        (r'/entrance_token', View.GetEntranceTokenHandler, app_param),
         (r'/gs', View.UpdateGoogleSheetHandler, app_param),
     ], cookie_secret=Config.SECRET_KEY)
-    app.listen(7122)
+    app.listen(7123)
 
     asyncio.get_event_loop().run_forever()
 

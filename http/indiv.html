@@ -62,7 +62,7 @@
   <p><b>STEP. 2 算法班預試</b></p>
   <p>需先通過規則測驗後才能前往預試評測頁面，若<b>非報名算法班</b>可馬上往下個步驟。</p>
   <div class="button-ct">
-    <form action="#" method="post" target="_blank">
+    <form id="pre_test_from" action="#" method="post" target="_blank">
       <input name="username" type="hidden">
       <input name="password" type="hidden">
       <input name="realname" type="hidden">
@@ -76,6 +76,19 @@
     <button id="c_class" class="btn-disabled">C 語法班報名</button>
     <button id="python_class" class="btn-disabled">Python 語法班報名</button>
     <button id="algorithm_class" class="btn-disabled">算法班報名</button>
+  </div>
+  <div id="entrance_area" style="display: none;">
+    <p><b>STEP. 4 入芽考</b></p>
+    <p>算法班入芽考</p>
+    <div class="button-ct">
+      <form id="entrance_form" action="#" method="post" target="_blank">
+        <input name="username" type="hidden">
+        <input name="password" type="hidden">
+        <input name="realname" type="hidden">
+      </form>
+      <button class="empty"></button>
+      <button id="entrance" class="btn-pri">算法班入芽考</button>
+    </div>
   </div>
 </div>
 <div class="ct" id="indiv_data" style="display: none;">
