@@ -1,0 +1,40 @@
+div#indiv div.button-ct,
+div#ass_indiv div.button-ct {
+  width: 100%;
+}
+div#indiv div.button-ct button,
+div#ass_indiv div.button-ct button {
+  width: 32%;
+}
+div#indiv div.button-ct button.empty,
+div#ass_indiv div.button-ct button.empty {
+  opacity: 0;
+}
+div.button-ct button {
+  vertical-align: top;
+}
+.btn-disabled {
+  height: 48px;
+  padding-left: 11px;
+  padding-right: 11px;
+  background-color: #FFFFFF;
+  color: #BDC0BA;
+  font-size: 18px;
+  line-height: 18px;
+  border: #BDC0BA 1px solid;
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+.btn-disabled:before {
+  content: "";
+  width: 16.97056275px;
+  height: 16.97056275px;
+  background-color: #BDC0BA;
+  position: absolute;
+  top: -8.48528137px;
+  left: -8.48528137px;
+  transform: rotate(45deg);
+  display: block;
+}
