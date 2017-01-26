@@ -33,6 +33,10 @@ server {
         return 404;
     }
 
+    location ~ ^/(spt/ass|spt\/ass.+)/$ {
+        try_files /ass_index.html =404;
+    }
+
 	location ~ ^/(spt|spt\/.+)/$ {
 	    try_files /index.html =404;
     }
