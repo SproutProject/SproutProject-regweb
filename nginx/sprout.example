@@ -56,6 +56,11 @@ server {
         try_files $uri =404;
     }
 
+    location /spt/d/ {
+        rewrite ^/spt/d/(.*)$ /$1 break;
+        proxy_pass http://localhost:7122;
+    }
+
 	# Only for nginx-naxsi used with nginx-naxsi-ui : process denied requests
 	#location /RequestDenied {
 	#	proxy_pass http://127.0.0.1:8080;    
