@@ -1143,10 +1143,10 @@ class GetCmsTokenHandler(RequestHandler):
                 return
             
             h = hashlib.new('sha512')
-            h.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
+            h.update((Config.PRETEST_SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
             hh = hashlib.new('ripemd160')
-            hh.update((Config.SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
+            hh.update((Config.PRETEST_SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
             url = 'http://%s/user_score' % Config.PRETEST_HOST
             res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()}, timeout=0.5)

@@ -1,4 +1,4 @@
-HOST = 'regweb.azure.sprout.tw'
+HOST = 'sprout.tw'
 LISTEN_PORT = 7122
 
 DB_HOST = '127.0.0.1'
@@ -7,9 +7,9 @@ DB_USER = 'user'
 DB_PASSWD = '1234'
 
 SMTP_HOST = 'smtp.gmail.com'
-SMTP_USER = 'user@gmail.com'
+SMTP_USER = 'sprout@csie.ntu.edu.tw'
 SMTP_PASSWD = '1234'
-SMTP_SENDER = 'Sender'
+SMTP_SENDER = '2017  資訊之芽工作團隊'
 
 GOOGLE_SPREAD_SHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
 GOOGLE_APPLICATION_NAME = 'Google Sheets API Python Quickstart'
@@ -18,11 +18,12 @@ GOOGLE_CLIENT_SECRET_FILE = 'client_secret.json'
 GOOGLE_REFRESH_TIME = 30
 
 SECRET_KEY = '7122'
-SSO_LOGIN_PASSWORD = 'SSO_PASS_XXXXXXXXXXXXXX'
 
-PRETEST_HOST = 'pretest.azure.sprout.tw'
+PRETEST_HOST = 'pretest.sprout.tw'
+PRETEST_SSO_LOGIN_PASSWORD = 'SSO_PASS_XXXXXXXXXXXXXX'
 PRETEST_THRESHOLD = 300.0
 ENTRANCE_HOST = 'entrance.sprout.tw'
+ENTRANCE_SSO_LOGIN_PASSWORD = 'SSO_PASS_XXXXXXXXXXXXXX'
 
 from datetime import datetime
 DEADLINE = datetime(2017, 1, 15)

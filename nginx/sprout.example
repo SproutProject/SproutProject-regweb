@@ -29,37 +29,37 @@ server {
 	# Make site accessible from http://localhost/
 	server_name sprout.localhost;
 
-    location = / {
-        return 404;
-    }
+	location = / {
+		return 404;
+	}
 
-    location ~ ^/(spt/ass|spt\/ass.+)/$ {
-        try_files /ass_index.html =404;
-    }
+	location ~ ^/(spt/ass|spt\/ass.+)/$ {
+		try_files /ass_index.html =404;
+	}
 
 	location ~ ^/(spt|spt\/.+)/$ {
-	    try_files /index.html =404;
-    }
+		try_files /index.html =404;
+	}
 
-    location ~ ^/spt/.+\.html$ {
-        rewrite ^/spt/(.*)$ /$1 break;
-        try_files $uri =404;
-    }
+	location ~ ^/spt/.+\.html$ {
+		rewrite ^/spt/(.*)$ /$1 break;
+		try_files $uri =404;
+	}
 
-    location ~ ^/spt/stylesheets/ {
-        rewrite ^/spt/(stylesheets\/.*)$ /$1 break;
-        try_files $uri =404;
-    }
+	location ~ ^/spt/stylesheets/ {
+		rewrite ^/spt/(stylesheets\/.*)$ /$1 break;
+		try_files $uri =404;
+	}
 
-    location ~ ^/spt/js/ {
-        rewrite ^/spt/(js\/.*)$ /$1 break;
-        try_files $uri =404;
-    }
+	location ~ ^/spt/js/ {
+		rewrite ^/spt/(js\/.*)$ /$1 break;
+		try_files $uri =404;
+	}
 
-    location /spt/d/ {
-        rewrite ^/spt/d/(.*)$ /$1 break;
-        proxy_pass http://localhost:7122;
-    }
+	location /spt/d/ {
+		rewrite ^/spt/d/(.*)$ /$1 break;
+		proxy_pass http://localhost:7122;
+	}
 
 	# Only for nginx-naxsi used with nginx-naxsi-ui : process denied requests
 	#location /RequestDenied {
