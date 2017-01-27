@@ -5,3 +5,4 @@ http/*.css
 */__pycache__/
 
 python/Config.py
+python/client_secret.json
