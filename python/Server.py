@@ -29,8 +29,7 @@ def set_interval(func, sec):
 
 
 def update_google_sheet():
-    r = requests.post('http://localhost/spt/d/gs', params={'key': Config.SECRET_KEY})
-
+    r = requests.post('http://%s/spt/d/gs' % Config.HOST, params={'key': Config.SECRET_KEY})
 
 def main():
     Model.init()
@@ -79,7 +78,7 @@ def main():
         (r'/entrance_token', View.GetEntranceTokenHandler, app_param),
         (r'/gs', View.UpdateGoogleSheetHandler, app_param),
     ], cookie_secret=Config.SECRET_KEY)
-    app.listen(7123)
+    app.listen(Config.LISTEN_PORT)
 
     asyncio.get_event_loop().run_forever()
 
