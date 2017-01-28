@@ -11,6 +11,7 @@ import View
 import Model
 import Config
 
+import Views.QuestionAnswer
 
 async def create_db_engine():
     return await aiopg.sa.create_engine(
@@ -66,7 +67,10 @@ def main():
         'session_maker': SessionMaker,
     }
     app = tornado.web.Application([
-        (r'/qa', View.QaHandler, app_param),
+        (r'/qa/get_all', Views.QuestionAnswer.GetAllHandler, app_param),
+        (r'/qa/del', Views.QuestionAnswer.DeleteHandler, app_param),
+        (r'/qa/add', Views.QuestionAnswer.AddHandler, app_param),
+
         (r'/poll', View.PollHandler, app_param),
         (r'/register', View.RegisterHandler, app_param),
         (r'/register_data', View.RegisterDataHandler, app_param),
@@ -83,8 +87,6 @@ def main():
         (r'/application', View.ApplicationHandler, app_param),
         (r'/application_answer', View.ApplicationAnswerHandler, app_param),
         (r'/mg', View.ManageHandler, app_param),
-        (r'/mg/qa_del', View.QaDeleteHandler, app_param),
-        (r'/mg/qa_add', View.QaAddHandler, app_param),
         (r'/mg/poll_del', View.PollDeleteHandler, app_param),
         (r'/mg/poll_add', View.PollAddHandler, app_param),
         (r'/mg/rule_question_add', View.RuleQuestionAddHandler, app_param),

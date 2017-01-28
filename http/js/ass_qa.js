@@ -6,7 +6,7 @@ var ass_qa = new function() {
     that.load = function() {
         var t_qa = $('#qa-templ').html();
 
-        $.post('/spt/d/qa', {}, function(res) {
+        $.post('/spt/d/qa/get_all', {}, function(res) {
             var i;
 
             res.question_value = function() {
@@ -27,7 +27,7 @@ var ass_qa = new function() {
                     var answer = j_edit.find('textarea').val();
                     ajax_start();
 
-                    $.post('/spt/d/mg/qa_add', {
+                    $.post('/spt/d/qa/add', {
                         'id': qa_id,
                         'question': question,
                         'answer': answer,
@@ -51,7 +51,7 @@ var ass_qa = new function() {
             $('button.delete').on('click', function(e) {
                 ajax_start();
                 if (confirm('確認刪除？')) {
-                    $.post('/spt/d/mg/qa_del', {
+                    $.post('/spt/d/qa/del', {
                         'id': $(this).parent().attr('qaid'),
                     }, function(res) {
                         reload_page('/spt/ass_qa/');

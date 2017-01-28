@@ -6,7 +6,7 @@ var qa = new function() {
     that.load = function() {
         var template = $('#template').html();
 
-        $.post('/spt/d/qa', {}, function(res){
+        $.post('/spt/d/qa/get_all', {}, function(res){
             $('#list').html(Mustache.render(template, res));
 
             ajax_done();
