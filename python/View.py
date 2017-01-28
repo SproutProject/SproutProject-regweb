@@ -43,12 +43,6 @@ class RequestHandler(tornado.web.RequestHandler):
         return self.session_maker()
 
 
-class IndexHandler(RequestHandler):
-    async def get(self):
-        db = await self.get_db()
-        self.write("Ello World")
-
-
 class PollHandler(RequestHandler):
     async def post(self):
         self.set_header('Content-Type', 'application/json')

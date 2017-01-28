@@ -66,7 +66,6 @@ def main():
         'session_maker': SessionMaker,
     }
     app = tornado.web.Application([
-        (r'/', View.IndexHandler, app_param),
         (r'/qa', View.QaHandler, app_param),
         (r'/poll', View.PollHandler, app_param),
         (r'/register', View.RegisterHandler, app_param),
