@@ -20,7 +20,7 @@ var register = new function() {
 
         j_school_type.on('change', set_grade_option);
 
-        $.post('/spt/d/register_options', {}, function(res) {
+        $.post('/spt/d/register/get_options', {}, function(res) {
             if (res.status == 'SUCCESS') {
                 j_gender.html(Mustache.render(t_options, {'data': res.data.gender}));
                 j_school_type.html(Mustache.render(t_school_options, {'data': res.data.school_type}));
@@ -48,7 +48,7 @@ var register = new function() {
 
                 if (done) {
                     ajax_start();
-                    $.post('/spt/d/register_data', data, function(res) {
+                    $.post('/spt/d/register/second', data, function(res) {
                         if (res.status == 'SUCCESS') {
                             show_message('基本資料填寫完成，請回個人頁面登入後進行報名。');
                             reload_page('/spt/indiv/');

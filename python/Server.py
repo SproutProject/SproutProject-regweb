@@ -11,6 +11,8 @@ import View
 import Model
 import Config
 
+import Views.User
+import Views.Register
 import Views.QuestionAnswer
 import Views.Poll
 
@@ -68,6 +70,12 @@ def main():
         'session_maker': SessionMaker,
     }
     app = tornado.web.Application([
+        (r'/user/check_login', Views.User.CheckLoginHandler, app_param),
+        (r'/user/login', Views.User.LoginHandler, app_param),
+        (r'/user/logout', Views.User.LogoutHandler, app_param),
+        (r'/register/first', Views.Register.FirstHandler, app_param),
+        (r'/register/second', Views.Register.SecondHandler, app_param),
+        (r'/register/get_options', Views.Register.GetOptionsHandler, app_param),
         (r'/qa/get_all', Views.QuestionAnswer.GetAllHandler, app_param),
         (r'/qa/add', Views.QuestionAnswer.AddHandler, app_param),
         (r'/qa/del', Views.QuestionAnswer.DeleteHandler, app_param),
@@ -75,14 +83,8 @@ def main():
         (r'/poll/add', Views.Poll.AddHandler, app_param),
         (r'/poll/del', Views.Poll.DeleteHandler, app_param),
 
-        (r'/register', View.RegisterHandler, app_param),
-        (r'/register_data', View.RegisterDataHandler, app_param),
-        (r'/check_login', View.CheckLoginHandler, app_param),
-        (r'/login', View.LoginHandler, app_param),
-        (r'/logout', View.LogoutHandler, app_param),
         (r'/forget', View.ForgetHandler, app_param),
         (r'/set_password', View.SetPasswordHandler, app_param),
-        (r'/register_options', View.RegisterOptionsHandler, app_param),
         (r'/indiv_data', View.IndividualDataHandler, app_param),
         (r'/modify_indiv_data', View.ModifyIndividualDataHandler, app_param),
         (r'/rule_question', View.RuleQuestionHandler, app_param),

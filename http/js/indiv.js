@@ -10,7 +10,7 @@ var indiv = new function() {
         var t_indiv_data = $('#indiv-data-templ').html();
         var j_indiv = $('#indiv');
 
-        $.post('/spt/d/check_login', {}, function(res) {
+        $.post('/spt/d/user/check_login', {}, function(res) {
             if (res.status != 'LOGINED') {
                 j_indiv.html(Mustache.render(t_login));
 
@@ -19,7 +19,7 @@ var indiv = new function() {
                     var password = $('#password').val();
                     ajax_start();
 
-                    $.post('/spt/d/login', {
+                    $.post('/spt/d/user/login', {
                         'mail': mail,
                         'password': password,
                     }, function(res) {
@@ -76,7 +76,7 @@ var indiv = new function() {
                         }
                         ajax_start();
 
-                        $.post('/spt/d/register', {
+                        $.post('/spt/d/register/first', {
                             'mail': mail,
                             'password': password,
                         }, function(res) {
@@ -224,7 +224,7 @@ var indiv = new function() {
 
                         $('.logout').on('click', function(e) {
                             ajax_start();
-                            $.post('/spt/d/logout', {}, function(res) {
+                            $.post('/spt/d/user/logout', {}, function(res) {
                                 if (res.status == 'SUCCESS') {
                                     window.location.reload();
                                 }
