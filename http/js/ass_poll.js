@@ -7,7 +7,7 @@ var ass_poll = new function() {
         var t_poll = $('#poll-templ').html();
         var j_ass_poll = $('#ass_poll');
 
-        $.post('/spt/d/poll', {}, function(res) {
+        $.post('/spt/d/poll/get_all', {}, function(res) {
             var i;
 
             res.subject_value = function() {
@@ -29,7 +29,7 @@ var ass_poll = new function() {
                     var body = j_edit.find('textarea.body').val();
                     ajax_start();
 
-                    $.post('/spt/d/mg/poll_add', {
+                    $.post('/spt/d/poll/add', {
                         'id': poll_id,
                         'order': order,
                         'year': year,
@@ -54,7 +54,7 @@ var ass_poll = new function() {
             $('button.delete').on('click', function(e) {
                 if (confirm('確認刪除？')) {
                     ajax_start();
-                    $.post('/spt/d/mg/poll_del', {
+                    $.post('/spt/d/poll/del', {
                         'id': $(this).parent().attr('pollid'),
                     }, function(res) {
                         reload_page('/spt/ass_poll/');

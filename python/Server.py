@@ -12,6 +12,7 @@ import Model
 import Config
 
 import Views.QuestionAnswer
+import Views.Poll
 
 async def create_db_engine():
     return await aiopg.sa.create_engine(
@@ -68,10 +69,12 @@ def main():
     }
     app = tornado.web.Application([
         (r'/qa/get_all', Views.QuestionAnswer.GetAllHandler, app_param),
-        (r'/qa/del', Views.QuestionAnswer.DeleteHandler, app_param),
         (r'/qa/add', Views.QuestionAnswer.AddHandler, app_param),
+        (r'/qa/del', Views.QuestionAnswer.DeleteHandler, app_param),
+        (r'/poll/get_all', Views.Poll.GetAllHandler, app_param),
+        (r'/poll/add', Views.Poll.AddHandler, app_param),
+        (r'/poll/del', Views.Poll.DeleteHandler, app_param),
 
-        (r'/poll', View.PollHandler, app_param),
         (r'/register', View.RegisterHandler, app_param),
         (r'/register_data', View.RegisterDataHandler, app_param),
         (r'/check_login', View.CheckLoginHandler, app_param),
@@ -87,8 +90,6 @@ def main():
         (r'/application', View.ApplicationHandler, app_param),
         (r'/application_answer', View.ApplicationAnswerHandler, app_param),
         (r'/mg', View.ManageHandler, app_param),
-        (r'/mg/poll_del', View.PollDeleteHandler, app_param),
-        (r'/mg/poll_add', View.PollAddHandler, app_param),
         (r'/mg/rule_question_add', View.RuleQuestionAddHandler, app_param),
         (r'/mg/rule_question_del', View.RuleQuestionDeleteHandler, app_param),
         (r'/mg/user_data', View.UserDataHandler, app_param),

@@ -6,7 +6,7 @@ var poll = new function() {
     that.load = function() {
         var template = $('#template').html();
 
-        $.post('/spt/d/poll', {}, function(res) {
+        $.post('/spt/d/poll/get_all', {}, function(res) {
             $('#list').html(Mustache.render(template, res));
 
             $('#list div.item').on('click', function(e) {
