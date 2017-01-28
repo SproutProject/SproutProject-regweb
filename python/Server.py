@@ -11,6 +11,7 @@ import View
 import Model
 import Config
 
+
 async def create_db_engine():
     return await aiopg.sa.create_engine(
             database=Config.DB_NAME,
@@ -41,9 +42,28 @@ def main():
     # Daemon for updating google sheet
     set_interval(update_google_sheet, Config.GOOGLE_REFRESH_TIME)
 
+    import sqlalchemy
+    from sqlalchemy.ext.declarative import declarative_base
+    from sqlalchemy.orm import sessionmaker
+
+    new_db_engine = sqlalchemy.create_engine(
+        sqlalchemy.engine.url.URL(
+            drivername='postgresql+psycopg2',
+            database=Config.DB_NAME,
+            host=Config.DB_HOST,
+            username=Config.DB_USER,
+            password=Config.DB_PASSWD
+        )
+    )
+
+    SessionMaker = sessionmaker(bind=new_db_engine)
+    from Model import User
+    session = SessionMaker()
+
     app_param = {
         'db_engine': db_engine,
         'g_sheet': g_sheet,
+        'session_maker': SessionMaker,
     }
     app = tornado.web.Application([
         (r'/', View.IndexHandler, app_param),
