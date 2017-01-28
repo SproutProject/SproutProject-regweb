@@ -74,6 +74,8 @@ def main():
         (r'/user/check_login', Views.User.CheckLoginHandler, app_param),
         (r'/user/login', Views.User.LoginHandler, app_param),
         (r'/user/logout', Views.User.LogoutHandler, app_param),
+        (r'/user/get_indiv_data', Views.User.GetIndividualDataHandler, app_param),
+        (r'/user/modify_indiv_data', Views.User.ModifyIndividualDataHandler, app_param),
         (r'/register/first', Views.Register.FirstHandler, app_param),
         (r'/register/second', Views.Register.SecondHandler, app_param),
         (r'/register/get_options', Views.Register.GetOptionsHandler, app_param),
@@ -86,8 +88,6 @@ def main():
         (r'/poll/add', Views.Poll.AddHandler, app_param),
         (r'/poll/del', Views.Poll.DeleteHandler, app_param),
 
-        (r'/indiv_data', View.IndividualDataHandler, app_param),
-        (r'/modify_indiv_data', View.ModifyIndividualDataHandler, app_param),
         (r'/rule_question', View.RuleQuestionHandler, app_param),
         (r'/rule_test', View.RuleTestHandler, app_param),
         (r'/application', View.ApplicationHandler, app_param),

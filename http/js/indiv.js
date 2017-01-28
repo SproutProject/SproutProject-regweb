@@ -102,7 +102,7 @@ var indiv = new function() {
                 ajax_done();
             } else {
                 ajax_start();
-                $.post('/spt/d/indiv_data', {}, function(res) {
+                $.post('/spt/d/user/get_indiv_data', {}, function(res) {
                     if (res.status == 'SUCCESS') {
                         j_indiv.html(Mustache.render(t_indiv_data, res.data));
 
@@ -236,7 +236,7 @@ var indiv = new function() {
                             var address = $('#address').val();
                             ajax_start();
 
-                            $.post('/spt/d/modify_indiv_data', {
+                            $.post('/spt/d/user/modify_indiv_data', {
                                 'phone': phone,
                                 'address': address
                             }, function(res) {
