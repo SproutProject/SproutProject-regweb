@@ -20,7 +20,7 @@ var set_password = new function() {
             });
 
             ajax_start();
-            $.post('/spt/d/set_password', data, function(res) {
+            $.post('/spt/d/reset_password/set', data, function(res) {
                 if (res.status == 'SUCCESS') {
                     show_message('密碼重設完成。');
                     reload_page('/spt/indiv/');

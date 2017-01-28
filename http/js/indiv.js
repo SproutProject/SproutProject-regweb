@@ -44,7 +44,7 @@ var indiv = new function() {
                         var mail = $('#mail').val();
                         ajax_start();
 
-                        $.post('/spt/d/forget', {
+                        $.post('/spt/d/reset_password/get_mail', {
                             'mail': mail,
                         }, function(res) {
                             if (res.status == 'SUCCESS')

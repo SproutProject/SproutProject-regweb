@@ -13,6 +13,7 @@ import Config
 
 import Views.User
 import Views.Register
+import Views.ResetPassword
 import Views.QuestionAnswer
 import Views.Poll
 
@@ -76,6 +77,8 @@ def main():
         (r'/register/first', Views.Register.FirstHandler, app_param),
         (r'/register/second', Views.Register.SecondHandler, app_param),
         (r'/register/get_options', Views.Register.GetOptionsHandler, app_param),
+        (r'/reset_password/get_mail', Views.ResetPassword.GetMailHandler, app_param),
+        (r'/reset_password/set', Views.ResetPassword.SetHandler, app_param),
         (r'/qa/get_all', Views.QuestionAnswer.GetAllHandler, app_param),
         (r'/qa/add', Views.QuestionAnswer.AddHandler, app_param),
         (r'/qa/del', Views.QuestionAnswer.DeleteHandler, app_param),
@@ -83,8 +86,6 @@ def main():
         (r'/poll/add', Views.Poll.AddHandler, app_param),
         (r'/poll/del', Views.Poll.DeleteHandler, app_param),
 
-        (r'/forget', View.ForgetHandler, app_param),
-        (r'/set_password', View.SetPasswordHandler, app_param),
         (r'/indiv_data', View.IndividualDataHandler, app_param),
         (r'/modify_indiv_data', View.ModifyIndividualDataHandler, app_param),
         (r'/rule_question', View.RuleQuestionHandler, app_param),
