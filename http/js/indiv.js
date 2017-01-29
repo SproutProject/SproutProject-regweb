@@ -110,7 +110,7 @@ var indiv = new function() {
                             // $("#rule_test").append(' (已完成)');
 							var _res = res;
 
-                            $.post('/spt/d/cms_token', {}, function(res) {
+                            $.post('/spt/d/token/pretest', {}, function(res) {
                                 var token_time = +new Date();
                                 if (res.status == 'SUCCESS') {
                                     $('form#pre_test_from').attr('action', res.url);
@@ -177,7 +177,7 @@ var indiv = new function() {
                             $('#entrance').on('click', function(e) {
                                 $.ajax({
                                     type: 'POST',
-                                    url: '/spt/d/entrance_token',
+                                    url: '/spt/d/token/entrance',
                                     dataType: 'json',
                                     async: false
                                 }).done(function(res) {

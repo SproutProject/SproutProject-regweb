@@ -7,7 +7,6 @@ import tornado.platform.asyncio
 import tornado.process
 import tornado.web
 
-import View
 import Model
 import Config
 
@@ -18,6 +17,8 @@ import Views.QuestionAnswer
 import Views.Poll
 import Views.RuleTest
 import Views.Application
+import Views.Token
+import Views.GoogleSheet
 
 async def create_db_engine():
     return await aiopg.sa.create_engine(
@@ -37,7 +38,7 @@ def set_interval(func, sec):
 
 
 def update_google_sheet():
-    r = requests.post('http://%s/spt/d/gs' % Config.HOST, params={'key': Config.SECRET_KEY})
+    r = requests.post('http://%s/spt/d/google_sheet/update' % Config.HOST, params={'key': Config.SECRET_KEY})
 
 def main():
     Model.init()
@@ -100,10 +101,9 @@ def main():
         (r'/application/answer', Views.Application.AnswerHandler, app_param),
         (r'/application/update_question', Views.Application.UpdateQuestionHandler, app_param),
         (r'/application/del_question', Views.Application.DeleteQuestionHandler, app_param),
-
-        (r'/cms_token', View.GetCmsTokenHandler, app_param),
-        (r'/entrance_token', View.GetEntranceTokenHandler, app_param),
-        (r'/gs', View.UpdateGoogleSheetHandler, app_param),
+        (r'/token/pretest', Views.Token.PretestHandler, app_param),
+        (r'/token/entrance', Views.Token.EntranceHandler, app_param),
+        (r'/google_sheet/update', Views.GoogleSheet.UpdateHandler, app_param),
     ], cookie_secret=Config.SECRET_KEY)
     app.listen(Config.LISTEN_PORT)
 
