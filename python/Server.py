@@ -16,6 +16,7 @@ import Views.Register
 import Views.ResetPassword
 import Views.QuestionAnswer
 import Views.Poll
+import Views.RuleTest
 
 async def create_db_engine():
     return await aiopg.sa.create_engine(
@@ -87,14 +88,14 @@ def main():
         (r'/poll/get_all', Views.Poll.GetAllHandler, app_param),
         (r'/poll/add', Views.Poll.AddHandler, app_param),
         (r'/poll/del', Views.Poll.DeleteHandler, app_param),
+        (r'/rule_test/get_question', Views.RuleTest.GetQuestionHandler, app_param),
+        (r'/rule_test/answer', Views.RuleTest.AnswerHandler, app_param),
+        (r'/rule_test/add_question', Views.RuleTest.AddQuestionHandler, app_param),
+        (r'/rule_test/del_question', Views.RuleTest.DeleteQuestionHandler, app_param),
 
-        (r'/rule_question', View.RuleQuestionHandler, app_param),
-        (r'/rule_test', View.RuleTestHandler, app_param),
         (r'/application', View.ApplicationHandler, app_param),
         (r'/application_answer', View.ApplicationAnswerHandler, app_param),
         (r'/mg', View.ManageHandler, app_param),
-        (r'/mg/rule_question_add', View.RuleQuestionAddHandler, app_param),
-        (r'/mg/rule_question_del', View.RuleQuestionDeleteHandler, app_param),
         (r'/mg/user_data', View.UserDataHandler, app_param),
         (r'/mg/application_add', View.ApplicationAddHandler, app_param),
         (r'/mg/application_del', View.ApplicationDeleteHandler, app_param),

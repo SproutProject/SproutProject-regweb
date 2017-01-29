@@ -6,7 +6,7 @@ var ass_rule_test = new function() {
     that.load = function() {
         var t_question = $('#question-templ').html();
 
-        $.post('/spt/d/rule_question', {}, function(res) {
+        $.post('/spt/d/rule_test/get_question', {}, function(res) {
             res.is_answer_value = function() {
                 return (this.is_answer) ? 'checked' : '';
             };
@@ -38,7 +38,7 @@ var ass_rule_test = new function() {
                 
                 ajax_start();
 
-                $.post('/spt/d/mg/rule_question_add', {
+                $.post('/spt/d/rule_test/add_question', {
                     'id': qid,
                     'order': order,
                     'description': description,
@@ -76,7 +76,7 @@ var ass_rule_test = new function() {
                     var qid = $(this).parent().attr('qid');
                     ajax_start();
 
-                    $.post('/spt/d/mg/rule_question_del', {
+                    $.post('/spt/d/rule_test/del_question', {
                         'id': qid
                     }, function(res) {
                         reload_page('/spt/ass_rule_test/');

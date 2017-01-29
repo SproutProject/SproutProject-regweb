@@ -6,7 +6,7 @@ var rule_test = new function() {
     that.load = function() {
         var t_question = $('#question-templ').html();
 
-        $.post('/spt/d/rule_question', {}, function(res) {
+        $.post('/spt/d/rule_test/get_question', {}, function(res) {
             $('#rule_test').html(Mustache.render(t_question, res));
 
             $('button.submit').on('click', function(e) {
@@ -23,7 +23,7 @@ var rule_test = new function() {
                 }
 
                 ajax_start();
-                $.post('/spt/d/rule_test', {
+                $.post('/spt/d/rule_test/answer', {
                     'data': JSON.stringify(data)
                 }, function(res) {
                     if (res.status == 'SUCCESS') {
