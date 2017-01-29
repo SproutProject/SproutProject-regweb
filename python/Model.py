@@ -6,11 +6,6 @@ from sqlalchemy.orm import sessionmaker
 import Config
 
 
-DEBUG = True
-
-
-# Database
-
 Base = declarative_base()
 
 class DictBase():
@@ -195,7 +190,7 @@ class SMTPMail(object):
         self.username = Config.SMTP_USER
         self.password = Config.SMTP_PASSWD
         self.sender = Config.SMTP_SENDER
-    
+
     def send(self, to, subject, plain_content, html_content):
         smtp_server = smtplib.SMTP(Config.SMTP_HOST)
         smtp_server.ehlo()
