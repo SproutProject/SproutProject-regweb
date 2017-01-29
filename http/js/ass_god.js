@@ -11,7 +11,7 @@ var ass_god = new function() {
             var power = $('#power').val();
 
             ajax_start();
-            $.post('/spt/d/mg/set_power', {
+            $.post('/spt/d/user/set_power', {
                 'mail': mail,
                 'power': power,
             }, function(res) {

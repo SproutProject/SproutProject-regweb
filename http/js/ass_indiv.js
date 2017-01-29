@@ -27,7 +27,7 @@ var ass_indiv = new function() {
 
         $('#show_indiv_data').on('click', function(e) {
             ajax_start();
-            $.post('/spt/d/mg/user_data', {}, function(res) {
+            $.post('/spt/d/user/get_all_user_data', {}, function(res) {
                 res.power_value = function() {
                     if (this.power == -1)
                         return '未完成註冊'

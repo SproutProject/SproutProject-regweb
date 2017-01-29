@@ -20,56 +20,6 @@ from Views.Utils import get_user
 DEBUG = True
 
 
-class ManageHandler(RequestHandler):
-    async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
-        uid = self.get_secure_cookie('uid')
-
-        if uid == None:
-            self.write({'status': 'NOT LOGINED'})
-        else:
-            uid = int(uid)
-            user = await get_user(db, uid)
-            if user.power < 1:
-                self.write({'status': 'PERMISSION DENIED'})
-            else:
-                self.write({'status': 'SUCCESS'})
-        await db.close()
-
-
-class UserDataHandler(RequestHandler):
-    async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
-        uid = self.get_secure_cookie('uid')
-
-        if uid == None:
-            self.write({'status': 'NOT LOGINED'})
-        else:
-            uid = int(uid)
-            user = await get_user(db, uid)
-            if user.power < 1:
-                self.write({'status': 'PERMISSION DENIED'})
-            else:
-                data = []
-                async for row in db.execute(
-                    'SELECT u."id", u."mail", u."power", u."rule_test", u."pre_test", u."signup_status",'
-                    ' g."value" as "gender_value", s."value" as "school_type_value",'
-                    ' d."full_name", d."gender", d."school", d."school_type", d."grade", d."phone", d."address"'
-                    ' FROM "user" u'
-                    ' JOIN "user_data" d ON u."id"=d."uid"'
-                    ' JOIN "gender_option" g ON d."gender"=g."id"'
-                    ' JOIN "school_type_option" s ON d."school_type"=s."id"'
-                ):
-                    element = {}
-                    for key in row:
-                        element[key] = row[key]
-                    data.append(element)
-                self.write({'status': 'SUCCESS', 'data': data})
-        await db.close()
-
-
 class ApplicationHandler(RequestHandler):
     async def post(self):
         self.set_header('Content-Type', 'application/json')
@@ -388,36 +338,6 @@ class UpdateGoogleSheetHandler(RequestHandler):
             if DEBUG:
                 print(e)
             self.write({'status': 'ERROR'})
-        await db.close()
-
-
-class SetPowerHandler(RequestHandler):
-    async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
-        uid = self.get_secure_cookie('uid')
-
-        if uid == None:
-            self.write({'status': 'NOT LOGINED'})
-        else:
-            uid = int(uid)
-            user = await get_user(db, uid)
-
-            if user.power < 2:
-                self.write({'status': 'PERMISSION DENIED'})
-            else:
-                try:
-                    mail = self.get_argument('mail')
-                    power = self.get_argument('power')
-                    await db.execute(
-                        'UPDATE "user" SET "power"=%s WHERE "mail"=%s',
-                        (power, mail)
-                    )
-                    self.write({'status': 'SUCCESS'})
-                except Exception as e:
-                    if DEBUG:
-                        print(e)
-                    self.write({'status': 'ERROR'})
         await db.close()
 
 

@@ -29,7 +29,7 @@
     
     $(document).ready(function() {
         $("#overlay").hide();
-        $.post('/spt/d/mg', {}, function(res) {
+        $.post('/spt/d/user/check_admin', {}, function(res) {
             if(res.status != 'SUCCESS') {
                 reload_page('/spt/ass_denied/');
             } else {
