@@ -13,8 +13,13 @@ DEBUG = True
 
 Base = declarative_base()
 
+class DictBase():
+    __table__ = ''
 
-class User(Base):
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class User(Base, DictBase):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -29,7 +34,7 @@ class User(Base):
         return '<User(mail="%s", password="%s", power="%d")>' % (
                                 self.mail, self.password, self.power)
 
-class AuthToken(Base):
+class AuthToken(Base, DictBase):
     __tablename__ = 'auth_token'
 
     id = Column(Integer, primary_key=True)
@@ -37,7 +42,7 @@ class AuthToken(Base):
     token = Column(String)
 
 
-class UserData(Base):
+class UserData(Base, DictBase):
     __tablename__ = 'user_data'
 
     id = Column(Integer, primary_key=True)
@@ -51,7 +56,7 @@ class UserData(Base):
     phone = Column(String)
 
 
-class SetPasswordToken(Base):
+class SetPasswordToken(Base, DictBase):
     __tablename__ = 'set_password_token'
 
     id = Column(Integer, primary_key=True)
@@ -59,7 +64,7 @@ class SetPasswordToken(Base):
     token = Column(String)
 
 
-class Poll(Base):
+class Poll(Base, DictBase):
     __tablename__ = 'poll'
 
     id = Column(Integer, primary_key=True)
@@ -70,7 +75,7 @@ class Poll(Base):
     status = Column(Integer)
 
 
-class Qa(Base):
+class Qa(Base, DictBase):
     __tablename__ = 'qa'
 
     id = Column(Integer, primary_key=True)
@@ -80,14 +85,14 @@ class Qa(Base):
     status = Column(Integer)
 
 
-class GenderOption(Base):
+class GenderOption(Base, DictBase):
     __tablename__ = 'gender_option'
 
     id = Column(Integer, primary_key=True)
     value = Column(String)
 
 
-class SchoolTypeOption(Base):
+class SchoolTypeOption(Base, DictBase):
     __tablename__ = 'school_type_option'
 
     id = Column(Integer, primary_key=True)
@@ -95,7 +100,7 @@ class SchoolTypeOption(Base):
     max_grade = Column(Integer)
 
 
-class RuleQuestion(Base):
+class RuleQuestion(Base, DictBase):
     __tablename__ = 'rule_question'
 
     id = Column(Integer, primary_key=True)
@@ -104,7 +109,7 @@ class RuleQuestion(Base):
     status = Column(Integer)
 
 
-class RuleAnswer(Base):
+class RuleAnswer(Base, DictBase):
     __tablename__ = 'rule_answer'
 
     id = Column(Integer, primary_key=True)
@@ -114,14 +119,14 @@ class RuleAnswer(Base):
     status = Column(Integer)
 
 
-class ClassTypeOption(Base):
+class ClassTypeOption(Base, DictBase):
     __tablename__ = 'class_type_option'
 
     id = Column(Integer, primary_key=True)
     value = Column(String)
 
 
-class ApplicationQuestion(Base):
+class ApplicationQuestion(Base, DictBase):
     __tablename__ = 'application_question'
 
     id = Column(Integer, primary_key=True)
@@ -131,7 +136,7 @@ class ApplicationQuestion(Base):
     status = Column(Integer)
 
 
-class ApplicationAnswer(Base):
+class ApplicationAnswer(Base, DictBase):
     __tablename__ = 'application_answer'
 
     id = Column(Integer, primary_key=True)
