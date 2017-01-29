@@ -24,6 +24,7 @@ class RequestHandler(tornado.web.RequestHandler):
     STATUS_ERROR = 'ERROR'
     STATUS_LOGINED = 'LOGINED'
     STATUS_NOT_LOGINED = 'NOT LOGINED'
+    STATUS_WRONG = 'WRONG'
 
     def return_status(self, status, data=None):
         if data:

@@ -1,17 +1,18 @@
 import bcrypt
 import re
 from uuid import uuid4
+from sqlalchemy import and_
 
 import Config
-from Model import SMTPMail
+from Config import DEBUG
+from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user
+from Views.Utils import get_user, get_user_new, db_insert
 
 
 class FirstHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         try:
             mail = self.get_argument('mail')
             password = self.get_argument('password')
@@ -20,64 +21,52 @@ class FirstHandler(RequestHandler):
 
             # Check email format
             if not re.match(r'^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$', mail):
-                self.write({'status': 'WRONG MAIL'})
+                self.return_status(self.STATUS_WRONG)
             else:
 
                 # Check if this mail be registered or not
                 uid = None
-                async for row in db.execute(
-                    'SELECT "id" FROM "user" WHERE "mail"=%s',
-                    (mail, )
-                ):
+                res = session.query(User).filter(User.mail == mail)
+                for row in res:
                     uid = row.id
 
                 if uid:
-                    self.write({'status': 'FAILED'})
+                    self.return_status(self.STATUS_FAILED)
                 else:
-                    await db.execute(
-                        'INSERT INTO "user" ("mail", "password", "power", "rule_test", "pre_test", "signup_status")'
-                        ' VALUES (%s, %s, %s, 0, 0, 0)',
-                        (mail, str(hashed), -1)
-                    )
+                    instance = User(mail = mail, password = str(hashed), power = -1 \
+                        , rule_test = 0, pre_test = 0, signup_status = 0)
+                    db_insert(session, instance)
 
-                    async for row in db.execute(
-                        'SELECT "id" FROM "user" WHERE "mail"=%s',
-                        (mail, )
-                    ):
+                    res = session.query(User).filter(User.mail == mail)
+                    for row in res:
                         lastrowid = row.id
 
                     token = uuid4()
-                    await db.execute(
-                        'INSERT INTO "auth_token" ("uid", "token") VALUES (%s, %s)',
-                        (lastrowid, token)
-                    )
+                    instance = AuthToken(uid = lastrowid, token = token)
+                    db_insert(session, instance)
 
-                    # Insert empty userdata
-                    await db.execute(
-                        'INSERT INTO "user_data" ("uid", "gender", "school_type") VALUES (%s, 1, 1)',
-                        (lastrowid, )
-                    )
+                    instance = UserData(uid = lastrowid, gender = 1, school_type = 1)
+                    db_insert(session, instance)
 
                     url = 'http://%s/spt/register/?id=%s&token=%s' % (Config.HOST, lastrowid, str(token))
                     with open('mail_template/register.mail') as f:
                         plain_content = f.read() % url
                     with open('mail_template/register.html') as f:
                         html_content = f.read() % (url, url)
-                
+
                     smtp = SMTPMail()
                     smtp.send(mail, '[2017 資訊之芽] 註冊帳號確認信', plain_content, html_content)
-                    self.write({'status': 'SUCCESS'})
+                    self.return_status(self.STATUS_SUCCESS)
         except Exception as e:
             if DEBUG:
                 print(e)
-            self.write({'status': 'ERROR'})
-        await db.close()
+            self.return_status(self.STATUS_ERROR)
+        session.close()
 
 
 class SecondHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         try:
             uid = int(self.get_argument('id'))
             token = self.get_argument('token')
@@ -88,56 +77,56 @@ class SecondHandler(RequestHandler):
             grade = int(self.get_argument('grade'))
             address = self.get_argument('address')
             phone = self.get_argument('phone')
-            
-            legal = False
-            async for row in db.execute(
-                'SELECT * FROM "auth_token" WHERE "uid"=%s AND "token"=%s',
-                (uid, token)
-            ):
-                legal = True
 
-            if legal:
-                await db.execute(
-                    'UPDATE "user_data" SET "full_name"=%s, "gender"=%s, "school"=%s,'
-                    ' "school_type"=%s, "grade"=%s, "address"=%s, "phone"=%s'
-                    ' WHERE "uid"=%s',
-                    (full_name, gender, school, school_type, grade, address, phone, uid)
-                )
-                await db.execute(
-                    'UPDATE "user" SET "power"=0 WHERE "id"=%s',
-                    (uid, )
-                )
-                await db.execute(
-                    'DELETE FROM "auth_token" WHERE "uid"=%s AND "token"=%s',
-                    (uid, token)
-                )
-                self.write({'status': 'SUCCESS'})
+            res = session.query(AuthToken).filter(and_(AuthToken.uid == uid, AuthToken.token == token))
+
+            if res.count() > 0:
+                res = session.query(UserData).filter(UserData.uid == uid)
+                for row in res:
+                    row.full_name = full_name
+                    row.gender = gender
+                    row.school = school
+                    row.school_type = school_type
+                    row.grade = grade
+                    row.address = address
+                    row.phone = phone
+                session.commit()
+
+                res = session.query(User).filter(User.id == uid)
+                for row in res:
+                    row.power = 0
+                session.commit()
+
+                session.query(AuthToken).filter(and_(AuthToken.uid == uid, AuthToken.token == token)).delete()
+                session.commit()
+
+                self.return_status(self.STATUS_SUCCESS)
             else:
-                self.write({'status': 'FAILED'})
+                self.return_status(self.STATUS_FAILED)
         except Exception as e:
             if DEBUG:
                 print(e)
-        await db.close()
+        session.close()
 
 
 class GetOptionsHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         data = {}
         try:
             data['gender'] = []
-            async for row in db.execute('SELECT * FROM "gender_option"'):
+            for row in session.query(GenderOption):
                 obj = {'id': row.id, 'value': row.value}
                 data['gender'].append(obj)
 
             data['school_type'] = []
-            async for row in db.execute('SELECT * FROM "school_type_option"'):
+            for row in session.query(SchoolTypeOption):
                 obj = {'id': row.id, 'value': row.value, 'max_grade': row.max_grade}
                 data['school_type'].append(obj)
-            self.write({'status': 'SUCCESS', 'data': data})
+
+            self.return_status(self.STATUS_SUCCESS, data=data)
         except Exception as e:
             if DEBUG:
                 print(e)
-            self.write({'status': 'ERROR'}) 
-        await db.close()
+            self.return_status(self.STATUS_ERROR)
+        session.close()

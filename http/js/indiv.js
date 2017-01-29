@@ -86,7 +86,7 @@ var indiv = new function() {
                             }
                             else if (res.status == 'FAILED')
                                 show_message('此信箱已被註冊。');
-                            else if (res.status == 'WRONG MAIL')
+                            else if (res.status == 'WRONG')
                                 show_message('信箱格式錯誤！');
                             else if (res.status == 'ERROR')
                                 show_message('系統錯誤！');
