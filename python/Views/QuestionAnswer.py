@@ -1,88 +1,82 @@
+from sqlalchemy import and_
+
+from Config import DEBUG
+from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user
+from Views.Utils import get_user, get_user_new, db_insert
 
 
 class GetAllHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
 
         data = []
-        async for row in db.execute(
-            'SELECT * FROM "qa" WHERE "status"=1'
-            ' ORDER BY "order"'
-        ):
-            element = {}
-            for key in row:
-                element[key] = row[key]
-            data.append(element)
-        self.write({'status': 'SUCCESS', 'data': data})
+        for row in session.query(Qa).filter(Qa.status == 1).order_by(Qa.order):
+            data.append(row.as_dict())
 
-        await db.close()
+        self.return_status(self.STATUS_SUCCESS, data=data)
+        session.close()
 
 
 class DeleteHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
             if user.power < 1:
-                self.write({'status': 'PERMISSION DENIED'})
+                self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
                 try:
-                    poll_id = self.get_argument('id')
-                    await db.execute(
-                        'UPDATE "qa" SET "status"=0 WHERE "id"=%s',
-                        (poll_id, )
-                    )
-                    self.write({'status': 'SUCCESS'})
+                    qa_id = self.get_argument('id')
+                    for row in session.query(Qa).filter(Qa.id == qa_id):
+                        row.status = 0
+                    session.commit()
+                    self.return_status(self.STATUS_SUCCESS)
                 except Exception as e:
                     if DEBUG:
                         print(e)
-                    self.write({'status': 'ERROR'})
-        await db.close()
+                    self.return_status(self.STATUS_ERROR)
+        session.close()
 
 
 class AddHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
             if user.power < 1:
-                self.write({'status': 'PERMISSION DENIED'})
+                self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
                 try:
                     qa_id = int(self.get_argument('id'))
                     order = self.get_argument('order')
                     question = self.get_argument('question')
                     answer = self.get_argument('answer')
+
                     if qa_id != -1:
-                        await db.execute(
-                            'UPDATE "qa" SET "order"=%s, "question"=%s, "answer"=%s'
-                            ' WHERE "id"=%s AND "status"=1',
-                            (order, question, answer, qa_id)
-                        )
+                        for row in session.query(Qa).filter(and_(Qa.id == qa_id, Qa.status == 1)):
+                            row.order = order
+                            row.question = question
+                            row.answer = answer
+                        session.commit()
                     else:
-                        await db.execute(
-                            'INSERT INTO "qa" ("order", "question", "answer", "status")'
-                            ' VALUES (%s, %s, %s, 1)',
-                            (order, question, answer)
-                        )
-                    self.write({'status': 'SUCCESS'})
+                        instance = Qa(order = order, question = question \
+                            , answer = answer, status = 1)
+                        db_insert(session, instance)
+
+                    self.return_status(self.STATUS_SUCCESS)
                 except Exception as e:
                     if DEBUG:
                         print(e)
-                    self.write({'status': 'ERROR'})
+                    self.return_status(self.STATUS_ERROR)
         await db.close()
