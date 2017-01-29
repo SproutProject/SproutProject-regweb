@@ -17,6 +17,7 @@ import Views.ResetPassword
 import Views.QuestionAnswer
 import Views.Poll
 import Views.RuleTest
+import Views.Application
 
 async def create_db_engine():
     return await aiopg.sa.create_engine(
@@ -95,11 +96,11 @@ def main():
         (r'/rule_test/answer', Views.RuleTest.AnswerHandler, app_param),
         (r'/rule_test/add_question', Views.RuleTest.AddQuestionHandler, app_param),
         (r'/rule_test/del_question', Views.RuleTest.DeleteQuestionHandler, app_param),
+        (r'/application/get_all', Views.Application.GetAllHandler, app_param),
+        (r'/application/answer', Views.Application.AnswerHandler, app_param),
+        (r'/application/update_question', Views.Application.UpdateQuestionHandler, app_param),
+        (r'/application/del_question', Views.Application.DeleteQuestionHandler, app_param),
 
-        (r'/application/get_', View.ApplicationHandler, app_param),
-        (r'/application_answer', View.ApplicationAnswerHandler, app_param),
-        (r'/mg/application_add', View.ApplicationAddHandler, app_param),
-        (r'/mg/application_del', View.ApplicationDeleteHandler, app_param),
         (r'/cms_token', View.GetCmsTokenHandler, app_param),
         (r'/entrance_token', View.GetEntranceTokenHandler, app_param),
         (r'/gs', View.UpdateGoogleSheetHandler, app_param),

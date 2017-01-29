@@ -6,7 +6,7 @@ var ass_app = new function() {
     that.load = function() {
         var t_app = $('#app-templ').html();
 
-        $.post('/spt/d/application', {
+        $.post('/spt/d/application/get_all', {
             'class_type': class_type
         }, function(res) {
             res.title_value = function() {
@@ -31,7 +31,7 @@ var ass_app = new function() {
                     var description = j_edit.find('textarea').val();
                     ajax_start();
 
-                    $.post('/spt/d/mg/application_add', {
+                    $.post('/spt/d/application/update_question', {
                         'id': app_id,
                         'order': order,
                         'class_type': class_type,
@@ -55,7 +55,7 @@ var ass_app = new function() {
             $('button.delete').on('click', function(e) {
                 if (confirm('確認刪除？')) {
                     ajax_start();
-                    $.post('/spt/d/mg/application_del', {
+                    $.post('/spt/d/application/del_question', {
                         'id': $(this).parent().attr('appid'),
                     }, function(res) {
                         reload_page('/spt/ass_app/?type=' + class_type);

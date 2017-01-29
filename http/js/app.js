@@ -6,7 +6,7 @@ var app = new function() {
     that.load = function() {
         var t_app = $('#app-templ').html();
 
-        $.post('/spt/d/application', {
+        $.post('/spt/d/application/get_all', {
             'class_type': class_type
         }, function(res) {
             res.title_value = function() {
@@ -28,7 +28,7 @@ var app = new function() {
 
                 ajax_start();
 
-                $.post('/spt/d/application_answer', {
+                $.post('/spt/d/application/answer', {
                     'class_type': class_type,
                     'data': JSON.stringify(data)
                 }, function(res) {
