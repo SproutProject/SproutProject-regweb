@@ -3,7 +3,7 @@ from sqlalchemy import and_
 from Config import DEBUG
 from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user, get_user_new, db_insert
+from Views.Utils import get_user_new, db_insert
 
 
 class GetAllHandler(RequestHandler):
