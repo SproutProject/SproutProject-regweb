@@ -7,7 +7,7 @@ import Config
 from Config import DEBUG
 from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user, get_user_new, db_insert
+from Views.Utils import db_insert
 
 
 class FirstHandler(RequestHandler):
@@ -26,8 +26,7 @@ class FirstHandler(RequestHandler):
 
                 # Check if this mail be registered or not
                 uid = None
-                res = session.query(User).filter(User.mail == mail)
-                for row in res:
+                for row in session.query(User).filter(User.mail == mail):
                     uid = row.id
 
                 if uid:
@@ -37,8 +36,7 @@ class FirstHandler(RequestHandler):
                         , rule_test = 0, pre_test = 0, signup_status = 0)
                     db_insert(session, instance)
 
-                    res = session.query(User).filter(User.mail == mail)
-                    for row in res:
+                    for row in session.query(User).filter(User.mail == mail):
                         lastrowid = row.id
 
                     token = uuid4()
@@ -81,8 +79,7 @@ class SecondHandler(RequestHandler):
             res = session.query(AuthToken).filter(and_(AuthToken.uid == uid, AuthToken.token == token))
 
             if res.count() > 0:
-                res = session.query(UserData).filter(UserData.uid == uid)
-                for row in res:
+                for row in session.query(UserData).filter(UserData.uid == uid):
                     row.full_name = full_name
                     row.gender = gender
                     row.school = school
@@ -92,8 +89,7 @@ class SecondHandler(RequestHandler):
                     row.phone = phone
                 session.commit()
 
-                res = session.query(User).filter(User.id == uid)
-                for row in res:
+                for row in session.query(User).filter(User.id == uid):
                     row.power = 0
                 session.commit()
 

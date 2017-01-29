@@ -14,9 +14,7 @@ class LoginHandler(RequestHandler):
             password = self.get_argument('password')
             uid = None
 
-            res = session.query(User).filter(User.mail == mail)
-
-            for row in res:
+            for row in session.query(User).filter(User.mail == mail):
                 uid = row.id
                 hashed = eval(row.password)
                 power = row.power
@@ -96,8 +94,7 @@ class ModifyIndividualDataHandler(RequestHandler):
                 phone = self.get_argument('phone')
                 user_data = None
 
-                res = session.query(UserData).filter(UserData.uid == uid)
-                for row in res:
+                for row in session.query(UserData).filter(UserData.uid == uid):
                     row.address = address
                     row.phone = phone
 
@@ -145,9 +142,7 @@ class SetPowerHandler(RequestHandler):
                     mail = self.get_argument('mail')
                     power = self.get_argument('power')
 
-                    res = session.query(User).filter(User.mail == mail)
-
-                    for row in res:
+                    for row in session.query(User).filter(User.mail == mail):
                         row.power = power
 
                     session.commit()
