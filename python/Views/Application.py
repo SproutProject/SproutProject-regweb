@@ -1,85 +1,75 @@
 import json
 from datetime import datetime
+from sqlalchemy import and_
 
 import Config
+from Config import DEBUG
+from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user
+from Views.Utils import get_user_new, db_insert
 
 
 class GetAllHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
 
             try:
                 class_type = int(self.get_argument('class_type'))
                 data = []
                 if user.signup_status & (1 << (class_type - 1)):
                     id_records = {}
-                    async for row in db.execute(
-                        'SELECT q."id", q."order", q."description", a."description" as "answer" FROM "application_question" q'
-                        ' JOIN "application_answer" a'
-                        ' ON q."id"=a."qid"'
-                        ' WHERE q."class_type"=%s AND a."uid"=%s AND q."status"=1'
-                        ' ORDER BY q."order"',
-                        (class_type, uid)
-                    ):
-                        element = {}
-                        for key in row:
-                            element[key] = row[key]
+                    res = session.query(ApplicationQuestion, ApplicationAnswer) \
+                        .filter(and_(ApplicationQuestion.id == ApplicationAnswer.qid,
+                                     ApplicationQuestion.class_type == class_type,
+                                     ApplicationAnswer.uid == uid,
+                                     ApplicationQuestion.status == 1)) \
+                        .order_by(ApplicationQuestion.order)
+                    for row in res:
+                        element = row[0].as_dict()
+                        element['answer'] = row[1].description
+                        id_records[row[0].id] = True
                         data.append(element)
-                        id_records[row.id] = True
 
-                    async for row in db.execute(
-                        'SELECT * FROM "application_question"'
-                        ' WHERE "class_type"=%s AND "status"=1'
-                        ' ORDER BY "order"',
-                        (class_type, )
-                    ):
+                    res = session.query(ApplicationQuestion) \
+                        .filter(and_(ApplicationQuestion.class_type == class_type,
+                                     ApplicationQuestion.status == 1)) \
+                        .order_by(ApplicationQuestion.order)
+                    for row in res:
                         if row.id not in id_records:
-                            element = {}
-                            for key in row:
-                                element[key] = row[key]
-                            data.append(element)
-
+                            data.append(row.as_dict())
                 else:
-                    async for row in db.execute(
-                        'SELECT * FROM "application_question"'
-                        ' WHERE "class_type"=%s AND "status"=1'
-                        ' ORDER BY "order"',
-                        (class_type, )
-                    ):
-                        element = {}
-                        for key in row:
-                            element[key] = row[key]
-                        data.append(element)
-                self.write({'status': 'SUCCESS', 'data': data})
+                    res = session.query(ApplicationQuestion) \
+                        .filter(and_(ApplicationQuestion.class_type == class_type,
+                                     ApplicationQuestion.status == 1)) \
+                        .order_by(ApplicationQuestion.order)
+                    for row in res:
+                        data.append(row.as_dict())
+                self.return_status(self.STATUS_SUCCESS, data=data)
             except Exception as e:
                 if DEBUG:
                     print(e)
-                self.write({'status': 'ERROR'})
-        await db.close()
+                self.return_status(self.STATUS_ERROR)
+        session.close()
 
 
 class UpdateQuestionHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
             if user.power < 1:
-                self.write({'status': 'PERMISSION DENIED'})
+                self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
                 try:
                     app_id = int(self.get_argument('id'))
@@ -88,121 +78,98 @@ class UpdateQuestionHandler(RequestHandler):
                     description = self.get_argument('description')
 
                     if app_id == -1:
-                        await db.execute(
-                            'INSERT INTO "application_question"'
-                            ' ("order", "class_type", "description", "status")'
-                            ' VALUES (%s, %s, %s, 1)',
-                            (order, class_type, description)
-                        )
+                        instance = ApplicationQuestion(order = order, class_type = class_type,
+                                                       description = description, status = 1)
+                        db_insert(session, instance)
                     else:
-                        await db.execute(
-                            'UPDATE "application_question"'
-                            ' SET "order"=%s, "class_type"=%s, "description"=%s'
-                            ' WHERE "id"=%s',
-                            (order, class_type, description, app_id)
-                        )
+                        for row in session.query(ApplicationQuestion).filter(ApplicationQuestion.id == app_id):
+                            row.order = order
+                            row.class_type = class_type
+                            row.description = description
+                        session.commit()
 
-                    self.write({'status': 'SUCCESS'})
+                    self.return_status(self.STATUS_SUCCESS)
                 except Exception as e:
                     if DEBUG:
                         print(e)
-                    self.write({'status': 'ERROR'})
-        await db.close()
+                    self.return_status(self.STATUS_ERROR)
+        session.close()
 
 
 class DeleteQuestionHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
             if user.power < 1:
-                self.write({'status': 'PERMISSION DENIED'})
+                self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
                 try:
                     app_id = int(self.get_argument('id'))
 
-                    await db.execute(
-                        'UPDATE "application_question" SET "status"=0 WHERE "id"=%s',
-                        (app_id, )
-                    )
+                    for row in session.query(ApplicationQuestion).filter(ApplicationQuestion.id == app_id):
+                        row.status = 0
+                    session.commit()
 
-                    self.write({'status': 'SUCCESS'})
+                    self.return_status(self.STATUS_SUCCESS)
                 except Exception as e:
                     if DEBUG:
                         print(e)
-                    self.write({'status': 'ERROR'})
-        await db.close()
+                    self.return_status(self.STATUS_ERROR)
+        session.close()
 
 
 class AnswerHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
 
             try:
                 class_type = int(self.get_argument('class_type'))
 
-
                 if datetime.now() > Config.DEADLINE:
-                    self.write({'status': 'DEADLINE'})
+                    self.return_status(self.STATUS_DEADLINE)
                     return
 
                 if not user.rule_test:
-                    self.write({'status': 'PERMISSION DENIED'})
+                    self.return_status(self.STATUS_PERMISSION_DENIED)
                 elif class_type == 3 and not user.pre_test:
-                    self.write({'status': 'PERMISSION DENIED'})
-                else:                
+                    self.return_status(self.STATUS_PERMISSION_DENIED)
+                else:
                     data = json.loads(self.get_argument('data'))
                     for obj in data:
-                        legal = False
-                        async for row in db.execute(
-                            'SELECT * FROM "application_question"'
-                            ' WHERE "class_type"=%s AND "id"=%s',
-                            (class_type, obj['id'])
-                        ):
-                            legal = True
-                        if legal:
-                            exist = False
-                            async for row in db.execute(
-                                'SELECT * FROM "application_answer"'
-                                ' WHERE "uid"=%s AND "qid"=%s',
-                                (uid, obj['id'])
-                            ):
-                                exist = True
-                            if exist:
-                                await db.execute(
-                                    'UPDATE "application_answer"'
-                                    ' SET "description"=%s'
-                                    ' WHERE "uid"=%s AND "qid"=%s',
-                                    (obj['answer'], uid, obj['id'])
-                                )
+                        res = session.query(ApplicationQuestion) \
+                            .filter(and_(ApplicationQuestion.id == obj['id'],
+                                         ApplicationQuestion.class_type == class_type))
+                        if res.count() > 0:
+                            res = session.query(ApplicationAnswer) \
+                                .filter(and_(ApplicationAnswer.uid == uid,
+                                             ApplicationAnswer.qid == obj['id']))
+                            if res.count() > 0:
+                                for row in res:
+                                    row.description = obj['answer']
+                                session.commit()
                             else:
-                                await db.execute(
-                                    'INSERT INTO "application_answer" ("uid", "qid", "description")'
-                                    ' VALUES (%s, %s, %s)',
-                                    (uid, obj['id'], obj['answer'])
-                                )
+                                instance = ApplicationAnswer(uid = uid, qid = obj['id'], description = obj['answer'])
+                                db_insert(session, instance)
                     if (user.signup_status & (1 << (class_type - 1))) == 0:
-                        await db.execute(
-                            'UPDATE "user" SET "signup_status"=%s WHERE "id"=%s',
-                            (user.signup_status | (1 << (class_type - 1)), uid)
-                        )
-                    self.write({'status': 'SUCCESS'})
+                        for row in session.query(User).filter(User.id == uid):
+                            row.signup_status = user.signup_status | (1 << (class_type - 1))
+                        session.commit()
+                    self.return_status(self.STATUS_SUCCESS)
             except Exception as e:
                 if DEBUG:
                     print(e)
-                self.write({'status': 'ERROR'})
-        await db.close()
+                self.return_status(self.STATUS_ERROR)
+        session.close()
