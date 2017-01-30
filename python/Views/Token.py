@@ -3,26 +3,27 @@ import requests
 import time
 
 import Config
+from Config import DEBUG
+from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user
+from Views.Utils import get_user_new
 
 class PretestHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         try:
             uid = self.get_secure_cookie('uid')
             if uid is None:
-                self.write({'status': 'NOT LOGINED'})
+                self.return_status(self.STATUS_NOT_LOGINED)
                 return
-                
+
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
 
             if user.rule_test == 0:
-                self.write({'status': 'FAILED'})
+                self.return_status(self.STATUS_FAILED)
                 return
-            
+
             h = hashlib.new('sha512')
             h.update((Config.PRETEST_SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
@@ -31,36 +32,22 @@ class PretestHandler(RequestHandler):
 
             url = 'http://%s/user_score' % Config.PRETEST_HOST
             res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()}, timeout=0.5)
-            # print(res.url)
+
             try:
                 score = float(res.text.split('\n')[0].replace('*', ''))
             except Exception as e:
-                # if DEBUG:
-                if True:
+                if DEBUG:
                     print(e)
                     print(res.text)
-                # self.write({'status': 'ERROR'})
-                # return
                 score = -1
-            # print(res.text)
 
-            if score >= Config.PRETEST_THRESHOLD:
-                await db.execute(
-                    'UPDATE "user" SET "pre_test"=1 WHERE "id"=%s',
-                    (uid, )
-                )
-            else:
-                await db.execute(
-                    'UPDATE "user" SET "pre_test"=0 WHERE "id"=%s',
-                    (uid, )
-                )
+            for row in session.query(User).filter(User.id == uid):
+                row.pre_test = 1 if score >= Config.PRETEST_THRESHOLD else 0
+            session.commit()
 
-            async for row in db.execute(
-                'SELECT "full_name" FROM "user_data" WHERE "uid"=%s',
-                (uid, )
-            ):
+            for row in session.query(UserData).filter(UserData.uid == uid):
                 realname = row.full_name
-                
+
             redirect_url = 'http://%s/redirect_login' % Config.PRETEST_HOST
 
             self.write({
@@ -72,37 +59,33 @@ class PretestHandler(RequestHandler):
                 'score': score,
             })
         finally:
-            await db.close()
+            session.close()
 
 class EntranceHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         try:
             uid = self.get_secure_cookie('uid')
             if uid is None:
-                self.write({'status': 'NOT LOGINED'})
+                self.return_status(self.STATUS_NOT_LOGINED)
                 return
-                
+
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
 
             if (user.signup_status & 4) == 0:
-                self.write({'status': 'FAILED'})
+                self.return_status(self.STATUS_FAILED)
                 return
 
             print(user.mail)
             print(self.request.headers.get('Remote-Addr'))
-            
+
             h = hashlib.new('sha512')
             h.update((Config.ENTRANCE_SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
-            async for row in db.execute(
-                'SELECT "full_name" FROM "user_data" WHERE "uid"=%s',
-                (uid, )
-            ):
+            for row in session.query(UserData).filter(UserData.uid == uid):
                 realname = row.full_name
-                
+
             redirect_url = 'http://%s/redirect_login' % Config.ENTRANCE_HOST
 
             self.write({
@@ -113,4 +96,4 @@ class EntranceHandler(RequestHandler):
                 'url': redirect_url,
             })
         finally:
-            await db.close()
+            session.close()
