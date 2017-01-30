@@ -1,36 +1,37 @@
 import json
+import random
 import re
+from sqlalchemy import and_
 
+from Config import DEBUG
+from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user
+from Views.Utils import get_user_new, db_insert
 
 
 class GetQuestionHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         response_is_answer = False
         uid = self.get_secure_cookie('uid')
 
         if uid:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
             if user.power >= 1:
                 response_is_answer = True
 
         questions = {}
-        async for row in db.execute(
-            'SELECT q.*, a."id" as "aid", a."description" AS "answer", a."is_answer"'
-            ' FROM "rule_question" q'
-            ' JOIN "rule_answer" a'
-            ' ON q."id"=a."qid"'
-            ' WHERE q."status"=1 AND a."status"=1'
-        ):
-            questions[row.id] = questions.get(row.id, {'order': row.order, 'description': row.description, 'options': []})
-            option = {'aid': row.aid, 'answer': row.answer}
+        res = session.query(RuleQuestion, RuleAnswer) \
+            .filter(and_(RuleQuestion.id == RuleAnswer.qid, RuleQuestion.status == 1, RuleAnswer.status == 1))
+        for row in res:
+            q = row[0]
+            a = row[1]
+            questions[q.id] = questions.get(q.id, {'order': q.order, 'description': q.description, 'options': []})
+            option = {'aid': a.id, 'answer': a.description}
             if response_is_answer:
-                option['is_answer'] = row.is_answer
-            questions[row.id]['options'].append(option)
+                option['is_answer'] = a.is_answer
+            questions[q.id]['options'].append(option)
 
         data = []
         for qid in questions:
@@ -40,70 +41,67 @@ class GetQuestionHandler(RequestHandler):
             data.append(questions[qid])
         data = sorted(data, key=lambda x : x['order'])
 
-        self.write({'status': 'SUCCESS', 'data': data})
-        await db.close()
+        self.return_status(self.STATUS_SUCCESS, data=data)
+        session.close()
 
 
 class AnswerHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
-        response_is_answer = False
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
 
             if user.power < 0:
-                self.write({'status': 'PERMISSION DENIED'})
+                self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
                 try:
                     data = json.loads(self.get_argument('data'))
                     correct = True
-                    async for row in db.execute(
-                        'SELECT q."id", a."id" as "aid"'
-                        ' FROM "rule_question" q'
-                        ' JOIN "rule_answer" a'
-                        ' ON q."id"=a."qid"'
-                        ' WHERE a."is_answer"=1 AND q."status"=1 AND a."status"=1'
-                    ):
-                        if str(row.id) not in data:
+                    res = session.query(RuleQuestion, RuleAnswer).filter(
+                        and_(RuleQuestion.id == RuleAnswer.qid,
+                             RuleAnswer.is_answer == 1,
+                             RuleQuestion.status == 1,
+                             RuleAnswer.status == 1)
+                        )
+                    for row in res:
+                        q = row[0]
+                        a = row[1]
+                        if str(q.id) not in data:
                             correct = False
-                        elif data[str(row.id)] != str(row.aid):
+                        elif data[str(q.id)] != str(a.id):
                             correct = False
 
                     if not correct:
-                        self.write({'status': 'WRONG'})
+                        self.return_status(self.STATUS_WRONG)
                     else:
-                        await db.execute(
-                            'UPDATE "user" SET "rule_test"=1 WHERE "id"=%s',
-                            (uid, )
-                        )
-                        self.write({'status': 'SUCCESS'})
+                        for row in session.query(User).filter(User.id == uid):
+                            row.rule_test = 1
+                        session.commit()
+                        self.return_status(self.STATUS_SUCCESS)
                 except Exception as e:
                     if DEBUG:
                         print(e)
-                    self.write({'status': 'ERROR'})
-        await db.close()
-
+                    self.return_status(self.STATUS_ERROR)
+        session.close()
 
 
 class AddQuestionHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
             if user.power < 1:
-                self.write({'status': 'PERMISSION DENIED'})
+                self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
                 try:
                     qid = int(self.get_argument('id'))
@@ -119,75 +117,60 @@ class AddQuestionHandler(RequestHandler):
                             options[idx][val] = self.get_argument(arg)
 
                     if qid == -1:
-                        await db.execute(
-                            'INSERT INTO "rule_question"'
-                            ' ("order", "description", "status")'
-                            ' VALUES (%s, %s, 1)',
-                            (order, description)
-                        )
+                        instance = RuleQuestion(order = order, description = description, status = 1)
+                        db_insert(session, instance)
 
                         # maybe race condition for get insert lastrowid
-                        async for row in db.execute(
-                            'SELECT "id" FROM "rule_question" ORDER BY "id" DESC LIMIT 1'
-                        ):
+                        for row in session.query(RuleQuestion).order_by(RuleQuestion.id.desc()).limit(1):
                             qid = row.id
                     else:
                         # clear old optionss
-                        await db.execute(
-                            'UPDATE "rule_answer" SET "status"=0 WHERE "qid"=%s',
-                            (qid, )
-                        )
+                        for row in session.query(RuleAnswer).filter(RuleAnswer.qid == qid):
+                            row.status = 0
+                        session.commit()
 
-                        await db.execute(
-                            'UPDATE "rule_question"'
-                            ' SET "order"=%s, "description"=%s'
-                            ' WHERE "id"=%s',
-                            (order, description, qid)
-                        )
+                        for row in session.query(RuleQuestion).filter(RuleQuestion.id == qid):
+                            row.order = order
+                            row.description = description
+                        session.commit()
 
                     for key in options:
                         option = options[key]
-                        await db.execute(
-                            'INSERT INTO "rule_answer"'
-                            ' ("qid", "description", "is_answer", status)'
-                            ' VALUES (%s, %s, %s, 1)',
-                            (qid, option['answer'], 1 if ('is_answer' in option) else 0)
-                        )
-                    self.write({'status': "SUCCESS"})
+                        instance = RuleAnswer(qid = qid, description = option['answer'], status = 1,
+                                              is_answer = 1 if ('is_answer' in option) else 0)
+                        db_insert(session, instance)
+                    self.return_status(self.STATUS_SUCCESS)
                 except Exception as e:
                     if DEBUG:
                         print(e)
-                    self.write({'status': 'ERROR'})
-        await db.close()
+                    self.return_status(self.STATUS_ERROR)
+        session.close()
 
 
 class DeleteQuestionHandler(RequestHandler):
     async def post(self):
-        self.set_header('Content-Type', 'application/json')
-        db = await self.get_db()
+        session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
         if uid == None:
-            self.write({'status': 'NOT LOGINED'})
+            self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = await get_user(db, uid)
+            user = get_user_new(session, uid)
             if user.power < 1:
-                self.write({'status': 'PERMISSION DENIED'})
+                self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
                 try:
                     qid = self.get_argument('id')
-                    await db.execute(
-                        'UPDATE "rule_question" SET "status"=0 WHERE "id"=%s',
-                        (qid, )
-                    )
-                    await db.execute(
-                        'UPDATE "rule_answer" SET "status"=0 WHERE "qid"=%s',
-                        (qid, )
-                    )
-                    self.write({'status': "SUCCESS"})
+                    for row in session.query(RuleQuestion).filter(RuleQuestion.id == qid):
+                        row.status = 0
+                    session.commit()
+                    for row in session.query(RuleAnswer).filter(RuleAnswer.qid == qid):
+                        row.status = 0
+                    session.commit()
+                    self.return_status(self.STATUS_ERROR)
                 except Exception as e:
                     if DEBUG:
                         print(e)
-                    self.write({'status': 'ERROR'})
-        await db.close()
+                    self.return_status(self.STATUS_ERROR)
+        session.close()
