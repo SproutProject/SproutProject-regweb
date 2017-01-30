@@ -3,11 +3,11 @@ import bcrypt
 from Config import DEBUG
 from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user_new
+from Views.Utils import get_user
 
 
 class LoginHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         try:
             mail = self.get_argument('mail')
@@ -35,13 +35,13 @@ class LoginHandler(RequestHandler):
 
 
 class LogoutHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         self.clear_cookie('uid')
         self.return_status(self.STATUS_SUCCESS)
 
 
 class CheckLoginHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         uid = self.get_secure_cookie('uid')
         if uid:
             self.return_status(self.STATUS_LOGINED)
@@ -50,7 +50,7 @@ class CheckLoginHandler(RequestHandler):
 
 
 class GetIndividualDataHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -58,7 +58,7 @@ class GetIndividualDataHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
             data = {}
 
             res = session.query(UserData, GenderOption, SchoolTypeOption) \
@@ -80,7 +80,7 @@ class GetIndividualDataHandler(RequestHandler):
 
 
 class ModifyIndividualDataHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -108,7 +108,7 @@ class ModifyIndividualDataHandler(RequestHandler):
 
 
 class CheckAdminHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -116,7 +116,7 @@ class CheckAdminHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
             if user.power < 1:
                 self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
@@ -125,7 +125,7 @@ class CheckAdminHandler(RequestHandler):
 
 
 class SetPowerHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -133,7 +133,7 @@ class SetPowerHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
 
             if user.power < 2:
                 self.return_status(self.STATUS_PERMISSION_DENIED)
@@ -155,7 +155,7 @@ class SetPowerHandler(RequestHandler):
 
 
 class GetAllUserDataHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -163,7 +163,7 @@ class GetAllUserDataHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
             if user.power < 1:
                 self.return_status(self.STATUS_PERMISSION_DENIED)
             else:

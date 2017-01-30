@@ -1,15 +1,17 @@
 import threading
 import requests
 
-import aiopg.sa
-import asyncio
-import tornado.platform.asyncio
+import tornado.ioloop
+import tornado.netutil
 import tornado.process
+import tornado.httpserver
 import tornado.web
+import tornado.websocket
+import sqlalchemy
+from sqlalchemy.orm import sessionmaker
 
 import Model
 import Config
-
 import Views.User
 import Views.Register
 import Views.ResetPassword
@@ -19,13 +21,6 @@ import Views.RuleTest
 import Views.Application
 import Views.Token
 import Views.GoogleSheet
-
-async def create_db_engine():
-    return await aiopg.sa.create_engine(
-            database=Config.DB_NAME,
-            host=Config.DB_HOST,
-            user=Config.DB_USER,
-            password=Config.DB_PASSWD)
 
 
 def set_interval(func, sec):
@@ -43,16 +38,10 @@ def update_google_sheet():
 def main():
     Model.init()
 
-    tornado.platform.asyncio.AsyncIOMainLoop().install()
-    db_engine = asyncio.get_event_loop().run_until_complete(create_db_engine())
     g_sheet = Model.GoogleSheet()
 
     # Daemon for updating google sheet
     set_interval(update_google_sheet, Config.GOOGLE_REFRESH_TIME)
-
-    import sqlalchemy
-    from sqlalchemy.ext.declarative import declarative_base
-    from sqlalchemy.orm import sessionmaker
 
     new_db_engine = sqlalchemy.create_engine(
         sqlalchemy.engine.url.URL(
@@ -65,11 +54,9 @@ def main():
     )
 
     SessionMaker = sessionmaker(bind=new_db_engine)
-    from Model import User
     session = SessionMaker()
 
     app_param = {
-        'db_engine': db_engine,
         'g_sheet': g_sheet,
         'session_maker': SessionMaker,
     }
@@ -105,9 +92,12 @@ def main():
         (r'/token/entrance', Views.Token.EntranceHandler, app_param),
         (r'/google_sheet/update', Views.GoogleSheet.UpdateHandler, app_param),
     ], cookie_secret=Config.SECRET_KEY)
-    app.listen(Config.LISTEN_PORT)
 
-    asyncio.get_event_loop().run_forever()
+    httpsock = tornado.netutil.bind_sockets(Config.LISTEN_PORT)
+    tornado.process.fork_processes(16)
+    httpsrv = tornado.httpserver.HTTPServer(app)
+    httpsrv.add_sockets(httpsock)
+    tornado.ioloop.IOLoop.instance().start()
 
 
 if __name__ == '__main__':

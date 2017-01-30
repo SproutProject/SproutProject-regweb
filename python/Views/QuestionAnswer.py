@@ -3,11 +3,11 @@ from sqlalchemy import and_
 from Config import DEBUG
 from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user_new, db_insert
+from Views.Utils import get_user, db_insert
 
 
 class GetAllHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
 
         data = []
@@ -19,7 +19,7 @@ class GetAllHandler(RequestHandler):
 
 
 class DeleteHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -27,7 +27,7 @@ class DeleteHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
             if user.power < 1:
                 self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
@@ -45,7 +45,7 @@ class DeleteHandler(RequestHandler):
 
 
 class AddHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -53,7 +53,7 @@ class AddHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
             if user.power < 1:
                 self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
@@ -79,4 +79,4 @@ class AddHandler(RequestHandler):
                     if DEBUG:
                         print(e)
                     self.return_status(self.STATUS_ERROR)
-        await db.close()
+        session.close()

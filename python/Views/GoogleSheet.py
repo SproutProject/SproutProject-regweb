@@ -4,11 +4,10 @@ import Config
 from Config import DEBUG
 from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user
 
 
 class UpdateHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         try:
             key = self.get_argument('key')

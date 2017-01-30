@@ -10,7 +10,7 @@ from Views.Utils import db_insert
 
 
 class GetMailHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         try:
             mail = self.get_argument('mail')
@@ -44,7 +44,7 @@ class GetMailHandler(RequestHandler):
 
 
 class SetHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         try:
             uid = self.get_argument('id')

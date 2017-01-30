@@ -6,18 +6,18 @@ import Config
 from Config import DEBUG
 from Model import *
 from Views.Base import RequestHandler
-from Views.Utils import get_user_new, db_insert
+from Views.Utils import get_user, db_insert
 
 
 class GetAllHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
         if uid == None:
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
 
             try:
                 class_type = int(self.get_argument('class_type'))
@@ -59,7 +59,7 @@ class GetAllHandler(RequestHandler):
 
 
 class UpdateQuestionHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -67,7 +67,7 @@ class UpdateQuestionHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
             if user.power < 1:
                 self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
@@ -97,7 +97,7 @@ class UpdateQuestionHandler(RequestHandler):
 
 
 class DeleteQuestionHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -105,7 +105,7 @@ class DeleteQuestionHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
             if user.power < 1:
                 self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
@@ -125,7 +125,7 @@ class DeleteQuestionHandler(RequestHandler):
 
 
 class AnswerHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         uid = self.get_secure_cookie('uid')
 
@@ -133,7 +133,7 @@ class AnswerHandler(RequestHandler):
             self.return_status(self.STATUS_NOT_LOGINED)
         else:
             uid = int(uid)
-            user = get_user_new(session, uid)
+            user = get_user(session, uid)
 
             try:
                 class_type = int(self.get_argument('class_type'))

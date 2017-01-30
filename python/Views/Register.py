@@ -11,7 +11,7 @@ from Views.Utils import db_insert
 
 
 class FirstHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         try:
             mail = self.get_argument('mail')
@@ -63,7 +63,7 @@ class FirstHandler(RequestHandler):
 
 
 class SecondHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         try:
             uid = int(self.get_argument('id'))
@@ -106,7 +106,7 @@ class SecondHandler(RequestHandler):
 
 
 class GetOptionsHandler(RequestHandler):
-    async def post(self):
+    def post(self):
         session = self.get_session()
         data = {}
         try:

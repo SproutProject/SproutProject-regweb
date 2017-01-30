@@ -213,7 +213,6 @@ import os
 import threading
 from datetime import datetime
 
-import aiopg.sa
 from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
