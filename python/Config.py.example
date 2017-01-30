@@ -2,6 +2,8 @@ HOST = 'sprout.tw'
 LISTEN_PORT = 7122
 
 DEBUG = True
+MAX_TEST_ID = 0
+C_CLASS_QID = 42
 
 DB_HOST = '127.0.0.1'
 DB_NAME = 'database'

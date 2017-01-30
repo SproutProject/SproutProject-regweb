@@ -1,16 +1,19 @@
-import Config
+from sqlalchemy import and_
 
+import Config
+from Config import DEBUG
+from Model import *
 from Views.Base import RequestHandler
 from Views.Utils import get_user
 
 
 class UpdateHandler(RequestHandler):
     async def post(self):
-        db = await self.get_db()
+        session = self.get_session()
         try:
             key = self.get_argument('key')
             if key != Config.SECRET_KEY:
-                self.write({'status': 'PERMISSION DENIED'})
+                self.return_status(self.STATUS_PERMISSION_DENIED)
             else:
                 sheet_names = ['Sheet1', 'C', 'Python', 'Algorithm', 'Count']
 
@@ -20,31 +23,38 @@ class UpdateHandler(RequestHandler):
                     'power', 'rule_test', 'pre_test', 'signup_status']
 
                 values = []
-                async for row in db.execute(
-                    'SELECT u."id", u."mail", u."power", u."rule_test", u."pre_test", u."signup_status",'
-                    ' g."value" as "gender_value", s."value" as "school_type_value",'
-                    ' d."full_name", d."gender", d."school", d."school_type", d."grade", d."phone", d."address"'
-                    ' FROM "user" u'
-                    ' JOIN "user_data" d ON u."id"=d."uid"'
-                    ' JOIN "gender_option" g ON d."gender"=g."id"'
-                    ' JOIN "school_type_option" s ON d."school_type"=s."id"'
-                    ' ORDER BY u."id"'
-                ):
+                res = session.query(User, UserData, GenderOption, SchoolTypeOption) \
+                    .filter(and_(User.id == UserData.uid,
+                                 UserData.gender == GenderOption.id,
+                    UserData.school_type == SchoolTypeOption.id)) \
+                    .order_by(User.id)
+                for row in res:
+                    element = row[0].as_dict()
+                    del element['password']
+                    
+                    user_data = row[1].as_dict()
+                    del user_data['id']
+                    del user_data['uid']                    
+                    element.update(user_data)
+
+                    element['gender_value'] = row[2].value
+                    element['school_type_value'] = row[3].value
+
                     value = []
                     for key in value_order:
                         if key == 'rule_test' or key == 'pre_test':
-                            value.append('v' if row[key] else '')
+                            value.append('v' if element[key] else '')
                         elif key == 'power':
                             power_list = ['一般', '管理者', '神']
-                            if row[key] == -1:
+                            if element[key] == -1:
                                 value.append('未完成註冊')
                             else:
-                                value.append(power_list[row[key]])
+                                value.append(power_list[element[key]])
                         elif key == 'signup_status':
                             for i in range(3):
-                                value.append('v' if row[key] & (1 << i) else '')
+                                value.append('v' if element[key] & (1 << i) else '')
                         else:
-                            value.append("'" + str(row[key]))
+                            value.append("'" + str(element[key]))
                     values.append(value)
 
                 self.g_sheet.update(values, sheet_names[0] + '!A2:O')
@@ -58,37 +68,33 @@ class UpdateHandler(RequestHandler):
 
                     question_list = []
                     value = ['id', '姓名', '性別', '學校', '年級']
-                    async for row in db.execute(
-                        'SELECT * FROM "application_question" WHERE "class_type"=%s AND "status"=1 ORDER BY "order"',
-                        (class_type)
-                    ):
+                    res = session.query(ApplicationQuestion) \
+                        .filter(and_(ApplicationQuestion.class_type == class_type, ApplicationQuestion.status == 1)) \
+                        .order_by(ApplicationQuestion.order)
+                    for row in res:
                         question_list.append(row)
                         value.append(row.description)
                     values.append(value)
 
-                    async for user in db.execute(
-                        'SELECT u."id", d."full_name", d."school", d."grade", d."gender" FROM "user" u'
-                        ' JOIN "user_data" d'
-                        ' ON u."id"=d."uid"'
-                        ' WHERE (u."signup_status" & %s) > 0'
-                        ' ORDER BY u."id"',
-                        (1 << (class_type - 1), )
-                    ):
+                    res = session.query(User, UserData) \
+                        .filter(and_(User.id == UserData.uid,
+                                     User.signup_status.op('&')(1 << (class_type - 1)) > 0)) \
+                        .order_by(User.id)
+                    for row in res:
+                        user_id = row[0].id
+                        user = row[1]
                         answer = {}
-                        async for row in db.execute(
-                            'SELECT * FROM "application_answer" WHERE "uid"=%s',
-                            (user.id, )
-                        ):
-                            answer[row.qid] = row.description
+                        for app_row in session.query(ApplicationAnswer).filter(ApplicationAnswer.uid == row[0].id):
+                            answer[app_row.qid] = app_row.description
 
                         value = []
-                        value.append(user.id)
+                        value.append(user_id)
                         value.append(user.full_name)
                         value.append('女' if user.gender == 1 else '男')
                         value.append(user.school)
                         value.append(user.grade)
 
-                        if user.id > 28:
+                        if user_id > Config.MAX_TEST_ID:
                             if class_type > 1:
                                 count_values[class_type][0] += 1
                                 if user.gender == 1:
@@ -100,7 +106,7 @@ class UpdateHandler(RequestHandler):
                             else:
                                 value.append('')
 
-                            if user.id > 28 and question.id == 42 and question.id in answer:
+                            if user_id > Config.MAX_TEST_ID and question.id == Config.C_CLASS_QID and question.id in answer:
                                 if answer[question.id].find('竹') >= 0:
                                     count_values[0][0] += 1
                                     if user.gender == 1:
@@ -115,9 +121,9 @@ class UpdateHandler(RequestHandler):
 
                 self.g_sheet.update(count_values, sheet_names[4] + '!B2:C')
 
-                self.write({'status': 'SUCCESS'})
+                self.return_status(self.STATUS_SUCCESS)
         except Exception as e:
             if DEBUG:
                 print(e)
-            self.write({'status': 'ERROR'})
-        await db.close()
+            self.return_status(self.STATUS_ERROR)
+        session.close()
