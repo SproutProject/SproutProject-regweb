@@ -7,7 +7,7 @@ app.load = function() {
         {'class_type': class_type},
         app.render_data
     );
-}
+};
 
 app.render_data = function(res) {
     var template = $('#app-templ').html();
@@ -21,13 +21,13 @@ app.render_data = function(res) {
     app.init_close_button();
 
     ajax_done();
-}
+};
 
 app.init_submit_button = function() {
     $('button.submit').on('click', function(e) {
         app.submit_data();
     });
-}
+};
 
 app.submit_data = function() {
     var app_list = $('div.app');
@@ -47,7 +47,7 @@ app.submit_data = function() {
     }
 
     $.post('/spt/d/application/answer', data, app.handle_result);
-}
+};
 
 app.handle_result = function(res) {
     if (res.status == 'SUCCESS') {
@@ -62,10 +62,10 @@ app.handle_result = function(res) {
     }
 
     ajax_done();
-}
+};
 
 app.init_close_button = function() {
     $('button.close').on('click', function(e) {
         reload_page('/spt/indiv/');
     });
-}
+};

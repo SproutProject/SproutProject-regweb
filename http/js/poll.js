@@ -4,7 +4,7 @@ var poll = poll || {};
 
 poll.load = function() {
     $.post('/spt/d/poll/get_all', {}, poll.render_data);
-}
+};
 
 poll.render_data = function(res) {
     var template = $('#template').html();
@@ -14,7 +14,7 @@ poll.render_data = function(res) {
     poll.init_close_button();
 
     ajax_done();
-}
+};
 
 poll.init_poll = function() {
     $('#list div.item').on('click', function(e) {
@@ -22,7 +22,7 @@ poll.init_poll = function() {
         $('#list').find('div.subject').hide();
         poll_item.addClass('active');
     });
-}
+};
 
 poll.init_close_button = function() {
     $('#list button.close').on('click', function(e) {
@@ -31,4 +31,4 @@ poll.init_close_button = function() {
         poll_item.removeClass('active');
         return false;
     });
-}
+};
