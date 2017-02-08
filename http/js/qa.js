@@ -1,15 +1,14 @@
 'use strict'
 
-var qa = new function() {
-    var that = this;
+var qa = qa || {};
 
-    that.load = function() {
-        var template = $('#template').html();
+qa.load = function() {
+    $.post('/spt/d/qa/get_all', {}, qa.render_data);
+}
 
-        $.post('/spt/d/qa/get_all', {}, function(res){
-            $('#list').html(Mustache.render(template, res));
+qa.render_data = function(res) {
+    var template = $('#template').html();
+    $('#list').html(Mustache.render(template, res));
 
-            ajax_done();
-        });
-    };
+    ajax_done();
 }
