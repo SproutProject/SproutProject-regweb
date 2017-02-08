@@ -1,56 +1,71 @@
 'use strict'
 
-var app = new function() {
-    var that = this;
+var app = app || {};
 
-    that.load = function() {
-        var t_app = $('#app-templ').html();
+app.load = function() {
+    $.post('/spt/d/application/get_all',
+        {'class_type': class_type},
+        app.render_data
+    );
+}
 
-        $.post('/spt/d/application/get_all', {
-            'class_type': class_type
-        }, function(res) {
-            res.title_value = function() {
-                var arr = ['C 語法班', 'Python 語法班', '算法班'];
-                return arr[class_type - 1];
-            }
+app.render_data = function(res) {
+    var template = $('#app-templ').html();
+    res.title_value = function() {
+        var arr = ['C 語法班', 'Python 語法班', '算法班'];
+        return arr[class_type - 1];
+    }
+    $('#app').html(Mustache.render(template, res));
 
-            $('#app').html(Mustache.render(t_app, res));
+    app.init_submit_button();
+    app.init_close_button();
 
-            $('button.submit').on('click', function(e) {
-                var app_list = $('div.app');
-                var data = [];
+    ajax_done();
+}
 
-                for (var i = 0; i < app_list.size(); i++) {
-                    var id = $(app_list[i]).attr('appid');
-                    var answer = $(app_list[i]).find('.answer').val();
-                    data.push({'id': id, 'answer': answer});
-                }
+app.init_submit_button = function() {
+    $('button.submit').on('click', function(e) {
+        app.submit_data();
+    });
+}
 
-                ajax_start();
+app.submit_data = function() {
+    var app_list = $('div.app');
+    var app_data = [];
 
-                $.post('/spt/d/application/answer', {
-                    'class_type': class_type,
-                    'data': JSON.stringify(data)
-                }, function(res) {
-                    if (res.status == 'SUCCESS') {
-                        show_message('報名資料已成功送出。');
-                        reload_page('/spt/indiv/');
-                    }
-                    else if (res.status == 'PERMISSION DENIED')
-                        show_message('尚未完成規則測驗（或前測）。');
-                    else if (res.status == 'ERROR')
-                        show_message('系統錯誤！');
-                    else if (res.status == 'DEADLINE')
-                        show_message('報名期限已過！');
-                    ajax_done();
-                });
-            });
+    for (var i = 0; i < app_list.size(); i++) {
+        var id = $(app_list[i]).attr('appid');
+        var answer = $(app_list[i]).find('.answer').val();
+        app_data.push({'id': id, 'answer': answer});
+    }
 
-            $('button.close').on('click', function(e) {
-                reload_page('/spt/indiv/');
-            });
+    ajax_start();
 
-            ajax_done();
-        });
-    }; 
+    var data = {
+        'class_type': class_type,
+        'data': JSON.stringify(app_data)
+    }
+
+    $.post('/spt/d/application/answer', data, app.handle_result);
+}
+
+app.handle_result = function(res) {
+    if (res.status == 'SUCCESS') {
+        show_message('報名資料已成功送出。');
+        reload_page('/spt/indiv/');
+    } else if (res.status == 'PERMISSION DENIED') {
+        show_message('尚未完成規則測驗（或前測）。');
+    } else if (res.status == 'ERROR') {
+        show_message('系統錯誤！');
+    } else if (res.status == 'DEADLINE') {
+        show_message('報名期限已過！');
+    }
+
+    ajax_done();
+}
+
+app.init_close_button = function() {
+    $('button.close').on('click', function(e) {
+        reload_page('/spt/indiv/');
+    });
 }
