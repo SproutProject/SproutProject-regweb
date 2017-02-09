@@ -60,7 +60,6 @@ app.handle_result = function(res) {
     } else if (res.status == 'DEADLINE') {
         show_message('報名期限已過！');
     }
-
     ajax_done();
 };
 

@@ -27,13 +27,14 @@ ass_god.init_submit_button = function() {
 };
 
 ass_god.handle_result = function(res) {
-    if (res.status == 'SUCCESS')
+    if (res.status == 'SUCCESS') {
         show_message('Done.');
-    else if (res.status == 'NOT LOGIN')
+    } else if (res.status == 'NOT LOGIN') {
         show_message('Not login.');
-    else if (res.status == 'PERMISSION DENIED')
+    } else if (res.status == 'PERMISSION DENIED') {
         show_message('You are not ASS god!');
-    else if (res.status == 'ERROR')
+    } else if (res.status == 'ERROR') {
         show_message('系統錯誤！');
+    }
     ajax_done();
 };

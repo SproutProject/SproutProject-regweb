@@ -93,6 +93,5 @@ ass_app.handle_result = function(res) {
     } else if (res.status == 'ERROR') {
         show_message('系統錯誤！');
     }
-
     ajax_done();
 };

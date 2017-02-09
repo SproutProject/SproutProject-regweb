@@ -9,6 +9,5 @@ qa.load = function() {
 qa.render_data = function(res) {
     var template = $('#template').html();
     $('#list').html(Mustache.render(template, res));
-
     ajax_done();
 };
