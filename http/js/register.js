@@ -20,8 +20,9 @@ register.render_data = function(res) {
 register.set_grade_option = function(event) {
     var max_grade = parseInt(j_school_type.find(':selected').attr('max_grade'));
     var data = [];
-    for (var i = 1; i <= max_grade; i++)
+    for (var i = 1; i <= max_grade; i++) {
         data.push({'id': i, 'value': i});
+    }
     $('#grade').html(Mustache.render(t_options, {'data': data}));
 };
 
@@ -65,10 +66,10 @@ register.handle_result = function(res) {
     if (res.status == 'SUCCESS') {
         show_message('基本資料填寫完成，請回個人頁面登入後進行報名。');
         reload_page('/spt/indiv/');
-    }
-    else if (res.status == 'FAILED')
+    } else if (res.status == 'FAILED') {
         show_message('參數錯誤！');
-    else if (res.status == 'ERROR')
+    } else if (res.status == 'ERROR') {
         show_message('系統錯誤！');
+    }
     ajax_done();
 };

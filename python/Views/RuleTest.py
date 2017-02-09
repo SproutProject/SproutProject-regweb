@@ -168,7 +168,7 @@ class DeleteQuestionHandler(RequestHandler):
                     for row in session.query(RuleAnswer).filter(RuleAnswer.qid == qid):
                         row.status = 0
                     session.commit()
-                    self.return_status(self.STATUS_ERROR)
+                    self.return_status(self.STATUS_SUCCESS)
                 except Exception as e:
                     if DEBUG:
                         print(e)

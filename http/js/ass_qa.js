@@ -26,12 +26,12 @@ ass_qa.render_data = function(res) {
 ass_qa.init_modify_button = function() {
     $('button.modify').on('click', function(e) {
         if (confirm('確認修改？')) {
-            ass_qa.modify_data($(this).parent());
+            ass_qa.modify_qa($(this).parent());
         }
     });
 };
 
-ass_qa.modify_data = function(j_edit) {
+ass_qa.modify_qa = function(j_edit) {
     var qa_id = j_edit.attr('qaid');
     if (qa_id == undefined) {
         qa_id = -1;
@@ -79,7 +79,7 @@ ass_qa.init_delete_button = function() {
 ass_qa.handle_result = function(res) {
     if (res.status == 'SUCCESS') {
         reload_page('/spt/ass_qa/');
-    } else if (res.status == 'NOT LOGIN') {
+    } else if (res.status == 'NOT LOGINED') {
         show_message('尚未登入');
     } else if (res.status == 'PERMISSION DENIED') {
         show_message('權限不足。');

@@ -25,7 +25,7 @@ ass_god.init_submit_button = function() {
 ass_god.handle_result = function(res) {
     if (res.status == 'SUCCESS') {
         show_message('Done.');
-    } else if (res.status == 'NOT LOGIN') {
+    } else if (res.status == 'NOT LOGINED') {
         show_message('Not login.');
     } else if (res.status == 'PERMISSION DENIED') {
         show_message('You are not ASS god!');

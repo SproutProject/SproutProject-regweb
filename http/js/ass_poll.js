@@ -80,7 +80,7 @@ ass_poll.init_delete_button = function() {
 ass_poll.handle_result = function(res) {
     if (res.status == 'SUCCESS') {
         reload_page('/spt/ass_poll/');
-    } else if (res.status == 'NOT LOGIN') {
+    } else if (res.status == 'NOT LOGINED') {
         show_message('尚未登入');
     } else if (res.status == 'PERMISSION DENIED') {
         show_message('權限不足。');
