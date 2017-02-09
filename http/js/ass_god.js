@@ -3,10 +3,6 @@
 var ass_god = ass_god || {};
 
 ass_god.load = function() {
-    ass_god.render_data();
-};
-
-ass_god.render_data = function() {
     if (ass_mode_on) resizeSpecial();
     ass_god.init_submit_button();
     ajax_done();
