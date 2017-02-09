@@ -33,8 +33,9 @@ ass_poll.init_modify_button = function() {
 
 ass_poll.modify_poll = function(j_edit) {
     var poll_id = j_edit.attr('pollid');
-    if (poll_id == undefined)
+    if (poll_id == undefined) {
         poll_id = -1;
+    }
     var order = j_edit.find('input.order').val();
     var year = j_edit.find('input.year').val();
     var subject = j_edit.find('textarea.subject').val();
@@ -70,7 +71,6 @@ ass_poll.init_delete_button = function() {
             var data = {
                 'id': $(this).parent().attr('pollid'),
             };
-
             ajax_start();
             $.post('/spt/d/poll/del', data, ass_poll.handle_result);
         }
