@@ -169,6 +169,11 @@ indiv_data.render_data = function(res) {
             indiv_data.init_app_button('c', 1);
             indiv_data.init_app_button('python', 2);
             indiv_data.init_contest_button('pre_test');
+            indiv_data.get_pre_test_score();
+        }
+
+        if (res.data.pre_test == 1) {
+            indiv_data.init_app_button('algorithm', 3);
         }
 
         if (res.data.signup_status & 1) {
@@ -217,8 +222,10 @@ indiv_data.init_contest_button = function(contest_name) {
             $('form#' + contest_name + '_form input[name="realname"]').attr('value', res.realname);
             if (res.status == 'SUCCESS') {
                 $('form#' + contest_name + '_form').submit();
-            } else {
-                show_message('cms 系統錯誤！');
+            } else if (res.status == 'NOT LOGINED') {
+                show_message('尚未登入。');
+            } else if (res.status == 'FAILED') {
+                show_message('尚未完成前置條件。');
             }
         });
     });
@@ -280,15 +287,19 @@ indiv_data.handle_modify_result = function(res) {
     ajax_done();
 };
 
-/*
-if (res.score >= 0.0) {
-    $('#pre_test').append(' (' + res.score + ' / 300)');
-}
-if (_res.data.pre_test == 0 && res.score >= 300.0) {
-    $('#algorithm_class').removeClass('btn-disabled');
-    $('#algorithm_class').addClass('btn-pri');
-    $('#algorithm_class').on('click', function(e) {
-        reload_page('/spt/app/?type=3');
+indiv_data.get_pre_test_score = function(res) {
+    $.post('/spt/d/token/pre_test_score', {}, function(res) {
+        if (res.status == 'SUCCESS') {
+            if (res.score >= 0.0) {
+                $('#pre_test').append(' (' + res.score + ' / 300)');
+            }
+            if (res.score >= 300.0) {
+                indiv_data.init_app_button('algorithm', 3);
+            }
+        } else if (res.status == 'NOT LOGINED') {
+            show_message('尚未登入。');
+        } else if (res.status == 'FAILED') {
+            show_message('尚未完成前置條件。');
+        }
     });
-}
-*/
+};

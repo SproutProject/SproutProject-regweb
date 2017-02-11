@@ -8,8 +8,8 @@ from Model import *
 from Views.Base import RequestHandler
 from Views.Utils import get_user
 
-'''
-class PretestHandler(RequestHandler):
+
+class PretestScoreHandler(RequestHandler):
     def post(self):
         session = self.get_session()
         try:
@@ -25,14 +25,11 @@ class PretestHandler(RequestHandler):
                 self.return_status(self.STATUS_FAILED)
                 return
 
-            h = hashlib.new('sha512')
+            h = hashlib.new('ripemd160')
             h.update((Config.PRETEST_SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
 
-            hh = hashlib.new('ripemd160')
-            hh.update((Config.PRETEST_SSO_LOGIN_PASSWORD + '||' + user.mail + '||' + str(int(time.time()))).encode('utf-8'))
-
             url = 'http://%s/user_score' % Config.PRETEST_HOST
-            res = requests.get(url, params={'username': user.mail, 'password': hh.hexdigest()}, timeout=0.5)
+            res = requests.get(url, params={'username': user.mail, 'password': h.hexdigest()}, timeout=0.5)
 
             try:
                 score = float(res.text.split('\n')[0].replace('*', ''))
@@ -41,27 +38,18 @@ class PretestHandler(RequestHandler):
                     print(e)
                     print(res.text)
                 score = -1
-
+            
             for row in session.query(User).filter(User.id == uid):
                 row.pre_test = 1 if score >= Config.PRETEST_THRESHOLD else 0
             session.commit()
 
-            for row in session.query(UserData).filter(UserData.uid == uid):
-                realname = row.full_name
-
-            redirect_url = 'http://%s/redirect_login' % Config.PRETEST_HOST
-
             self.write({
                 'status': 'SUCCESS',
-                'username': user.mail,
-                'password': h.hexdigest(),
-                'realname': realname,
-                'url': redirect_url,
                 'score': score,
             })
         finally:
             session.close()
-'''
+
 
 class PretestHandler(RequestHandler):
     def post(self):
@@ -75,7 +63,7 @@ class PretestHandler(RequestHandler):
             uid = int(uid)
             user = get_user(session, uid)
 
-            if (user.signup_status & 4) == 0:
+            if user.rule_test == 0:
                 self.return_status(self.STATUS_FAILED)
                 return
 

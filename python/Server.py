@@ -88,6 +88,7 @@ def main():
         (r'/application/answer', Views.Application.AnswerHandler, app_param),
         (r'/application/update_question', Views.Application.UpdateQuestionHandler, app_param),
         (r'/application/del_question', Views.Application.DeleteQuestionHandler, app_param),
+        (r'/token/pre_test_score', Views.Token.PretestScoreHandler, app_param),
         (r'/token/pre_test', Views.Token.PretestHandler, app_param),
         (r'/token/entrance', Views.Token.EntranceHandler, app_param),
         (r'/google_sheet/update', Views.GoogleSheet.UpdateHandler, app_param),
