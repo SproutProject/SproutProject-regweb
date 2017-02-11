@@ -151,11 +151,78 @@ var indiv_data = indiv_data || {};
 
 indiv_data.load = function() {
     ajax_start();
+    $.post('/spt/d/user/get_indiv_data', {}, indiv_data.render_data);
+};
+
+indiv_data.render_data = function(res) {
+    if (res.status == 'SUCCESS') {
+        var template = $('#indiv-data-templ').html();
+        $('#indiv').html(Mustache.render(template, res.data));
+
+        if (res.data.rule_test == 1) {
+            indiv_data.init_app_button('c', 1);
+            indiv_data.init_app_button('python', 2);
+            indiv_data.init_contest_button('pre_test');
+        }
+
+        if (res.data.signup_status & 1) {
+            indiv_data.add_app_suffix('c');
+        }
+        if (res.data.signup_status & 2) {
+            indiv_data.add_app_suffix('python');
+        }
+        if (res.data.signup_status & 4) {
+            indiv_data.add_app_suffix('algorithm');
+            indiv_data.init_app_button('algorithm', 3);
+            indiv_data.init_contest_button('entrance');
+            $('div#entrance_area').show();
+        }
+    }
+    ajax_done();
+};
+
+indiv_data.init_app_button = function(class_name, class_type) {
+    $('#' + class_name + '_class').removeClass('btn-disabled');
+    $('#' + class_name + '_class').addClass('btn-pri');
+    $('#' + class_name + '_class').on('click', function(e) {
+        reload_page('/spt/app/?type=' + class_type);
+    });
+};
+
+indiv_data.add_app_suffix = function(class_name) {
+    var suffix_msg = '<b>資料修改</b>';
+    $('#' + class_name + '_class').append(suffix_msg);
+};
+
+indiv_data.init_contest_button = function(contest_name) {
+    $('#' + contest_name).removeClass('btn-disabled');
+    $('#' + contest_name).addClass('btn-pri');
+
+    $('#' + contest_name).on('click', function(e) {
+        $.ajax({
+            type: 'POST',
+            url: '/spt/d/token/' + contest_name,
+            dataType: 'json',
+            async: false
+        }).done(function(res) {
+            $('form#' + contest_name + '_form').attr('action', res.url);
+            $('form#' + contest_name + '_form input[name="username"]').attr('value', res.username);
+            $('form#' + contest_name + '_form input[name="password"]').attr('value', res.password);
+            $('form#' + contest_name + '_form input[name="realname"]').attr('value', res.realname);
+            if (res.status == 'SUCCESS') {
+                $('form#' + contest_name + '_form').submit();
+            } else {
+                show_message('cms 系統錯誤！');
+            }
+        });
+    });
+};
+
+/*
+indiv_data.load = function() {
+    ajax_start();
     $.post('/spt/d/user/get_indiv_data', {}, function(res) {
         if (res.status == 'SUCCESS') {
-            var template = $('#indiv-data-templ').html();
-            $('#indiv').html(Mustache.render(template, res.data));
-
             if (res.data.rule_test == 1) {
                 // $("#rule_test").append(' (已完成)');
                 var _res = res;
@@ -200,67 +267,7 @@ indiv_data.load = function() {
                         // show_message('尚未通過規則測驗。');
                     }
                 });
-
-                $('#c_class').removeClass('btn-disabled');
-                $('#c_class').addClass('btn-pri');
-                $('#c_class').on('click', function(e) {
-                    reload_page('/spt/app/?type=1');
-                });
-
-                $('#python_class').removeClass('btn-disabled');
-                $('#python_class').addClass('btn-pri');
-                $('#python_class').on('click', function(e) {
-                    reload_page('/spt/app/?type=2');
-                });
             }
-
-            if (res.data.signup_status & 4) {
-                // $("#pre_test").append(' (已完成)');
-
-                $('#algorithm_class').removeClass('btn-disabled');
-                $('#algorithm_class').addClass('btn-pri');
-                $('#algorithm_class').on('click', function(e) {
-                    reload_page('/spt/app/?type=3');
-                });
-
-                $('div#entrance_area').show();
-                $('#entrance').on('click', function(e) {
-                    $.ajax({
-                        type: 'POST',
-                        url: '/spt/d/token/entrance',
-                        dataType: 'json',
-                        async: false
-                    }).done(function(res) {
-                        console.log(res);
-                        $('form#entrance_form').attr('action', res.url);
-                        $('form#entrance_form input[name="username"]').attr('value', res.username);
-                        $('form#entrance_form input[name="password"]').attr('value', res.password);
-                        $('form#entrance_form input[name="realname"]').attr('value', res.realname);
-                        if (res.status == 'SUCCESS') {
-                            $('form#entrance_form').submit();
-                        } else {
-                            show_message('cms 系統錯誤！');
-                        }
-                    });
-                });
-            }
-
-            /*
-            if (res.data.signup_status & 1)
-                $("#c_class").append(' (已完成)');
-            if (res.data.signup_status & 2)
-                $("#python_class").append(' (已完成)');
-            if (res.data.signup_status & 4)
-                $("#algorithm_class").append(' (已完成)');
-            */
-
-            var suffix_msg = '<b>資料修改</b>'
-            if (res.data.signup_status & 1)
-                $("#c_class").append(suffix_msg);
-            if (res.data.signup_status & 2)
-                $("#python_class").append(suffix_msg);
-            if (res.data.signup_status & 4)
-                $("#algorithm_class").append(suffix_msg);
 
             $('#return_indiv_data').on('click', function(e) {
                 $('#sign_up').hide();
@@ -307,3 +314,4 @@ indiv_data.load = function() {
         ajax_done();
     });
 };
+*/
