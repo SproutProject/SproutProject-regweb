@@ -159,6 +159,12 @@ indiv_data.render_data = function(res) {
         var template = $('#indiv-data-templ').html();
         $('#indiv').html(Mustache.render(template, res.data));
 
+        indiv_data.init_rule_test_button();
+        indiv_data.init_logout_button();
+        indiv_data.init_return_indiv_data_button();
+        indiv_data.init_return_sign_up_button();
+        indiv_data.init_modify_button();
+
         if (res.data.rule_test == 1) {
             indiv_data.init_app_button('c', 1);
             indiv_data.init_app_button('python', 2);
@@ -218,100 +224,71 @@ indiv_data.init_contest_button = function(contest_name) {
     });
 };
 
-/*
-indiv_data.load = function() {
-    ajax_start();
-    $.post('/spt/d/user/get_indiv_data', {}, function(res) {
-        if (res.status == 'SUCCESS') {
-            if (res.data.rule_test == 1) {
-                // $("#rule_test").append(' (已完成)');
-                var _res = res;
-
-                $.post('/spt/d/token/pretest', {}, function(res) {
-                    var token_time = +new Date();
-                    if (res.status == 'SUCCESS') {
-                        $('form#pre_test_from').attr('action', res.url);
-                        $('form#pre_test_from input[name="username"]').attr('value', res.username);
-                        $('form#pre_test_from input[name="password"]').attr('value', res.password);
-                        $('form#pre_test_from input[name="realname"]').attr('value', res.realname);
-                        if (res.score >= 0.0) {
-                            $('#pre_test').append(' (' + res.score + ' / 300)');
-                        }
-                        if (_res.data.pre_test == 0 && res.score >= 300.0) {
-                            $('#algorithm_class').removeClass('btn-disabled');
-                            $('#algorithm_class').addClass('btn-pri');
-                            $('#algorithm_class').on('click', function(e) {
-                                reload_page('/spt/app/?type=3');
-                            });
-                        }
-                        $('#pre_test').removeClass('btn-disabled');
-                        $('#pre_test').addClass('btn-pri');
-                        $('#pre_test').on('click', function(e) {
-                            if (+new Date() - token_time > 30000){
-                                token_time = +new Date();
-                                $.post('/spt/d/cms_token', {}, function(res) {
-                                    $('input[name="password"]').attr('value', res.password);
-                                    if (res.status == 'SUCCESS') {
-                                        $('form#pre_test_from').submit();
-                                    } else {
-                                        show_message('cms 系統錯誤！');
-                                    }
-                                });
-                            } else {
-                                $('form#pre_test_from').submit();
-                            }
-                        });
-                    } else if (res.status == 'ERROR') {
-                        show_message('cms 系統錯誤！');
-                    } else {
-                        // show_message('尚未通過規則測驗。');
-                    }
-                });
-            }
-
-            $('#return_indiv_data').on('click', function(e) {
-                $('#sign_up').hide();
-                $('#indiv_data').show();
-            });
-
-            $('#return_sign_up').on('click', function(e) {
-                $('#indiv_data').hide();
-                $('#sign_up').show();
-            });
-
-            $('.logout').on('click', function(e) {
-                ajax_start();
-                $.post('/spt/d/user/logout', {}, function(res) {
-                    if (res.status == 'SUCCESS') {
-                        window.location.reload();
-                    }
-                });
-            });
-
-            $('#submit').on('click', function(e) {
-                var phone = $('#phone').val();
-                var address = $('#address').val();
-                ajax_start();
-
-                $.post('/spt/d/user/modify_indiv_data', {
-                    'phone': phone,
-                    'address': address
-                }, function(res) {
-                    if (res.status == 'SUCCESS')
-                        show_message('修改成功！');
-                    else if (res.status == 'NOT LOGINED')
-                        show_message('登入已失效，請重新登入。');
-                    else if (res.status == 'ERROR')
-                        show_message('系統錯誤！');
-                    ajax_done();
-                });
-            });
-
-            $('#rule_test').on('click', function(e) {
-                reload_page('/spt/rule_test/');
-            });
-        }
-        ajax_done();
+indiv_data.init_rule_test_button = function() {
+    $('#rule_test').on('click', function(e) {
+        reload_page('/spt/rule_test/');
     });
 };
+
+indiv_data.init_logout_button = function() {
+    $('.logout').on('click', function(e) {
+        ajax_start();
+        $.post('/spt/d/user/logout', {}, function(res) {
+            if (res.status == 'SUCCESS') {
+                window.location.reload();
+            }
+        });
+    });
+};
+
+indiv_data.init_return_indiv_data_button = function() {
+    $('#return_indiv_data').on('click', function(e) {
+        $('#sign_up').hide();
+        $('#indiv_data').show();
+    });
+};
+
+indiv_data.init_return_sign_up_button = function() {
+    $('#return_sign_up').on('click', function(e) {
+        $('#indiv_data').hide();
+        $('#sign_up').show();
+    });
+};
+
+indiv_data.init_modify_button = function() {
+    $('#submit').on('click', function(e) {
+        var phone = $('#phone').val();
+        var address = $('#address').val();
+        var data = {
+            'phone': phone,
+            'address': address
+        };
+
+        ajax_start();
+        $.post('/spt/d/user/modify_indiv_data', data, indiv_data.handle_modify_result);
+    });
+};
+
+indiv_data.handle_modify_result = function(res) {
+    if (res.status == 'SUCCESS') {
+        show_message('修改成功！');
+    } else if (res.status == 'NOT LOGINED') {
+        show_message('登入已失效，請重新登入。');
+    } else if (res.status == 'ERROR') {
+        show_message('系統錯誤！');
+    }
+    ajax_done();
+};
+
+/*
+if (res.score >= 0.0) {
+    $('#pre_test').append(' (' + res.score + ' / 300)');
+}
+if (_res.data.pre_test == 0 && res.score >= 300.0) {
+    $('#algorithm_class').removeClass('btn-disabled');
+    $('#algorithm_class').addClass('btn-pri');
+    $('#algorithm_class').on('click', function(e) {
+        reload_page('/spt/app/?type=3');
+    });
+}
 */
